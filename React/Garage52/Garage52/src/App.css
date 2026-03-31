@@ -1,0 +1,15 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(3, 0.3fr);
+    gap: 10px;
+    justify-items: center;
+    justify-content: center;
+    padding: 0 20px;
+}
