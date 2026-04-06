@@ -1,66 +1,64 @@
-#main{
+/* Fundo da página */
+.login_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #DFE8FF;
+}
+
+/* Card principal */
+.login_card {
+    position: relative;
+    width: 420px;
+    padding: 30px 25px 10px 25px;
+    background-color: #F5F5F5;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+/* Header */
+.login_header {
     display: flex;
     flex-direction: column;
     align-items: center;
+
 }
 
-input{
-    height: 32px;
-    width: 480px;
-    font-size: 16px;
-}
+/* Ícone (bolinha azul) */
+.icon_user {
+    position: absolute;
+    top: -30px;
 
-label{
+    width: 60px;
+    height: 60px;
+
+    background-color: #4361EE;
+    border-radius: 50%;
+
     display: flex;
-    flex-direction: column;
-    align-items: start;
-    width: fit-content;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Caso use imagem depois */
+.icon_user img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+}
+
+/* Título */
+.login_header h2 {
+    margin-top: 20px;
+    margin-bottom: 5px;
     font-size: 20px;
 }
 
-.form{
-    display: flex;
-    flex-direction: column;
-    border: solid 1px black;
-    width: 650px;
-    height: 460px;
-}
-
-#div_dados{
-    padding: 80px;
-    gap: 30px;
-    display: flex;
-    flex-direction: column;
-    height: 300px;
-    justify-content: space-around;
-}
-
-.div_label{
-    display: flex;
-    flex-direction: column;
-}
-
-#button_submit{
-    width: fit-content;
-    height: fit-content;
-    font-size: 20px;
-    padding: 5px 15px;
-}
-
-#div_action{
-    display: flex;
-    justify-content: space-between;
-}
-
-
-#div_action a{
-    transition: 0.5s;
-    color: white;
-    font-size: 16px;
-}
-
-#div_action a:hover{
-    transition: 0.5s;
-    scale: 1.20;
-    text-decoration: underline;
-}
+/* Subtítulo */
+.login_header p {
+    font-size: 14px;
+    color: #666;
+}   

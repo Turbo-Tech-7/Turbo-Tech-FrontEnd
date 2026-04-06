@@ -1,0 +1,81 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+    padding: 0;
+
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+/* Container dos inputs */
+#div_dados {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Label */
+.div_label label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #B3B3B3;
+    background-color: #FAFAFA;
+    font-size: 14px;
+}
+
+/* Botão */
+#div_button {
+    width: 100%;
+}
+
+#button_submit {
+    width: 100%;
+    height: 45px;
+
+    background-color: #4361EE;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#button_submit:hover {
+    opacity: 0.9;
+}
+
+/* Links */
+#div_action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Links estilo clean */
+#div_action a {
+    text-decoration: none;
+    color: #4361EE;
+    font-size: 13px;
+}
+
+#div_action a:hover {
+    text-decoration: underline;
+}

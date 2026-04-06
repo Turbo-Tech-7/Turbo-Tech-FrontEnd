@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { utilsJS } from "../hooks/utils"
 import {Link} from "react-router-dom"
+import "./css/Forms.css"
 
 const forms = (prop) => {
     
@@ -221,9 +222,9 @@ function formCadastro() {
 }
 
 return (
-    <div id="main">
+    <div className="form_wrapper">
 
-        {prop.ambiente == "login" ? <h1>login</h1> : <h1>Cadastro</h1>}
+      
 
         { prop.ambiente == "login" ? (
             formLogin()

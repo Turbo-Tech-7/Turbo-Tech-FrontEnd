@@ -15,6 +15,7 @@ import { Component } from 'react'
 import './App.css'
 import Home from "./Pages/Home.jsx"
 
+
 function App() {
 
   return (
@@ -22,7 +23,7 @@ function App() {
 
     <BrowserRouter>
       <Routes>
-        <Route path="/Login" element={<Login />}/>
+        <Route path="/login" element={<Login />}/>
         <Route path="/cadastro" element={<Cadastro />}/>
         <Route path="/" element={<Home />} />
       </Routes>

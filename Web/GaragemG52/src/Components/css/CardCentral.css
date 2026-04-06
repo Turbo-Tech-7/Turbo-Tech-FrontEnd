@@ -47,6 +47,15 @@
     cursor: pointer;
 }
 
+.logout_link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 15px;
+    text-decoration: none; /* tira o sublinhado */
+    color: inherit;        /* mantém a cor normal */
+}
+
 .img_sair {
     width:20px;
     height: 20px;
