@@ -13,6 +13,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom'
 
 import { Component } from 'react'
 import './App.css'
+import Home from "./Pages/Home.jsx"
 
 function App() {
 
@@ -21,8 +22,9 @@ function App() {
 
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />}/>
+        <Route path="/Login" element={<Login />}/>
         <Route path="/cadastro" element={<Cadastro />}/>
+        <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
 
