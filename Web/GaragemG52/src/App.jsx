@@ -16,6 +16,7 @@ import './App.css'
 import Home from "./Pages/Home.jsx"
 import RecuperarSenha from "./Pages/RecuperarSenha.jsx"
 import RecuperarSenhaVerificar from "./Pages/RecuperarSenhaVerificar"
+import RecuperarNovaSenha from "./Pages/RecuperarNovaSenha"
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/recuperar-senha" element={<RecuperarSenha />} />
           <Route path="/recuperar-senha/verificar" element={<RecuperarSenhaVerificar />} />
+          <Route path="/recuperar-senha/nova" element={<RecuperarNovaSenha />} />
         </Routes>
       </BrowserRouter>
 
