@@ -33,7 +33,17 @@ input {
     border: 1px solid #B3B3B3;
     background-color: #FAFAFA;
     font-size: 14px;
+    padding: 0 10px; 
+    box-sizing: border-box; 
 }
+
+/* Quando o usuário clica no input */
+input:focus {
+    outline: none; /* remove o contorno padrão do navegador */
+    border-color: #4361EE; /* altera a borda para preto */
+}
+
+
 
 /* Botão */
 #div_button {

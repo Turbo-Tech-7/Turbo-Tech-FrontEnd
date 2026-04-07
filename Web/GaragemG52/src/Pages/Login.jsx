@@ -1,6 +1,6 @@
 //Componentes
 import Forms from "../Components/forms"
-
+import user from "../assets/user.png"
 //Style
 import "./CSS/Login.css"
 
@@ -12,7 +12,7 @@ const Login = () => {
 
         <div className="login_header">
           <div className="icon_user">
-            {/* <img src={userIcon} alt="User Icon" /> */}
+             <img src={user} alt="User" />
           </div>
 
           <h2>Boas Vindas Usuário</h2>
