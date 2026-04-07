@@ -1,0 +1,38 @@
+/* Card principal */
+.recuperar_card {
+    align-items: center;
+    position: relative;
+    width: 420px;
+    padding: 30px 25px 10px 25px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.codigo_container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.codigo_input {
+    width: 40px;
+    height: 45px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 1px solid #B3B3B3;
+}
+
+.codigo_traco {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.div_label_codigo label {
+    display: flex;
+    justify-content: center;
+}

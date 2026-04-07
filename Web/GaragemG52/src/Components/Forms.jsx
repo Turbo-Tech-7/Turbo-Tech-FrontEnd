@@ -119,7 +119,7 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_action">
-                        <Link to="/">Esqueci minha senha</Link>
+                        <Link to="/recuperar-senha">Esqueci minha senha</Link>
                         <Link to="/cadastro">Não tenho uma conta</Link>
                     </div>
 
@@ -200,7 +200,7 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_action">
-                        <Link to="/">Já tenho conta</Link>
+                        <Link to="/login">Já tenho conta</Link>
                     </div>
 
                 </div>

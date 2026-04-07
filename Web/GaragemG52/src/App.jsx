@@ -9,27 +9,30 @@ import QuadroMensagem from './Components/quadroMensagem'
 //Style
 
 //Hook
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import { Component } from 'react'
 import './App.css'
 import Home from "./Pages/Home.jsx"
-
+import RecuperarSenha from "./Pages/RecuperarSenha.jsx"
+import RecuperarSenhaVerificar from "./Pages/RecuperarSenhaVerificar"
 
 function App() {
 
   return (
     <main>
 
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/cadastro" element={<Cadastro />}/>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+          <Route path="/recuperar-senha/verificar" element={<RecuperarSenhaVerificar />} />
+        </Routes>
+      </BrowserRouter>
 
-      
+
     </main>
   )
 }

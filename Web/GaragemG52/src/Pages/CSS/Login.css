@@ -59,6 +59,7 @@
 
 /* Subtítulo */
 .login_header p {
+    text-align: center;
     font-size: 14px;
     color: #666;
     margin-top: -2px;
