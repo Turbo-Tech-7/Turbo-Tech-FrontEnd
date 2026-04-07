@@ -26,7 +26,7 @@ const RecuperarSenhaNova = () => {
         </div>
 
         <div className="login_header">
-          <h2>Recuperar senha</h2>
+          <h2>Nova senha</h2>
           <p>Insira uma nova senha para homeroxxxxx@gmail.com</p>
         </div>
 
