@@ -26,9 +26,9 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/recuperar-senha" element={<RecuperarSenha />} />
           <Route path="/recuperar-senha/verificar" element={<RecuperarSenhaVerificar />} />
           <Route path="/recuperar-senha/nova" element={<RecuperarNovaSenha />} />

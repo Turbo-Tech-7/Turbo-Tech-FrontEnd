@@ -1,6 +1,5 @@
 export const utilsJS = () =>{
 
-    // simula função
 const utilsJSCongfig = (metodo, dado) => {
 
     if(metodo === "verificarEmail"){ 

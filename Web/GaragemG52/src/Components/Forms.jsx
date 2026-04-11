@@ -2,14 +2,14 @@
 import { useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { utilsJS } from "../hooks/utils"
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 import "./css/Forms.css"
 
 const Forms = (prop) => {
 
-    const url = "http://localhost:3000"
+    const url = "http://localhost:8080"
 
-    const { httpConfig, error } = useFetch(url)
+    const { data, httpConfig, error, loading } = useFetch(url)
     const { utilsJSCongfig } = utilsJS()
 
     // Dados usuario - Login
@@ -21,6 +21,11 @@ const Forms = (prop) => {
     const [nome, setNome] = useState("")
     const [telefone, setTelefone] = useState("")
     const [cep, setCep] = useState("")
+
+    //Processos em segundo plano
+    const [mensagem, setMensagem] = useState("")
+
+
 
     const handleSubmitLogin = async (e) => {
         e.preventDefault()
@@ -38,35 +43,28 @@ const Forms = (prop) => {
 
     const handleSubmitCadastro = async (e) => {
         e.preventDefault()
-
-        let usuarios = await httpConfig("", "GET", "usuario")
+        let usuarios = await httpConfig("GET", "users/findByEmail",null,{email: email},null)
 
         const emailExiste = usuarios.some(
             user => user.email.toLowerCase() === email.toLowerCase()
         )
 
         if (emailExiste) {
-            console.log("Email já cadastrado")
+            setMensagem("Email já cadastrado")
             return
         }
 
-        let id = "1"
-        if (usuarios.length > 0) {
-            id = (Number(usuarios[usuarios.length - 1].id) + 1).toString()
-        }
-
         if (!utilsJSCongfig("verificarEmail", email)) {
-            console.log("Email invalido")
+            setMensagem("Email invalido")
             return false
         }
 
         if (senha !== confirmarSenha) {
-            console.log("Senhas diferentes")
+            setMensagem("Senhas diferentes")
             return false
         }
 
         const usuario = {
-            id,
             nome,
             email,
             senha,
@@ -75,7 +73,7 @@ const Forms = (prop) => {
         }
 
         try {
-            await httpConfig(usuario, "POST", "usuario")
+            await httpConfig("POST", "/auth/login",usuario)
 
             setNome("");
             setEmail("");
@@ -83,10 +81,13 @@ const Forms = (prop) => {
             setConfirmarSenha("");
             setTelefone("");
             setCep("");
-            console.log("Todos os dados enviados com sucesso!");
+            setMensagem()
+
+            Navigate("/login")
 
         } catch (error) {
             console.error("Erro ao enviar dados:", error);
+            setMensagem("Erro ao enviar os dados")
         }
     }
 
@@ -196,6 +197,8 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_button">
+                        {loading ? "" : <p id="carregando">Carregando...</p>}
+                        {mensagem ? "" : <p id="mensagem">{mensagem}</p>}
                         <input type="submit" value="Cadastrar" id="button_submit" />
                     </div>
 

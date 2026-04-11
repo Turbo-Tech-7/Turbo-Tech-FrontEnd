@@ -1,44 +1,47 @@
-//hooks
-import { useState, useEffect } from "react"
+import { useState } from "react";
 
-export const useFetch = (url) => {
+export const useFetch = (baseUrl) => {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    // primeiro parametro valor atua, novo valor
-    // necessario para mexer com uma variavel durante o código
-    // setItemId(100)
+  const httpConfig = async (method, route, bodyData = null, queryParams = null, id = null) => {
+    setLoading(true);
+    setError(null); // Limpa erros anteriores
 
-    const [itemId, setItemId] = useState(null)
-    const [config, setConfig] = useState(null)
-    const [method, setMethod] = useState(null)
-    const [callFetch, setCallFetch] = useState(false)
-    const [error, setError] = useState(null)
-    const [data, setdata] = useState(null)
+    let url = id ? `${baseUrl}/${route}/${id}` : `${baseUrl}/${route}`;
 
+    if (queryParams) {
+      const searchParams = new URLSearchParams(queryParams);
+      url += `?${searchParams.toString()}`;
+    }
 
-    const httpConfig = async (data, method, route) => {
-        
-        let options = ""
-
-        if(method === "DELETE"){
-            options = {
-            method,
-            headers: { "Content-type": "application/json" }}    
-        
-            const res = await fetch(`${url}/${route}/${data}`, method === "GET" ? {} : options);
-            return await res.json();
-        }
-
-             options = {
-                method,
-                headers: { "Content-type": "application/json" },
-                body: data ? JSON.stringify(data) : null
-            };
-            
-            const res = await fetch(`${url}/${route}`, method === "GET" ? {} : options);
-            return await res.json();
-
+    const options = {
+      method,
+      headers: { "Content-type": "application/json" },
     };
 
-  return {data, httpConfig, error};
-}
+    if (bodyData && method !== "GET") {
+      options.body = JSON.stringify(bodyData);
+    }
 
+    try {
+      const res = await fetch(url, options);
+
+      if (!res.ok) {
+        throw new Error(`Erro: ${res.status} - ${res.statusText}`);
+      }
+
+      const json = await res.json();
+      setData(json);
+      return json;
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, httpConfig, error, loading };
+};
