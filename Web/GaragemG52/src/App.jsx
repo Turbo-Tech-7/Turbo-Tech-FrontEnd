@@ -9,8 +9,9 @@ import QuadroMensagem from './Components/quadroMensagem'
 //Style
 
 //Hook
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route} from 'react-router-dom'
 
+import Redirecionar from "./Components/Redirecionar.jsx"
 import { Component } from 'react'
 import './App.css'
 import Home from "./Pages/Home.jsx"
@@ -26,7 +27,8 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Redirecionar link="login" />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/home" element={<Home />} />
           <Route path="/recuperar-senha" element={<RecuperarSenha />} />

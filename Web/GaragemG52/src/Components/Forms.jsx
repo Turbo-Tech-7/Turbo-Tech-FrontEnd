@@ -1,6 +1,8 @@
 //hooks
-import { useState } from "react"
+import { useEffect, useState } from "react"
+
 import { useFetch } from "../hooks/useFetch"
+
 import { utilsJS } from "../hooks/utils"
 import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
@@ -9,9 +11,11 @@ const Forms = (prop) => {
 
 
     const url = "http://localhost:8080"
-    const navigate = useNavigate();
 
+    
     const { data, httpConfig, error, loading } = useFetch(url)
+    
+    const navigate = useNavigate();
     const { utilsJSCongfig } = utilsJS()
 
     // Dados usuario - Login
@@ -28,18 +32,27 @@ const Forms = (prop) => {
     const [mensagem, setMensagem] = useState("")
 
 
+    useEffect(() => {
+        sessionStorage.removeItem('token');
+    }, [])
+
 
     const handleSubmitLogin = async (e) => {
         e.preventDefault()
+        setMensagem("");
+        let credenciais = {
+            email,
+            senha
+        }
 
-        let credenciais = `usuario?email=${email}&senha=${senha}`
-        let resposta = await httpConfig(null, "GET", credenciais)
+        let resposta = await httpConfig("POST","auth/login", credenciais)
 
-        if (resposta && resposta.length > 0) {
-            console.log("Login realizado com sucesso!");
-            console.log("Dados do usuário:", resposta[0]);
+        if (resposta.status == 200) {
+            setMensagem("Login realizado com sucesso!");
+            setTimeout(() => {navigate("/verificar-conta")}, 2500)
         } else {
-            console.log("Usuário ou senha incorretos.");
+            setMensagem("Usuário ou senha incorretos.");
+            console.log("Erro do cliente:", error)
         }
     }
 
@@ -79,10 +92,7 @@ const Forms = (prop) => {
                 
                 
                 console.log("Cadastro realizado")
-                
-                setInterval(navigate("/"), 4000)
-                
-
+                setTimeout(()=>{navigate("/")}, 4000)
             }
 
         } catch (error) {
@@ -116,6 +126,8 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_button">
+                        {loading ? <p id="carregando">Carregando...</p> : "" }
+                        {mensagem ? <p id="mensagem">{mensagem}</p> : "" }
                         <input type="submit" value="Login" id="button_submit" />
                     </div>
 
@@ -203,7 +215,7 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_action">
-                        <Link to="/login">Já tenho conta</Link>
+                        <Link to="/">Já tenho conta</Link>
                     </div>
 
                 </div>
@@ -212,7 +224,7 @@ const Forms = (prop) => {
     }
 
     return (
-        <div className="form_wrapper">
+        <div className="form_wrapper" onLoad={() => setMensagem()}>
             {prop.ambiente === "login" ? formLogin() : formCadastro()}
             <br />
         </div>
