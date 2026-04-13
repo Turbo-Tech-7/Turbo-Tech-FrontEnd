@@ -2,12 +2,14 @@
 import { useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { utilsJS } from "../hooks/utils"
-import { Link, Navigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
 
 const Forms = (prop) => {
 
+
     const url = "http://localhost:8080"
+    const navigate = useNavigate();
 
     const { data, httpConfig, error, loading } = useFetch(url)
     const { utilsJSCongfig } = utilsJS()
@@ -18,7 +20,7 @@ const Forms = (prop) => {
 
     // Dados usuario - Cadastro
     const [confirmarSenha, setConfirmarSenha] = useState("")
-    const [nome, setNome] = useState("")
+    const [name, setName] = useState("")
     const [telefone, setTelefone] = useState("")
     const [cep, setCep] = useState("")
 
@@ -43,51 +45,49 @@ const Forms = (prop) => {
 
     const handleSubmitCadastro = async (e) => {
         e.preventDefault()
-        let usuarios = await httpConfig("GET", "users/findByEmail",null,{email: email},null)
-
-        const emailExiste = usuarios.some(
-            user => user.email.toLowerCase() === email.toLowerCase()
-        )
-
-        if (emailExiste) {
-            setMensagem("Email já cadastrado")
-            return
-        }
-
+        
         if (!utilsJSCongfig("verificarEmail", email)) {
             setMensagem("Email invalido")
             return false
         }
-
+        
         if (senha !== confirmarSenha) {
             setMensagem("Senhas diferentes")
             return false
         }
 
         const usuario = {
-            nome,
+            name,
             email,
-            senha,
             telefone,
-            cep
+            cep,
+            senha
         }
 
         try {
-            await httpConfig("POST", "/auth/login",usuario)
+            
+            const res = await httpConfig("POST", "auth/register",usuario)
 
-            setNome("");
-            setEmail("");
-            setSenha("");
-            setConfirmarSenha("");
-            setTelefone("");
-            setCep("");
-            setMensagem()
+            if(res.status == 201){
+                setName("");
+                setEmail("");
+                setSenha("");
+                setConfirmarSenha("");
+                setTelefone("");
+                setCep("");
+                setMensagem("Cadastro realizado")
+                
+                
+                console.log("Cadastro realizado")
+                
+                setInterval(navigate("/"), 4000)
+                
 
-            Navigate("/login")
+            }
 
         } catch (error) {
             console.error("Erro ao enviar dados:", error);
-            setMensagem("Erro ao enviar os dados")
+            setMensagem("Erro ao enviar os dados:", error)
         }
     }
 
@@ -150,7 +150,7 @@ const Forms = (prop) => {
                             id="input_nome"
                             type="text"
                             placeholder="  João Silva"
-                            onChange={(e) => setNome(e.target.value)}
+                            onChange={(e) => setName(e.target.value)}
                         />
                     </div>
 
@@ -197,8 +197,8 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_button">
-                        {loading ? "" : <p id="carregando">Carregando...</p>}
-                        {mensagem ? "" : <p id="mensagem">{mensagem}</p>}
+                        {loading ? <p id="carregando">Carregando...</p> : "" }
+                        {mensagem ? <p id="mensagem">{mensagem}</p> : "" }
                         <input type="submit" value="Cadastrar" id="button_submit" />
                     </div>
 

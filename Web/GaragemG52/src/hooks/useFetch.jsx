@@ -7,7 +7,7 @@ export const useFetch = (baseUrl) => {
 
   const httpConfig = async (method, route, bodyData = null, queryParams = null, id = null) => {
     setLoading(true);
-    setError(null); // Limpa erros anteriores
+    setError(null); 
 
     let url = id ? `${baseUrl}/${route}/${id}` : `${baseUrl}/${route}`;
 
@@ -27,17 +27,19 @@ export const useFetch = (baseUrl) => {
 
     try {
       const res = await fetch(url, options);
+      const status = res.status;
+      const json = status !== 204 ? await res.json() : null;
+      setData(json);
 
       if (!res.ok) {
         throw new Error(`Erro: ${res.status} - ${res.statusText}`);
       }
 
-      const json = await res.json();
-      setData(json);
-      return json;
+      return { data: json, status: status };
 
     } catch (err) {
       setError(err.message);
+      return { data: null, status: 500 };
     } finally {
       setLoading(false);
     }
