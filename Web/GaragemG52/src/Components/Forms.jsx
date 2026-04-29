@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 
 import { useFetch } from "../hooks/useFetch"
 
-import { utilsJS } from "../hooks/utils"
+import { verificarEmail, verificarTelefone, senhaValida, senhasIguais, nomeValido } from "../hooks/utils"
 import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
 
@@ -12,11 +12,10 @@ const Forms = (prop) => {
 
     const url = "http://localhost:8080"
 
-    
+
     const { data, httpConfig, error, loading } = useFetch(url)
-    
+
     const navigate = useNavigate();
-    const { utilsJSCongfig } = utilsJS()
 
     // Dados usuario - Login
     const [email, setEmail] = useState("")
@@ -45,11 +44,11 @@ const Forms = (prop) => {
             senha
         }
 
-        let resposta = await httpConfig("POST","auth/login", credenciais)
+        let resposta = await httpConfig("POST", "auth/login", credenciais)
 
         if (resposta.status == 200) {
             setMensagem("Login realizado com sucesso!");
-            setTimeout(() => {navigate("/verificar-conta")}, 2500)
+            setTimeout(() => { navigate("/verificar-conta") }, 2500)
         } else {
             setMensagem("Usuário ou senha incorretos.");
             console.log("Erro do cliente:", error)
@@ -58,13 +57,28 @@ const Forms = (prop) => {
 
     const handleSubmitCadastro = async (e) => {
         e.preventDefault()
-        
-        if (!utilsJSCongfig("verificarEmail", email)) {
+
+        if (!verificarEmail(email)) {
             setMensagem("Email invalido")
-            return false
+            return
         }
-        
-        if (senha !== confirmarSenha) {
+
+        if (!nomeValido(name)) {
+            setMensagem("Nome deve ter pelo menos 3 caracteres")
+            return
+        }
+
+        if (!verificarTelefone(telefone)) {
+            setMensagem("Telefone inválido")
+            return
+        }
+
+        if (!senhaValida(senha)) {
+            setMensagem("Senha deve ter no mínimo 6 caracteres")
+            return
+        }
+
+        if (!senhasIguais(senha, confirmarSenha)) {
             setMensagem("Senhas diferentes")
             return false
         }
@@ -78,10 +92,10 @@ const Forms = (prop) => {
         }
 
         try {
-            
-            const res = await httpConfig("POST", "auth/register",usuario)
 
-            if(res.status == 201){
+            const res = await httpConfig("POST", "auth/register", usuario)
+
+            if (res.status == 201) {
                 setName("");
                 setEmail("");
                 setSenha("");
@@ -89,10 +103,10 @@ const Forms = (prop) => {
                 setTelefone("");
                 setCep("");
                 setMensagem("Cadastro realizado")
-                
-                
+
+
                 console.log("Cadastro realizado")
-                setTimeout(()=>{navigate("/")}, 4000)
+                setTimeout(() => { navigate("/") }, 4000)
             }
 
         } catch (error) {
@@ -126,8 +140,8 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_button">
-                        {loading ? <p id="carregando">Carregando...</p> : "" }
-                        {mensagem ? <p id="mensagem">{mensagem}</p> : "" }
+                        {loading ? <p id="carregando">Carregando...</p> : ""}
+                        {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
                         <input type="submit" value="Login" id="button_submit" />
                     </div>
 
@@ -209,8 +223,8 @@ const Forms = (prop) => {
                     </div>
 
                     <div id="div_button">
-                        {loading ? <p id="carregando">Carregando...</p> : "" }
-                        {mensagem ? <p id="mensagem">{mensagem}</p> : "" }
+                        {loading ? <p id="carregando">Carregando...</p> : ""}
+                        {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
                         <input type="submit" value="Cadastrar" id="button_submit" />
                     </div>
 
