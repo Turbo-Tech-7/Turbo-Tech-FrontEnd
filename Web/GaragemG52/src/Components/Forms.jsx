@@ -48,7 +48,7 @@ const Forms = (prop) => {
 
         if (resposta.status == 200) {
             setMensagem("Login realizado com sucesso!");
-            setTimeout(() => { navigate("/verificar-conta") }, 2500)
+            setTimeout(() => { navigate("/verificar-conta", {state: {email: email}}) }, 2500)
         } else {
             setMensagem("Usuário ou senha incorretos.");
             console.log("Erro do cliente:", error)

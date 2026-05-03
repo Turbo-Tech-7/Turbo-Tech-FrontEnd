@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom"
 
 const CardVerificarConta = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const email = location.state?.email
   //Processos em segundo plano
     const [mensagem, setMensagem] = useState("")
 
@@ -100,7 +103,7 @@ const CardVerificarConta = () => {
 
         <div className="login_header">
           <h2>Verificar conta</h2>
-          <p>Código de verificação enviado para homeroxxxxx@gmail.com</p>
+          <p>Código de verificação enviado para {email}</p>
         </div>
 
         <form className="form" onSubmit={handleSubmit}>

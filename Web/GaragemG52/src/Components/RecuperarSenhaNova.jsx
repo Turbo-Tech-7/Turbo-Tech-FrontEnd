@@ -1,20 +1,47 @@
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useFetch } from "../hooks/useFetch"
 
 const RecuperarSenhaNova = () => {
+
+  const url = "http://localhost:8080"
+  const { data, httpConfig, error, loading } = useFetch(url)
+
+  const navigate = useNavigate();
+
   const [senha, setSenha] = useState("")
+  const [codigo, setCodigo] = useState("")
   const [confirmarSenha, setConfirmarSenha] = useState("")
 
-  const handleSubmit = (e) => {
+  const location = useLocation();
+  const email = location.state?.email
+
+  const [mensagem, setMensagem] = useState("")
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (senha !== confirmarSenha) {
-      alert("As senhas não coincidem")
+      setMensagem("As senhas não coincidem")
       return
     }
 
-    console.log("Nova senha:", senha)
+    try {
+
+            const res = await httpConfig("POST", "auth/reset-password",null, `token=${codigo}&novaSenha=${senha}`)
+
+            if (res.status == 200) {
+                setMensagem("Senha atualizada")
+                setTimeout(() => { navigate("/") }, 2000)
+            }
+
+        } catch (error) {
+            console.error("Erro ao enviar dados:", error);
+            setMensagem("Erro ao enviar os dados:", error)
+        }
+
   }
 
   return (
@@ -27,11 +54,20 @@ const RecuperarSenhaNova = () => {
 
         <div className="login_header">
           <h2>Nova senha</h2>
-          <p>Insira uma nova senha para homeroxxxxx@gmail.com</p>
+          <p>Insira uma nova senha para {email}</p>
         </div>
 
         <form className="form" onSubmit={handleSubmit}>
           <div id="div_dados">
+            <div className="div_label">
+              <label>Código</label>
+              <input 
+                type="text"
+                placeholder="Código de verificação"
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+              />
+            </div>
 
             <div className="div_label">
               <label>Senha</label>
@@ -42,6 +78,7 @@ const RecuperarSenhaNova = () => {
                 onChange={(e) => setSenha(e.target.value)}
               />
             </div>
+
 
             <div className="div_label">
               <label>Confirmar senha</label>
@@ -56,6 +93,8 @@ const RecuperarSenhaNova = () => {
           </div>
 
           <div id="div_button">
+            {loading ? <p id="carregando">Carregando...</p> : ""}
+            {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
             <button id="button_submit">
               Validar
             </button>
