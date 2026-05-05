@@ -90,3 +90,13 @@ input:focus {
 #div_action a:hover {
     text-decoration: underline;
 }
+
+#carregamento {
+    display: flex;
+    justify-content: center;
+}
+
+#mensagem {
+    display: flex;
+    justify-content: center;
+}
