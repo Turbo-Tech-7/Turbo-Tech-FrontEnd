@@ -91,7 +91,7 @@ input:focus {
     text-decoration: underline;
 }
 
-#carregamento {
+#carregando {
     display: flex;
     justify-content: center;
 }

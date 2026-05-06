@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { Link } from "react-router-dom"
 import './css/Home.css'
+
 import CardCentral from '../Components/CardCentral'
 import CardCriarOrcamento from '../Components/CardCriarOrcamento'
 import CardBuscarPecas from '../Components/CardBuscarPecas'
@@ -11,18 +12,21 @@ import CardVisaoGeral from '../Components/CardVisaoGeral'
 function Home() {
   return (
     <>
-      <div className='header' >
+      <div className='header'>
         <CardCentral />
       </div>
+
       <div className='menu'>
-        <CardCriarOrcamento />
+        <Link to="/criar-orcamento" >
+          <CardCriarOrcamento />
+        </Link>
+
         <CardBuscarPecas />
         <CardRelatorios />
         <CardBuscarOrcamentos />
         <CardBuscarClientes />
         <CardVisaoGeral />
       </div>
-
     </>
   )
 }

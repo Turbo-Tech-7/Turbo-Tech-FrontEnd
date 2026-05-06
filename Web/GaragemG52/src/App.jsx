@@ -1,7 +1,9 @@
 //Pages
 import Login from "./Pages/Login"
 import Cadastro from "./Pages/Cadastro"
-
+import CriarOrcamento from "./pages/CriarOrcamento"
+import CadastrarCliente from "./pages/CadastrarCliente"
+import CriarOrcamentoCliente from "./pages/CriarOrcamentoCliente"
 //Component
 import Forms from './Components/forms'
 import QuadroMensagem from './Components/quadroMensagem'
@@ -35,6 +37,11 @@ function App() {
           <Route path="/recuperar-senha/verificar" element={<RecuperarSenhaVerificar />} />
           <Route path="/recuperar-senha/nova" element={<RecuperarNovaSenha />} />
           <Route path="/verificar-conta" element={<VerificarConta />} />
+          <Route path="/criar-orcamento" element={<CriarOrcamento />} />
+          <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
+          <Route path="/criar-orcamento-cliente" element={<CriarOrcamentoCliente />} />
+        
+          
         </Routes>
       </BrowserRouter>
 

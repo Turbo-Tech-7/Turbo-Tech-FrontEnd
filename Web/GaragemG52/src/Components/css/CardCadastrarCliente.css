@@ -1,0 +1,141 @@
+/* CardCadastrarCliente.css */
+
+.ccc_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #DFE8FF;
+    min-height: 115vh;
+}
+
+/* TOP BAR */
+.ccc_top_bar {
+    margin-top: 30px;
+    width: 80%;
+    max-width: 900px;
+
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ccc_top_left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ccc_top_icon {
+    width: 30px;
+    height: 30px;
+}
+
+.ccc_top_left h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.ccc_top_left p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.ccc_link {
+    color: #4361EE;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* CARD */
+.ccc_card {
+    margin-top: 80px;
+    width: 550px;
+
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px 25px 25px 25px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+}
+
+/* ICON CENTRAL */
+.ccc_icon {
+    position: absolute;
+    top: -30px;
+
+    width: 60px;
+    height: 60px;
+
+    background-color: #4361EE;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ccc_icon img {
+    width: 60%;
+}
+
+/* TITULO */
+.ccc_title {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+.ccc_form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ccc_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* INPUT */
+.ccc_input_group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ccc_input_group input {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #B3B3B3;
+    padding: 0 10px;
+    background-color: #FAFAFA;
+}
+
+.ccc_input_group input:hover{
+    border-color: #4361EE;
+}
+
+/* BOTÃO */
+.ccc_button {
+    margin-top: 10px;
+    height: 45px;
+
+    background-color: #4361EE;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
