@@ -7,6 +7,7 @@
 }
 
 /* TOP BAR */
+
 .cocc_top_bar {
     margin-top: 30px;
     width: 80%;
@@ -28,7 +29,7 @@
 }
 
 .cocc_top_icon {
-    width: 28px;
+    width: 13%;
 }
 
 .cocc_top_left div {
@@ -38,7 +39,7 @@
 
 .cocc_top_left h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 23px;
 }
 
 .cocc_top_left p {
@@ -53,6 +54,7 @@
 }
 
 /* CARD */
+
 .cocc_card {
     margin-top: 60px;
     width: 600px;
@@ -67,13 +69,15 @@
 }
 
 /* SECTION */
+
 .cocc_section {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* HEADER COM NÚMERO AO LADO */
+/* HEADER */
+
 .cocc_section_header {
     display: flex;
     align-items: center;
@@ -85,6 +89,7 @@
 }
 
 /* NUMBER */
+
 .cocc_number {
     width: 20px;
     height: 20px;
@@ -101,6 +106,7 @@
 }
 
 /* GRID */
+
 .cocc_grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -108,6 +114,7 @@
 }
 
 /* INPUT */
+
 .cocc_card input {
     height: 40px;
     border-radius: 8px;
@@ -116,11 +123,94 @@
     background: #FAFAFA;
 }
 
+/* BOX PEÇAS */
+
+.cocc_peca_box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 15px;
+
+    border: 1px solid #E5E5E5;
+    border-radius: 10px;
+
+    background: #FCFCFC;
+}
+
+/* TOPO DA PEÇA */
+
+.cocc_peca_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cocc_peca_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* BOTÃO REMOVER */
+
+.cocc_remove_button {
+    width: 28px;
+    height: 28px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #ff4d4d;
+    color: white;
+
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.cocc_remove_button:hover {
+    transform: scale(1.08);
+}
+
+/* BOTÃO ADD */
+
+.cocc_add_button {
+    width: 100%;
+    height: 42px;
+
+    border: 1px dashed #4361EE;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #4361EE;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.cocc_add_button:hover {
+    transform: scale(1.01);
+}
+
 /* TOTAL */
+
 .cocc_totais {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
+    gap: 10px;
 }
 
 .cocc_totais div {
@@ -130,14 +220,39 @@
     width: 30%;
     text-align: center;
     font-size: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 /* BUTTON */
+
 .cocc_button {
+    width: 100%;
     height: 45px;
-    background: #4361EE;
+
+    background-color: #4361EE;
     color: white;
+
     border: none;
     border-radius: 8px;
+
+    font-size: 16px;
+    font-weight: 500;
+
     cursor: pointer;
+
+    transition: 0.3s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+}
+
+.cocc_button:hover {
+    transform: scale(1.01);
+    transition: 0.2s;
 }

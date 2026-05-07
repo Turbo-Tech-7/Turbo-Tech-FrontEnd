@@ -4,6 +4,10 @@ import Cadastro from "./Pages/Cadastro"
 import CriarOrcamento from "./pages/CriarOrcamento"
 import CadastrarCliente from "./pages/CadastrarCliente"
 import CriarOrcamentoCliente from "./pages/CriarOrcamentoCliente"
+import VisualizarOrcamento from "./pages/VisualizarOrcamento"
+import CancelarOrcamento from "./pages/CancelarOrcamento"
+
+
 //Component
 import Forms from './Components/forms'
 import QuadroMensagem from './Components/quadroMensagem'
@@ -40,6 +44,8 @@ function App() {
           <Route path="/criar-orcamento" element={<CriarOrcamento />} />
           <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
           <Route path="/criar-orcamento-cliente" element={<CriarOrcamentoCliente />} />
+          <Route path="/visualizar-orcamento" element={<VisualizarOrcamento />} />
+          <Route path="/cancelar-orcamento" element={<CancelarOrcamento />} />
         
           
         </Routes>
