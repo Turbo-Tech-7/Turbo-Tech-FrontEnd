@@ -1,41 +1,69 @@
-import { Link } from "react-router-dom"
-import { useState } from "react"
+import { Link, useLocation } from "react-router-dom"
+import { useRef, useState } from "react"
+import { useFetch } from "../hooks/useFetch"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardCriarOrcamentoCliente.css"
 
 const CardCriarOrcamentoCliente = () => {
+  const location = useLocation()
+  const url = "http://localhost:8080"
+
+  const[resLista, setResLista] = useState([])
+
+  let dadosCliente = location.state?.DadosCliente
+  const [Cliente, setCliente] = useState(
+    dadosCliente || {
+            placa:"",
+            nome:"",
+            telefone:"",
+            email:""
+        }
+  )
+
+  const { data, httpConfig, error, loading } = useFetch(url)
+  const descricaoRef = useRef();
+  const queixaRef = useRef();
+  const pecaRef = useRef();
 
   const [maoDeObra, setMaoDeObra] = useState("")
 
   const [pecas, setPecas] = useState([
-    {
-      descricao: "",
-      peca: "",
-      fornecedor: "",
-      valor: ""
-    }
   ])
 
-  const adicionarPeca = () => {
+  const adicionarPeca = (peca) => {
+  const index = pecas.findIndex(item => item.id === peca.idPeca)
+
+  if (index !== -1) {
+    const novasPecas = [...pecas]
+    novasPecas[index].quantidade += 1
+    setPecas(novasPecas)
+  } else {
     setPecas([
       ...pecas,
       {
-        descricao: "",
-        peca: "",
-        fornecedor: "",
-        valor: ""
+        id: peca.idPeca,
+        nome: peca.nomePeca,
+        descricao: peca.descricaoPeca,
+        valor: peca.precoPeca,
+        quantidade: 1
       }
     ])
   }
+}
 
-  const removerPeca = (index) => {
+  const removerPeca = (id) => {
+  const novasPecas = pecas.map((peca) => {
+    if (peca.id === id) {
+      return {
+        ...peca,
+        quantidade: peca.quantidade - 1
+      }
+    }
+    return peca
+  }).filter((peca) => peca.quantidade > 0)
 
-    if (pecas.length === 1) return
-
-    const novasPecas = pecas.filter((_, i) => i !== index)
-
-    setPecas(novasPecas)
-  }
+  setPecas(novasPecas)
+}
 
   const atualizarPeca = (index, campo, valor) => {
 
@@ -47,12 +75,26 @@ const CardCriarOrcamentoCliente = () => {
   }
 
   const totalPecas = pecas.reduce((acc, item) => {
-    return acc + (parseFloat(item.valor) || 0)
-  }, 0)
+  return acc + ((parseFloat(item.valor) || 0) * item.quantidade)
+}, 0)
 
   const valorMao = parseFloat(maoDeObra) || 0
 
   const total = totalPecas + valorMao
+
+  async function buscarPeca(nomePeca) {
+      const res = await httpConfig("GET", `pecas/buscar-nome`, null, `nomePeca=${nomePeca}`)
+
+      console.log(res.data)
+      setResLista(res.data)
+  }
+
+  async function enviarOrçamento(e) {
+    e.preventDefault()
+
+
+
+  }
 
   return (
     <div className="cocc_container">
@@ -84,10 +126,55 @@ const CardCriarOrcamentoCliente = () => {
           </div>
 
           <div className="cocc_grid">
-            <input placeholder="ABC-1234" />
-            <input placeholder="João Silva" />
-            <input placeholder="(11) 98765-4321" />
-            <input placeholder="Corolla 2022" />
+
+            <input
+              type="text"
+              placeholder="ABC-1234"
+              value={Cliente.placa || ""}
+              onChange={(e) =>
+                setCliente({
+                  ...Cliente,
+                  placa: e.target.value
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="João Silva"
+              value={Cliente.nome || ""}
+              onChange={(e) =>
+                setCliente({
+                  ...Cliente,
+                  nome: e.target.value
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="(11) 98765-4321"
+              value={Cliente.telefone || ""}
+              onChange={(e) =>
+                setCliente({
+                  ...Cliente,
+                  telefone: e.target.value
+                })
+              }
+            />
+
+            <input
+              type="text"
+              placeholder="exemplo@gmail.com"
+              value={Cliente.email || ""}
+              onChange={(e) =>
+                setCliente({
+                  ...Cliente,
+                  email: e.target.value
+                })
+              }
+            />
+
           </div>
 
         </div>
@@ -99,76 +186,68 @@ const CardCriarOrcamentoCliente = () => {
             <h4>Dados do Serviço</h4>
           </div>
 
+          <input
+                  placeholder="Queixa do cliente"
+                  ref={queixaRef}
+          />
+          <input
+                  placeholder="Descrição do Serviço"
+                  ref={descricaoRef}
+          />
+
+                <input
+                  placeholder="Buscar peças"
+                  ref={pecaRef}
+                />
+
+                
+                <button 
+                className="cocc_button"
+                onClick={()=>buscarPeca(pecaRef.current.value)}
+                > 
+                  Buscar peça
+                </button>
+
+
+              {resLista?.length > 0
+                  ? resLista.map((item) => (
+                      <div className="cocc_peca_box_center" key={item.idPeca}>
+                        <span>
+                          <strong>Peça</strong>: {item.nomePeca} || 
+                          <strong> Valor</strong>: R${item.precoPeca}
+                        </span>
+                        <button className="cocc_add_button" onClick={() => {adicionarPeca(item)}}>Adicionar Peça</button>
+                      </div>
+                    ))
+                  : null
+                }
+
           {
             pecas.map((item, index) => (
-              <div key={index} className="cocc_peca_box">
+              <div key={item.id} className="cocc_peca_box">
 
                 <div className="cocc_peca_top">
-
                   <span className="cocc_peca_title">
-                    Peça {index + 1}
+                    Peça {index + 1} || Quantidade {item.quantidade}
                   </span>
-
-                  {
-                    pecas.length > 1 && (
                       <button
                         className="cocc_remove_button"
-                        onClick={() => removerPeca(index)}
+                        onClick={() => removerPeca(item.id)}
                       >
                         −
                       </button>
-                    )
-                  }
-
                 </div>
-
-                <input
-                  placeholder="Descrição do Serviço"
-                  value={item.descricao}
-                  onChange={(e) =>
-                    atualizarPeca(index, "descricao", e.target.value)
-                  }
-                />
-
-                <input
-                  placeholder="Peças Compradas/Utilizadas"
-                  value={item.peca}
-                  onChange={(e) =>
-                    atualizarPeca(index, "peca", e.target.value)
-                  }
-                />
-
-                <div className="cocc_grid">
-
-                  <input
-                    placeholder="Fornecedor"
-                    value={item.fornecedor}
-                    onChange={(e) =>
-                      atualizarPeca(index, "fornecedor", e.target.value)
-                    }
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Valor da peça/material"
-                    value={item.valor}
-                    onChange={(e) =>
-                      atualizarPeca(index, "valor", e.target.value)
-                    }
-                  />
-
+                <div>
+                  <span>
+                    <strong>Peça</strong>: {item.nome} <br /> 
+                    <strong> Valor</strong>: R${item.valor}
+                  </span>
                 </div>
-
               </div>
             ))
           }
 
-          <button
-            className="cocc_add_button"
-            onClick={adicionarPeca}
-          >
-            + Adicionar peça
-          </button>
+          
 
         </div>
 
@@ -207,9 +286,10 @@ const CardCriarOrcamentoCliente = () => {
 
         </div>
 
-        <Link to="/visualizar-orcamento" className="cocc_button">
+        <button onClick={(e) => enviarOrçamento(e)} className="cocc_button">
           Criar Orçamento
-        </Link>
+        </button>
+
 
       </div>
     </div>

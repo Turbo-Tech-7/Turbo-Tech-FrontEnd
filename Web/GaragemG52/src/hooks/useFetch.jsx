@@ -5,9 +5,15 @@ export const useFetch = (baseUrl) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const httpConfig = async (method, route, bodyData = null, queryParams = null, id = null) => {
+  const httpConfig = async (
+    method,
+    route,
+    bodyData = null,
+    queryParams = null,
+    id = null
+  ) => {
     setLoading(true);
-    setError(null); 
+    setError(null);
 
     let url = id ? `${baseUrl}/${route}/${id}` : `${baseUrl}/${route}`;
 
@@ -16,9 +22,15 @@ export const useFetch = (baseUrl) => {
       url += `?${searchParams.toString()}`;
     }
 
+
+    const token = sessionStorage.getItem("token");
+
     const options = {
       method,
-      headers: { "Content-type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
     };
 
     if (bodyData && method !== "GET") {
@@ -29,13 +41,13 @@ export const useFetch = (baseUrl) => {
       const res = await fetch(url, options);
       const status = res.status;
       const json = status !== 204 ? await res.json() : null;
-      setData(json);
 
       if (!res.ok) {
         throw new Error(`Erro: ${res.status} - ${res.statusText}`);
       }
 
-      return { data: json, status: status };
+      setData(json);
+      return { data: json, status };
 
     } catch (err) {
       setError(err.message);
