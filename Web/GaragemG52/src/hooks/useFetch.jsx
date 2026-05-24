@@ -7,7 +7,7 @@ export const useFetch = (baseUrl) => {
 
   const httpConfig = async (method, route, bodyData = null, queryParams = null, id = null) => {
     setLoading(true);
-    setError(null); 
+    setError(null);
 
     let url = id ? `${baseUrl}/${route}/${id}` : `${baseUrl}/${route}`;
 
@@ -16,9 +16,17 @@ export const useFetch = (baseUrl) => {
       url += `?${searchParams.toString()}`;
     }
 
+    const token = sessionStorage.getItem("token");
+
+    const headers = { "Content-Type": "application/json" };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const options = {
       method,
-      headers: { "Content-type": "application/json" },
+      headers,
     };
 
     if (bodyData && method !== "GET") {
@@ -35,7 +43,7 @@ export const useFetch = (baseUrl) => {
         throw new Error(`Erro: ${res.status} - ${res.statusText}`);
       }
 
-      return { data: json, status: status };
+      return { data: json, status };
 
     } catch (err) {
       setError(err.message);

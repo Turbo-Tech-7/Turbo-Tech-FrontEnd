@@ -1,4 +1,3 @@
-//Pages
 import Login from "./Pages/Login"
 import Cadastro from "./Pages/Cadastro"
 import CriarOrcamento from "./pages/CriarOrcamento"
@@ -25,6 +24,7 @@ import RecuperarSenha from "./Pages/RecuperarSenha.jsx"
 import RecuperarSenhaVerificar from "./Pages/RecuperarSenhaVerificar"
 import RecuperarNovaSenha from "./Pages/RecuperarNovaSenha"   
 import VerificarConta from "./Pages/VerificarConta"
+import VisaoGeral from "./Pages/VisaoGeral"
 
 function App() {
 
@@ -46,6 +46,7 @@ function App() {
           <Route path="/criar-orcamento-cliente" element={<CriarOrcamentoCliente />} />
           <Route path="/visualizar-orcamento" element={<VisualizarOrcamento />} />
           <Route path="/cancelar-orcamento" element={<CancelarOrcamento />} />
+          <Route path="/visao-geral" element={<VisaoGeral />} />
         
           
         </Routes>

@@ -25,7 +25,9 @@ function Home() {
         <CardRelatorios />
         <CardBuscarOrcamentos />
         <CardBuscarClientes />
-        <CardVisaoGeral />
+        <Link to="/visao-geral">
+          <CardVisaoGeral />
+        </Link>
       </div>
     </>
   )
