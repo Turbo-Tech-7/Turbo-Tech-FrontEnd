@@ -17,17 +17,25 @@ function Home() {
       </div>
 
       <div className='menu'>
-        <Link to="/criar-orcamento" >
+
+        <Link to="/criar-orcamento">
           <CardCriarOrcamento />
         </Link>
 
         <CardBuscarPecas />
-        <CardRelatorios />
+
+        <Link to="/relatorio-financeiro">
+          <CardRelatorios />
+        </Link>
+
         <CardBuscarOrcamentos />
+
         <CardBuscarClientes />
+
         <Link to="/visao-geral">
           <CardVisaoGeral />
         </Link>
+
       </div>
     </>
   )

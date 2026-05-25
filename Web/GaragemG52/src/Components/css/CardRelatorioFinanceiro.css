@@ -1,0 +1,198 @@
+.crf_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #DFE8FF;
+    min-height: 150vh;
+}
+
+/* TOP BAR */
+
+.crf_top_bar {
+    margin-top: 30px;
+    width: 80%;
+    max-width: 900px;
+
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.crf_top_left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.crf_icon {
+    width: 30px;
+}
+
+.crf_top_left h3 {
+    margin: 0;
+    font-size: 23px;
+}
+
+.crf_top_left p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.crf_link {
+    text-decoration: none;
+    color: #4361EE;
+}
+
+/* NAVBAR */
+
+.crf_navbar {
+    margin-top: 25px;
+    width: 80%;
+    max-width: 900px;
+
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.crf_tabs {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.crf_tabs button {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.crf_tabs .active {
+    text-decoration: underline;
+}
+
+.crf_tab_link {
+    text-decoration: none;
+}
+
+.crf_select {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #B3B3B3;
+    padding: 0 10px;
+    background: white;
+}
+
+/* CARDS */
+
+.crf_cards {
+    margin-top: 35px;
+
+    width: 80%;
+    max-width: 900px;
+
+    display: flex;
+    gap: 20px;
+}
+
+.crf_info_card {
+    flex: 1;
+
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+
+    border: 1px solid #00000020;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    transition: 0.2s;
+}
+
+.crf_info_card:hover {
+    transform: scale(1.02);
+}
+
+.crf_card_icon {
+    font-size: 22px;
+}
+
+.crf_info_card span {
+    font-size: 14px;
+    color: #555;
+}
+
+.crf_info_card strong {
+    font-size: 20px;
+}
+
+/* GRÁFICOS */
+
+.crf_graphs {
+    margin-top: 40px;
+
+    width: 80%;
+    max-width: 900px;
+
+    display: flex;
+    gap: 25px;
+}
+
+.crf_graph_box {
+    flex: 1;
+
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+
+    border: 1px solid #00000020;
+}
+
+.crf_graph_box h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* LEGENDA */
+
+.crf_legend {
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.crf_legend_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crf_color {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+.crf_legend_item p {
+    margin: 0;
+    font-size: 13px;
+}
