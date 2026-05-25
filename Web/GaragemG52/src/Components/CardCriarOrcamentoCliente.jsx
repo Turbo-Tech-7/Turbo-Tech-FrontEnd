@@ -7,6 +7,7 @@ import "./css/CardCriarOrcamentoCliente.css"
 const CardCriarOrcamentoCliente = () => {
   const location = useLocation()
   const url = "http://localhost:8080"
+  const { data, httpConfig, error, loading } = useFetch(url)
   const [mensagem, setMensagem] = useState("")
 
   const [Placa, setPlaca] = useState("")
@@ -24,11 +25,12 @@ const CardCriarOrcamentoCliente = () => {
             placa:"",
             nome:"",
             telefone:"",
-            email:""
+            email:"",
+            idClienteVeiculo:""
         }
   )
 
-  const { data, httpConfig, error, loading } = useFetch(url)
+  
   const descricaoRef = useRef();
   const queixaRef = useRef();
   const pecaRef = useRef();
@@ -50,10 +52,11 @@ const CardCriarOrcamentoCliente = () => {
       ...pecas,
       {
         id: peca.idPeca,
-        nome: peca.nomePeca,
+        nomePeca: peca.nomePeca,
         descricao: peca.descricaoPeca,
         valor: peca.precoPeca,
-        quantidade: 1
+        quantidade: 1,
+        fornecedor:peca.fornecedor,
       }
     ])
   }
@@ -91,27 +94,49 @@ const CardCriarOrcamentoCliente = () => {
   const total = totalPecas + valorMao
 
   async function buscarPeca(nomePeca) {
-      const res = await httpConfig("GET", `pecas/buscar-nome`, null, `nomePeca=${nomePeca}`)
+      const res = await httpConfig("GET", `pecas/buscar-nome`, null, { nomePeca: nomePeca })
 
       console.log(res.data)
-      setResLista(res.data)
+      setResLista(res.data.content)
   }
 
   async function enviarOrçamento(e) {
     e.preventDefault()
 
-    setTimeout(() => { navigate("/visualizar-orcamento", {state:{
-            Orçamento:{
+    const orcamento = {
+    "clienteVeiculoId":Cliente.idClienteVeiculo,
+    "descricaoServico":descricaoRef.current.value,
+    "valorMaoDeObra": Number(maoDeObra),
+    "itens": pecas
+    }
+
+    console.log(orcamento)
+
+    const res = await httpConfig("POST","orcamentos",orcamento)
+
+    console.log(res)
+
+    const data = res.data
+
+    if (res.status == 201) {
+        setMensagem("Orçamento cadastrado com sucesso!");
+
+        setTimeout(() => { navigate("/visualizar-orcamento", {state:{
+            Orcamento:{
+            clienteVeiculoId:Cliente.idClienteVeiculo,
+            descricaoServico:descricaoRef.current.value,
+            valorMaoDeObra:maoDeObra,
+            itens:[pecas],
+            idOrcamento: data.id,
             DadosCliente:{
-                nome:Nome,
-                telefone:Telefone,
-                placa:Placa,
-                email:Email
+                nome:Cliente.nome,
+                telefone:Cliente.telefone,
+                placa:Cliente.placa,
+                email:Cliente.email
             },
             DadosServico:{
               pecas:pecas,
               informacoes:{
-                queixa:queixaRef.current.value,
                 descricao:descricaoRef.current.value
               }
             },
@@ -122,6 +147,13 @@ const CardCriarOrcamentoCliente = () => {
 
           }
             }})}, 2500)
+
+      } else {
+            setMensagem("Erro ao cadastrar");
+            console.log("Erro do cliente:", error)
+      }
+
+    
 
   }
 
@@ -215,10 +247,6 @@ const CardCriarOrcamentoCliente = () => {
             <h4>Dados do Serviço</h4>
           </div>
 
-          <input
-                  placeholder="Queixa do cliente"
-                  ref={queixaRef}
-          />
           <input
                   placeholder="Descrição do Serviço"
                   ref={descricaoRef}

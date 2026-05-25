@@ -40,16 +40,19 @@ const CardCadastrarCliente = () => {
             emailCliente:Email
         }
 
-        let respostaClienteVeiculo= await httpConfig("POST", `/clientes-veiculos`, Cliente)
+        let respostaClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
+
+        let dataClienteVeiculo = respostaClienteVeiculo.data
 
         if (respostaClienteVeiculo.status == 201) {
             setMensagem("Cadastro realizado com sucesso!");
             setTimeout(() => { navigate("/criar-orcamento-cliente", {state:{
             DadosCliente:{
-            nome:Nome,
-            telefone:Telefone,
-            placa:Placa,
-            email:Email
+            nome:dataClienteVeiculo.nomeCliente,
+            telefone:dataClienteVeiculo.telefoneCliente,
+            placa:dataClienteVeiculo.placaVeiculo,
+            email:dataClienteVeiculo.emailCliente,
+            idClienteVeiculo:dataClienteVeiculo.id
             }
             }})}, 2500)
         } else {
