@@ -22,15 +22,17 @@ export const useFetch = (baseUrl) => {
       url += `?${searchParams.toString()}`;
     }
 
-
     const token = sessionStorage.getItem("token");
+
+    const headers = { "Content-Type": "application/json" };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
 
     const options = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      headers,
     };
 
     if (bodyData && method !== "GET") {
@@ -46,7 +48,6 @@ export const useFetch = (baseUrl) => {
         throw new Error(`Erro: ${res.status} - ${res.statusText}`);
       }
 
-      setData(json);
       return { data: json, status };
 
     } catch (err) {

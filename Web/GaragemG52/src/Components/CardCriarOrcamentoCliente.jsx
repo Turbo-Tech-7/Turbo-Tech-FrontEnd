@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useRef, useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import criardoc from "../assets/criardoc.png"
@@ -7,6 +7,14 @@ import "./css/CardCriarOrcamentoCliente.css"
 const CardCriarOrcamentoCliente = () => {
   const location = useLocation()
   const url = "http://localhost:8080"
+  const [mensagem, setMensagem] = useState("")
+
+  const [Placa, setPlaca] = useState("")
+  const [Nome, setNome] = useState("")
+  const [Telefone, setTelefone] = useState("")
+  const [Email, setEmail] = useState("")
+
+  const navigate = useNavigate();
 
   const[resLista, setResLista] = useState([])
 
@@ -92,7 +100,28 @@ const CardCriarOrcamentoCliente = () => {
   async function enviarOrçamento(e) {
     e.preventDefault()
 
+    setTimeout(() => { navigate("/visualizar-orcamento", {state:{
+            Orçamento:{
+            DadosCliente:{
+                nome:Nome,
+                telefone:Telefone,
+                placa:Placa,
+                email:Email
+            },
+            DadosServico:{
+              pecas:pecas,
+              informacoes:{
+                queixa:queixaRef.current.value,
+                descricao:descricaoRef.current.value
+              }
+            },
+            DadosValor:{
+              maoDeObra:maoDeObra,
+              totalPecas:totalPecas
+            }
 
+          }
+            }})}, 2500)
 
   }
 
@@ -285,7 +314,8 @@ const CardCriarOrcamentoCliente = () => {
           </div>
 
         </div>
-
+          {loading ? <p id="carregando">Carregando...</p> : ""}
+          {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
         <button onClick={(e) => enviarOrçamento(e)} className="cocc_button">
           Criar Orçamento
         </button>

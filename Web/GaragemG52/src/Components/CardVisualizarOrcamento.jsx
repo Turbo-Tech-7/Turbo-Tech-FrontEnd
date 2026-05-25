@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { useState } from "react"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardVisualizarOrcamento.css"
 
 const CardVisualizarOrcamento = () => {
+
+  const location = useLocation()
 
   const [mostrarAviso, setMostrarAviso] = useState(false)
   const [mensagemAviso, setMensagemAviso] = useState("")
@@ -16,6 +18,16 @@ const CardVisualizarOrcamento = () => {
       setMostrarAviso(false)
     }, 5000)
   }
+
+  let dadosCliente = location.state?.DadosCliente
+  const [Cliente, setCliente] = useState(
+    dadosCliente || {
+            placa:"",
+            nome:"",
+            telefone:"",
+            email:""
+        }
+  )
 
   return (
     <div className="cvo_container">
@@ -66,22 +78,27 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_row">
             <span>Placa do Veículo</span>
-            <span>ABC-1234</span>
+            <span>{Cliente.placa || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Nome do Cliente</span>
-            <span>João Silva</span>
+            <span>{Cliente.nome || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Telefone</span>
-            <span>(11)98765-4321</span>
+            <span>{Cliente.telefone || ""}</span>
+          </div>
+
+          <div className="cvo_row">
+            <span>Email</span>
+            <span>{Cliente.email || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Modelo do Veículo</span>
-            <span>Corolla 2022</span>
+            <span>{Cliente.modelo || ""}</span>
           </div>
 
         </div>
@@ -92,7 +109,19 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_row">
             <span>Peça/Material</span>
-            <span>Pastilha de freio</span>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              }}>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+              <span>Pastilha de freio (R$ XX,XX)</span>
+
+            </div>
           </div>
 
           <div className="cvo_row">
@@ -101,7 +130,7 @@ const CardVisualizarOrcamento = () => {
           </div>
 
           <div className="cvo_row">
-            <span>Valor da Peça</span>
+            <span>Valor da Peça(s)</span>
             <span>R$ 450,00</span>
           </div>
 
