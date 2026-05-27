@@ -138,6 +138,21 @@
     background: #FCFCFC;
 }
 
+.cocc_peca_box_center {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    align-items: center;
+
+    padding: 15px;
+
+    border: 1px solid #E5E5E5;
+    border-radius: 10px;
+
+    background: #FCFCFC;
+}
+
 /* TOPO DA PEÇA */
 
 .cocc_peca_top {

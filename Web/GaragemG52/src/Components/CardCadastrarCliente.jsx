@@ -1,10 +1,93 @@
 // CardCadastrarCliente.jsx
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useFetch } from "../hooks/useFetch"
 import userIcon from "../assets/user.png"
 import "./css/CardCadastrarCliente.css"
 import cccazul from "../assets/ccc-azul.png"
+import { useEffect, useState } from "react"
+
 
 const CardCadastrarCliente = () => {
+  const url = "http://localhost:8080"
+
+  
+  
+  const { data, httpConfig, error, loading } = useFetch(url)
+
+  const navigate = useNavigate();
+
+  const [Placa, setPlaca] = useState("")
+  const [Nome, setNome] = useState("")
+  const [Telefone, setTelefone] = useState("")
+  const [Email, setEmail] = useState("")
+
+
+  const [mensagem, setMensagem] = useState("")
+
+ 
+
+  async function handleSubmit(){ 
+
+    setMensagem("")
+    //Java utils
+
+    if(Placa.length != 7){
+      console.log("Placa invalida")
+      return 
+    }
+
+    try {
+      let Cliente = {
+            placaVeiculo:Placa,
+            nomeCliente:Nome,
+            telefoneCliente:Telefone,
+            emailCliente:Email
+        }
+
+        let respostaClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
+
+        let dataClienteVeiculo = respostaClienteVeiculo.data
+
+        if (respostaClienteVeiculo.status == 201) {
+            setMensagem("Cadastro realizado com sucesso!");
+            setTimeout(() => { navigate("/criar-orcamento-cliente", {state:{
+            DadosCliente:{
+            nome:dataClienteVeiculo.nomeCliente,
+            telefone:dataClienteVeiculo.telefoneCliente,
+            placa:dataClienteVeiculo.placaVeiculo,
+            email:dataClienteVeiculo.emailCliente,
+            idClienteVeiculo:dataClienteVeiculo.id
+            }
+            }})}, 2500)
+        } else {
+            setMensagem("Erro ao cadastrar");
+            console.log("Erro do cliente:", error)
+        }
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+  async function procurarCliente(params){
+    console.log("Entrou na função")
+    try {
+      if(!params) return
+      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+      if(placaNormalized.length === 7){
+          const res = await httpConfig("GET", "clientes-veiculos/buscar-placa", null, {placa: placaNormalized})
+          console.log(res.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+   useEffect(() => {
+
+  procurarCliente(Placa)
+
+}, [Placa])
+
   return (
     <div className="ccc_container">
 
@@ -35,31 +118,30 @@ const CardCadastrarCliente = () => {
           <div className="ccc_grid">
             <div className="ccc_input_group">
               <label>Placa do Veículo</label>
-              <input placeholder="Ex: ABC-1234" />
+              <input onChange={(e) => {
+                setPlaca(e.target.value)
+              }} placeholder="Ex: ABC-1234" />
             </div>
 
             <div className="ccc_input_group">
               <label>Nome do Cliente</label>
-              <input placeholder="Ex: João Silva" />
+              <input onChange={(e) => {setNome(e.target.value)}} placeholder="Ex: João Silva" />
             </div>
 
             <div className="ccc_input_group">
               <label>Telefone</label>
-              <input placeholder="Ex: (11)98765-4321" />
-            </div>
-
-            <div className="ccc_input_group">
-              <label>Modelo do Veículo</label>
-              <input placeholder="Ex: Corolla 2022" />
+              <input onChange={(e) => {setTelefone(e.target.value)}} placeholder="Ex: (11)98765-4321" />
             </div>
           </div>
 
           <div className="ccc_input_group">
             <label>Email</label>
-            <input placeholder="Ex: joao@gmail.com" />
+            <input onChange={(e) => {setEmail(e.target.value)}} placeholder="Ex: joao@gmail.com" />
           </div>
 
-          <button className="ccc_button">
+          {loading ? <p id="carregando">Carregando...</p> : ""}
+          {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
+          <button className="ccc_button" onClick={handleSubmit}>
             Cadastrar Cliente
           </button>
 
