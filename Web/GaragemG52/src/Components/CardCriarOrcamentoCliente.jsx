@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardCriarOrcamentoCliente.css"
@@ -32,7 +32,6 @@ const CardCriarOrcamentoCliente = () => {
 
   
   const descricaoRef = useRef();
-  const queixaRef = useRef();
   const pecaRef = useRef();
 
   const [maoDeObra, setMaoDeObra] = useState("")
@@ -157,6 +156,37 @@ const CardCriarOrcamentoCliente = () => {
 
   }
 
+  async function buscarCliente(params) {
+    
+    try {
+
+      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+
+      if (placaNormalized.length !== 7) return
+
+      const res = await httpConfig(
+        "GET",
+        "clientes-veiculos/buscar-placa",
+        null,
+        { placa: placaNormalized }
+      )
+
+      setCliente(
+            {
+            placa:res.data[0].placaVeiculo,
+            nome:res.data[0].nomeCliente,
+            telefone:res.data[0].telefoneCliente,
+            email:res.data[0].emailCliente,
+            idClienteVeiculo:res.data[0].id
+          }
+
+      )
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="cocc_container">
 
@@ -192,11 +222,13 @@ const CardCriarOrcamentoCliente = () => {
               type="text"
               placeholder="ABC-1234"
               value={Cliente.placa || ""}
-              onChange={(e) =>
+              onChange={(e) => {
                 setCliente({
                   ...Cliente,
                   placa: e.target.value
                 })
+                buscarCliente(e.target.value)
+              }
               }
             />
 

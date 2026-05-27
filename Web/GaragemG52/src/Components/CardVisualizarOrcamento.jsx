@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardVisualizarOrcamento.css"
@@ -8,6 +8,7 @@ const CardVisualizarOrcamento = () => {
   const url = "http://localhost:8080"
   
   const location = useLocation()
+  const navigate = useNavigate()
   
   const { data, httpConfig, error, loading } = useFetch(url)
 
@@ -70,6 +71,31 @@ const CardVisualizarOrcamento = () => {
     console.log("Erro ao gerar PDF:", err);
   }
 }
+
+ async function mandarPDF() {
+    try {
+      const res = await httpConfig(
+      "POST",
+      `orcamentos/${Orcamento.Orcamento.idOrcamento}/pdf/email`
+    );
+
+    console.log(res);
+
+    if(res.status == 200){
+      setMensagem("O orçamento foi enviado por email para " + Orcamento.Orcamento.DadosCliente.email)
+    }
+    } catch (err) {
+    setMensagem("Erro ao mandar PDF");
+    console.log("Erro ao mandar PDF:", err);
+    }
+ }
+
+ function CancelarOrcamento(){
+    setTimeout(() => { navigate("/cancelar-orcamento", {state:{
+      idOrcamento:Orcamento.Orcamento.idOrcamento
+    }
+  })}, 2500)
+ }
 
   return (
     <div className="cvo_container">
@@ -197,8 +223,10 @@ const CardVisualizarOrcamento = () => {
 
           <button
             className="cvo_button"
-            onClick={() =>
-              mostrarMensagem("O orçamento foi enviado por email para João Silva.")
+            onClick={() =>{
+              mostrarMensagem("O orçamento foi enviado por email para " + Orcamento.Orcamento.DadosCliente.email)
+              mandarPDF()
+            }
             }
           >
             Enviar para cliente
@@ -206,12 +234,13 @@ const CardVisualizarOrcamento = () => {
 
         </div>
 
-        <Link
-          to="/cancelar-orcamento"
+        <button
+          type="button"
           className="cvo_button full"
+          onClick={() => CancelarOrcamento()}
         >
           Cancelar Orçamento
-        </Link>
+        </button>
 
       </div>
     </div>

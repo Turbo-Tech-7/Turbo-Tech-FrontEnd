@@ -4,11 +4,13 @@ import { useFetch } from "../hooks/useFetch"
 import userIcon from "../assets/user.png"
 import "./css/CardCadastrarCliente.css"
 import cccazul from "../assets/ccc-azul.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 const CardCadastrarCliente = () => {
   const url = "http://localhost:8080"
+
+  
   
   const { data, httpConfig, error, loading } = useFetch(url)
 
@@ -21,6 +23,8 @@ const CardCadastrarCliente = () => {
 
 
   const [mensagem, setMensagem] = useState("")
+
+ 
 
   async function handleSubmit(){ 
 
@@ -63,9 +67,26 @@ const CardCadastrarCliente = () => {
       console.log(error)
     }
 
-
+  }
+  async function procurarCliente(params){
+    console.log("Entrou na função")
+    try {
+      if(!params) return
+      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+      if(placaNormalized.length === 7){
+          const res = await httpConfig("GET", "clientes-veiculos/buscar-placa", null, {placa: placaNormalized})
+          console.log(res.data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
+   useEffect(() => {
+
+  procurarCliente(Placa)
+
+}, [Placa])
 
   return (
     <div className="ccc_container">
@@ -97,7 +118,9 @@ const CardCadastrarCliente = () => {
           <div className="ccc_grid">
             <div className="ccc_input_group">
               <label>Placa do Veículo</label>
-              <input onChange={(e) => {setPlaca(e.target.value)}} placeholder="Ex: ABC-1234" />
+              <input onChange={(e) => {
+                setPlaca(e.target.value)
+              }} placeholder="Ex: ABC-1234" />
             </div>
 
             <div className="ccc_input_group">
