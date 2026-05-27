@@ -132,12 +132,14 @@ const CardCadastrarCliente = () => {
               <label>Telefone</label>
               <input onChange={(e) => {setTelefone(e.target.value)}} placeholder="Ex: (11)98765-4321" />
             </div>
-          </div>
 
-          <div className="ccc_input_group">
+            <div className="ccc_input_group">
             <label>Email</label>
             <input onChange={(e) => {setEmail(e.target.value)}} placeholder="Ex: joao@gmail.com" />
+            </div>
           </div>
+
+          
 
           {loading ? <p id="carregando">Carregando...</p> : ""}
           {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
