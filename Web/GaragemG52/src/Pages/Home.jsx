@@ -28,10 +28,14 @@ function Home() {
           <CardRelatorios />
         </Link>
 
-        <CardBuscarOrcamentos />
+        <Link to="/buscar-orcamentos">
+          <CardBuscarOrcamentos />
+        </Link>
 
+        <Link to= "/buscar-clientes">
         <CardBuscarClientes />
-
+        </Link>
+        
         <Link to="/visao-geral">
           <CardVisaoGeral />
         </Link>
