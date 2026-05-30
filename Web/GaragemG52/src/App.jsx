@@ -25,6 +25,10 @@ import RecuperarSenhaVerificar from "./Pages/RecuperarSenhaVerificar"
 import RecuperarNovaSenha from "./Pages/RecuperarNovaSenha"
 import VerificarConta from "./Pages/VerificarConta"
 import VisaoGeral from "./Pages/VisaoGeral"
+import BuscarOrcamentos from "./Pages/BuscarOrcamento.jsx"
+import ListaOrcamento from "./Pages/ListaOrcamento.jsx"
+import BuscarCliente from "./Pages/BuscarClientes.jsx"
+import ListarClientes from "./Pages/ListaClientes.jsx"
 
 function App() {
 
@@ -47,12 +51,12 @@ function App() {
           <Route path="/visualizar-orcamento" element={<VisualizarOrcamento />} />
           <Route path="/cancelar-orcamento" element={<CancelarOrcamento />} />
           <Route path="/visao-geral" element={<VisaoGeral />} />
+          <Route path="/lista-orcamentos" element={<ListaOrcamento/>}/>
+          <Route path="/buscar-orcamentos" element={<BuscarOrcamentos/>}></Route>
           <Route path="/relatorio-orcamentos" element={<RelatorioOrcamentos />} />
           <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
-         
-
-
-
+          <Route path="/buscar-clientes" element={<BuscarCliente/>}></Route>
+          <Route path="/lista-clientes" element={<ListarClientes/>}></Route>
         </Routes>
       </BrowserRouter>
 
