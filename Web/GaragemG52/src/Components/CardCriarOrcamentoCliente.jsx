@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardCriarOrcamentoCliente.css"
+import ModalConfirmarCarro from "./ModalConfirmarCarro"
+import ListaPecasEncontradas from "./ListaPecasEncontradas"
 
 const CardCriarOrcamentoCliente = () => {
   const location = useLocation()
@@ -14,10 +16,22 @@ const CardCriarOrcamentoCliente = () => {
   const [Nome, setNome] = useState("")
   const [Telefone, setTelefone] = useState("")
   const [Email, setEmail] = useState("")
+  const [textoPecas, setTextoPecas] = useState("");
 
   const navigate = useNavigate();
 
   const[resLista, setResLista] = useState([])
+  
+  // Estados para robô de busca de carro
+  const [showModalCarro, setShowModalCarro] = useState(false)
+  const [dadosCarroBuscado, setDadosCarroBuscado] = useState(null)
+  const [carroConfirmado, setCarroConfirmado] = useState(false)
+  const [loadingCarro, setLoadingCarro] = useState(false)
+  
+  // Estados para robô de busca de peças
+  const [pecasEncontradas, setPecasEncontradas] = useState([])
+  const [loadingPecas, setLoadingPecas] = useState(false)
+  const [buscandoPecas, setBuscandoPecas] = useState(false)
 
   let dadosCliente = location.state?.DadosCliente
   const [Cliente, setCliente] = useState(
@@ -99,6 +113,128 @@ const CardCriarOrcamentoCliente = () => {
       setResLista(res.data.content)
   }
 
+  // ============================================================================
+  // 🤖 FUNÇÕES DO ROBÔ (API FLASK - localhost:5000)
+  // ============================================================================
+
+  // Buscar dados do carro via robô
+  async function buscarCarroComRobo(placa) {
+    try {
+      setLoadingCarro(true)
+      const placaNormalized = placa.replace(/[^A-Za-z0-9]/g, "").toUpperCase()
+      
+      if (placaNormalized.length !== 7) {
+        setMensagem("Placa deve ter 7 caracteres")
+        setLoadingCarro(false)
+        return
+      }
+      
+      // Chamar API Flask (robô)
+      const res = await fetch("http://localhost:5000/api/veiculo/buscar-robo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ placa: placaNormalized })
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok && data.status === 200) {
+        setDadosCarroBuscado(data)
+        setShowModalCarro(true)
+        setMensagem("")
+      } else {
+        setMensagem(data.error || "Erro ao buscar dados do carro")
+      }
+    } catch (error) {
+      setMensagem("❌ Servidor Flask não está respondendo! Certifique-se que está rodando em localhost:5000")
+      console.error("Erro ao buscar carro:", error)
+    } finally {
+      setLoadingCarro(false)
+    }
+  }
+
+// fechar navegador
+function fecharRobo() {
+    fetch("http://localhost:5000/api/robo/fechar", {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        alert(data.message);
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+
+  // Confirmar dados do carro do robô
+  function confirmarDadosCarro(dados) {
+    setCarroConfirmado(true)
+    setCliente({
+      ...Cliente,
+      placa: dados.placa,
+    })
+    setShowModalCarro(false)
+  }
+
+  // Buscar peças via robô
+  async function buscarPecasComRobo(listaPecas) {
+    try {
+      setBuscandoPecas(true)
+      setLoadingPecas(true)
+      
+      // Chamar API Flask (robô)
+      const res = await fetch("http://localhost:5000/api/pecas/buscar-robo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pecas: listaPecas })
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok && data.status === 200) {
+        setPecasEncontradas(data.pecas || [])
+        setMensagem(`✅ ${data.total} peças encontradas!`)
+      } else {
+        setMensagem(data.error || "Nenhuma peça encontrada")
+        setPecasEncontradas([])
+      }
+    } catch (error) {
+      setMensagem("❌ Servidor Flask não está respondendo! Certifique-se que está rodando em localhost:5000")
+      console.error("Erro ao buscar peças:", error)
+      setPecasEncontradas([])
+    } finally {
+      setLoadingPecas(false)
+      setBuscandoPecas(false)
+    }
+  }
+
+  // Adicionar peça encontrada pelo robô
+  const adicionarPecaDoRobo = (peca) => {
+    const index = pecas.findIndex(item => item.id === peca.idPeca)
+
+    if (index !== -1) {
+      const novasPecas = [...pecas]
+      novasPecas[index].quantidade += 1
+      setPecas(novasPecas)
+    } else {
+      setPecas([
+        ...pecas,
+        {
+          id: peca.idPeca,
+          nomePeca: peca.nomePeca,
+          descricao: peca.descricaoPeca,
+          valor: peca.precoPeca,
+          quantidade: 1,
+          fornecedor: peca.fornecedor,
+        }
+      ])
+    }
+    setMensagem(`✅ ${peca.nomePeca} adicionado ao orçamento!`)
+  }
+
   async function enviarOrçamento(e) {
     e.preventDefault()
 
@@ -171,24 +307,37 @@ const CardCriarOrcamentoCliente = () => {
         { placa: placaNormalized }
       )
 
-      setCliente(
-            {
-            placa:res.data[0].placaVeiculo,
-            nome:res.data[0].nomeCliente,
-            telefone:res.data[0].telefoneCliente,
-            email:res.data[0].emailCliente,
-            idClienteVeiculo:res.data[0].id
-          }
-
-      )
+      // Verificar se a resposta e os dados existem
+      if (res && res.data && res.data.length > 0) {
+        setCliente({
+          placa: res.data[0].placaVeiculo,
+          nome: res.data[0].nomeCliente,
+          telefone: res.data[0].telefoneCliente,
+          email: res.data[0].emailCliente,
+          idClienteVeiculo: res.data[0].id
+        })
+      } else {
+        console.log("⚠️ Cliente não encontrado ou servidor não respondeu")
+      }
 
     } catch (error) {
-      console.log(error)
+      console.log("❌ Erro ao buscar cliente:", error)
     }
   }
 
   return (
-    <div className="cocc_container">
+    <>
+      {/* Modal de confirmação do carro */}
+      {showModalCarro && (
+        <ModalConfirmarCarro
+          dadosCarro={dadosCarroBuscado}
+          onConfirmar={confirmarDadosCarro}
+          onCancelar={() => setShowModalCarro(false)}
+          loading={loadingCarro}
+        />
+      )}
+
+      <div className="cocc_container">
 
       <div className="cocc_top_bar">
 
@@ -232,6 +381,14 @@ const CardCriarOrcamentoCliente = () => {
               }
             />
 
+            <button 
+              className="cocc_button_robo"
+              onClick={() => buscarCarroComRobo(Cliente.placa)}
+              disabled={loadingCarro || !Cliente.placa || Cliente.placa.length < 7}
+            >
+              {loadingCarro ? "⏳ Buscando..." : "🤖 Buscar Carro"}
+            </button>
+
             <input
               type="text"
               placeholder="João Silva"
@@ -270,6 +427,12 @@ const CardCriarOrcamentoCliente = () => {
 
           </div>
 
+          {carroConfirmado && (
+            <div className="carro_confirmado">
+              ✅ Dados do carro confirmados!
+            </div>
+          )}
+
         </div>
 
         <div className="cocc_section">
@@ -284,33 +447,51 @@ const CardCriarOrcamentoCliente = () => {
                   ref={descricaoRef}
           />
 
-                <input
-                  placeholder="Buscar peças"
-                  ref={pecaRef}
-                />
+          <div className="cocc_buscar_pecas">
+            <label>🔍 Buscar peças (separadas por vírgula)</label>
+            <div className="cocc_input_button">
+              <input
+                placeholder="Ex: pneu, óleo, filtro"
+                value={textoPecas}
+                onChange={(e) => setTextoPecas(e.target.value)}
+                ref={pecaRef}
+              />  
+              
+              <button
+                className="cocc_button_robo"
+                onClick={() => {
+                  const pecas = textoPecas
+                    .split(",")
+                    .map(p => p.trim())
+                    .filter(p => p);
 
-                
-                <button 
-                className="cocc_button"
-                onClick={()=>buscarPeca(pecaRef.current.value)}
-                > 
-                  Buscar peça
-                </button>
+                  if (pecas.length > 0) {
+                    buscarPecasComRobo(pecas);
+                  }
+                }}
+                disabled={loadingPecas || !textoPecas.trim()}
+              >
+                {loadingPecas ? "⏳ Buscando..." : "🤖 Buscar"}
+              </button>
+            </div>
+            
+            {buscandoPecas && (
+              <div className="buscando_pecas">
+                ⏳ Conectando ao robô de busca de peças... isso pode demorar alguns segundos
+              </div>
+            )}
+          </div>
 
+          {/* Lista de peças encontradas pelo robô */}
+          {pecasEncontradas.length > 0 && (
+            <ListaPecasEncontradas 
+              pecas={pecasEncontradas}
+              onAdicionar={adicionarPecaDoRobo}
+              loading={loadingPecas}
+            />
+          )}
 
-              {resLista?.length > 0
-                  ? resLista.map((item) => (
-                      <div className="cocc_peca_box_center" key={item.idPeca}>
-                        <span>
-                          <strong>Peça</strong>: {item.nomePeca} || 
-                          <strong> Valor</strong>: R${item.precoPeca}
-                        </span>
-                        <button className="cocc_add_button" onClick={() => {adicionarPeca(item)}}>Adicionar Peça</button>
-                      </div>
-                    ))
-                  : null
-                }
-
+          {/* Peças adicionadas */}
           {
             pecas.map((item, index) => (
               <div key={item.id} className="cocc_peca_box">
@@ -328,15 +509,13 @@ const CardCriarOrcamentoCliente = () => {
                 </div>
                 <div>
                   <span>
-                    <strong>Peça</strong>: {item.nome} <br /> 
+                    <strong>Peça</strong>: {item.nomePeca} <br /> 
                     <strong> Valor</strong>: R${item.valor}
                   </span>
                 </div>
               </div>
             ))
           }
-
-          
 
         </div>
 
@@ -376,13 +555,14 @@ const CardCriarOrcamentoCliente = () => {
         </div>
           {loading ? <p id="carregando">Carregando...</p> : ""}
           {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
-        <button onClick={(e) => enviarOrçamento(e)} className="cocc_button">
+        <button onClick={(e) => {enviarOrçamento(e); fecharRobo()}} className="cocc_button">
           Criar Orçamento
         </button>
 
 
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 

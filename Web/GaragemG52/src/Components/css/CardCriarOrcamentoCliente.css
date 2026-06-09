@@ -113,6 +113,10 @@
     gap: 10px;
 }
 
+.cocc_grid .cocc_button_robo {
+    grid-column: 2;
+}
+
 /* INPUT */
 
 .cocc_card input {
@@ -270,4 +274,105 @@
 .cocc_button:hover {
     transform: scale(1.01);
     transition: 0.2s;
+}
+
+/* BUTTON ROBO */
+
+.cocc_button_robo {
+    width: 100%;
+    height: 40px;
+
+    background-color: #27ae60;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+}
+
+.cocc_button_robo:hover:not(:disabled) {
+    background-color: #229954;
+    transform: scale(1.02);
+}
+
+.cocc_button_robo:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* CARRO CONFIRMADO */
+
+.carro_confirmado {
+    padding: 12px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    color: #155724;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* BUSCAR PEÇAS */
+
+.cocc_buscar_pecas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cocc_buscar_pecas label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.cocc_input_button {
+    display: flex;
+    gap: 10px;
+}
+
+.cocc_input_button input {
+    flex: 1;
+}
+
+.cocc_input_button button {
+    flex: 0 0 150px;
+}
+
+/* BUSCANDO PEÇAS */
+
+.buscando_pecas {
+    padding: 12px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    color: #856404;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }

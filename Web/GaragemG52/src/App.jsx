@@ -33,7 +33,7 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Redirecionar link="login" />} />
+          <Route path="/" element={<Redirecionar link="criar-orcamento" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/home" element={<Home />} />
