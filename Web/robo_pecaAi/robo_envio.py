@@ -1,9 +1,12 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
+from pymongo import MongoClient
 import os 
 import unicodedata
 import time
@@ -81,6 +84,81 @@ def pegar_pecas_mais_baratas(driver, wait, peca,limite=5):
 # 🤖 FUNÇÃO 1: Buscar dados do carro
 # ============================================================================
 
+def salvar_pecas_mongo(lista_pecas):
+
+    load_dotenv()
+
+    client = MongoClient(
+        os.getenv(
+            "MONGO_URI",
+            "mongodb://localhost:27017/"
+        )
+    )
+
+    db = client[
+        os.getenv(
+            "MONGO_DATABASE"
+        )
+    ]
+
+    collection = db[
+        os.getenv(
+            "MONGO_COLLECTION"
+        )
+    ]
+
+    documentos = []
+
+    for peca in lista_pecas:
+
+        documento = {
+
+            "nome":
+                peca.get(
+                    "nome",
+                    "N/A"
+                ),
+
+            "descricao":
+                peca.get(
+                    "descricao",
+                    "N/A"
+                ),
+
+            "valor":
+                float(
+                    peca.get(
+                        "preco",
+                        0
+                    )
+                ),
+
+            "fornecedor":
+                peca.get(
+                    "link",
+                    "N/A"
+                ),
+
+            "unidade_venda":
+                "UNIDADE"
+        }
+
+        documentos.append(
+            documento
+        )
+
+    if documentos:
+
+        resultado = collection.insert_many(
+            documentos
+        )
+
+        print(
+            f"✅ {len(resultado.inserted_ids)} registros salvos"
+        )
+
+    client.close()
+
 def buscar_carro_peca_ai(placa):
     """
     Busca dados do carro no peca.ai e retorna um dicionário
@@ -104,8 +182,25 @@ def buscar_carro_peca_ai(placa):
     # options.add_argument('--headless')  # Executar sem interface gráfica
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    global driver 
-    driver = webdriver.Chrome(options=options)
+    global driver
+
+    driver_path = ChromeDriverManager().install()
+    from pathlib import Path
+    driver_path = Path(driver_path)
+
+    if driver_path.suffix != ".exe":
+        fallback = driver_path.parent / "chromedriver.exe"
+        if fallback.exists():
+            driver_path = fallback
+        else:
+            raise FileNotFoundError(
+                f"Chromedriver executable not found next to {driver_path}."
+            )
+
+    driver = webdriver.Chrome(
+        service=Service(str(driver_path)),
+        options=options
+    )
     wait = WebDriverWait(driver, 10)
 
 
@@ -329,10 +424,16 @@ def buscar_pecas_peca_ai(lista_pecas):
         
         print(f"✅ Total de peças coletadas: {len(pecas_coletadas)}")
         
+        if len(pecas_coletadas) > 0:
+            salvar_pecas_mongo(
+            pecas_coletadas
+        )
+
         return {
             "status": "success",
             "pecas": pecas_coletadas
-        }
+        }      
+    
 
     except Exception as e:
         print(f"❌ Erro geral ao buscar peças: {e}")

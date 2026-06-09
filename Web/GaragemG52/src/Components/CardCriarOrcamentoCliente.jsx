@@ -1,14 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEffect, useRef, useState } from "react"
 import { useFetch } from "../hooks/useFetch"
+import { descricaoValida, valorPositivo } from "../hooks/utils"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardCriarOrcamentoCliente.css"
-<<<<<<< HEAD
 import ModalConfirmarCarro from "./ModalConfirmarCarro"
 import ListaPecasEncontradas from "./ListaPecasEncontradas"
-=======
-import { valorPositivo, descricaoValida } from "../hooks/utils"
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
 const CardCriarOrcamentoCliente = () => {
   const location = useLocation()
@@ -24,7 +21,6 @@ const CardCriarOrcamentoCliente = () => {
 
   const navigate = useNavigate();
 
-<<<<<<< HEAD
   const[resLista, setResLista] = useState([])
   
   // Estados para robô de busca de carro
@@ -37,9 +33,6 @@ const CardCriarOrcamentoCliente = () => {
   const [pecasEncontradas, setPecasEncontradas] = useState([])
   const [loadingPecas, setLoadingPecas] = useState(false)
   const [buscandoPecas, setBuscandoPecas] = useState(false)
-=======
-  const [resLista, setResLista] = useState([])
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
   let dadosCliente = location.state?.DadosCliente
   const [Cliente, setCliente] = useState(
@@ -201,6 +194,8 @@ function fecharRobo() {
       })
       
       const data = await res.json()
+
+      console.log(data)
       
       if (res.ok && data.status === 200) {
         setPecasEncontradas(data.pecas || [])
@@ -328,29 +323,18 @@ function fecharRobo() {
         { placa: placaNormalized }
       )
 
-<<<<<<< HEAD
       // Verificar se a resposta e os dados existem
       if (res && res.data && res.data.length > 0) {
         setCliente({
-=======
-      setCliente(
-        {
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           placa: res.data[0].placaVeiculo,
           nome: res.data[0].nomeCliente,
           telefone: res.data[0].telefoneCliente,
           email: res.data[0].emailCliente,
           idClienteVeiculo: res.data[0].id
-<<<<<<< HEAD
         })
       } else {
         console.log("⚠️ Cliente não encontrado ou servidor não respondeu")
       }
-=======
-        }
-
-      )
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
     } catch (error) {
       console.log("❌ Erro ao buscar cliente:", error)
@@ -479,7 +463,6 @@ function fecharRobo() {
             ref={descricaoRef}
           />
 
-<<<<<<< HEAD
           <div className="cocc_buscar_pecas">
             <label>🔍 Buscar peças (separadas por vírgula)</label>
             <div className="cocc_input_button">
@@ -514,12 +497,6 @@ function fecharRobo() {
               </div>
             )}
           </div>
-=======
-          <input
-            placeholder="Buscar peças"
-            ref={pecaRef}
-          />
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
           {/* Lista de peças encontradas pelo robô */}
           {pecasEncontradas.length > 0 && (
@@ -530,31 +507,7 @@ function fecharRobo() {
             />
           )}
 
-<<<<<<< HEAD
           {/* Peças adicionadas */}
-=======
-          <button
-            className="cocc_button"
-            onClick={() => buscarPeca(pecaRef.current.value)}
-          >
-            Buscar peça
-          </button>
-
-
-          {resLista?.length > 0
-            ? resLista.map((item) => (
-              <div className="cocc_peca_box_center" key={item.idPeca}>
-                <span>
-                  <strong>Peça</strong>: {item.nomePeca} ||
-                  <strong> Valor</strong>: R${item.precoPeca}
-                </span>
-                <button className="cocc_add_button" onClick={() => { adicionarPeca(item) }}>Adicionar Peça</button>
-              </div>
-            ))
-            : null
-          }
-
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           {
             pecas.map((item, index) => (
               <div key={item.id} className="cocc_peca_box">
@@ -572,11 +525,7 @@ function fecharRobo() {
                 </div>
                 <div>
                   <span>
-<<<<<<< HEAD
                     <strong>Peça</strong>: {item.nomePeca} <br /> 
-=======
-                    <strong>Peça</strong>: {item.nome} <br />
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
                     <strong> Valor</strong>: R${item.valor}
                   </span>
                 </div>
@@ -584,11 +533,6 @@ function fecharRobo() {
             ))
           }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
         </div>
 
         <div className="cocc_section">
@@ -625,15 +569,9 @@ function fecharRobo() {
           </div>
 
         </div>
-<<<<<<< HEAD
           {loading ? <p id="carregando">Carregando...</p> : ""}
           {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
         <button onClick={(e) => {enviarOrçamento(e); fecharRobo()}} className="cocc_button">
-=======
-        {loading ? <p id="carregando">Carregando...</p> : ""}
-        {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
-        <button onClick={(e) => enviarOrçamento(e)} className="cocc_button">
->>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           Criar Orçamento
         </button>
 
