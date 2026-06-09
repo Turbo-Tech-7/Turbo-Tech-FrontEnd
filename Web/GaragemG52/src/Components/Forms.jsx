@@ -2,8 +2,7 @@
 import { useEffect, useState } from "react"
 
 import { useFetch } from "../hooks/useFetch"
-
-import { verificarEmail, verificarTelefone, senhaValida, senhasIguais, nomeValido } from "../hooks/utils"
+import { verificarEmail, verificarTelefone, senhaValida, senhasIguais, nomeValido, verificarCep } from "../hooks/utils"
 import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
 
@@ -48,7 +47,7 @@ const Forms = (prop) => {
 
         if (resposta.status == 200) {
             setMensagem("Login realizado com sucesso!");
-            setTimeout(() => { navigate("/verificar-conta", {state: {email: email}}) }, 2500)
+            setTimeout(() => { navigate("/verificar-conta", { state: { email: email } }) }, 2500)
         } else {
             setMensagem("Usuário ou senha incorretos.");
             console.log("Erro do cliente:", error)
@@ -57,6 +56,11 @@ const Forms = (prop) => {
 
     const handleSubmitCadastro = async (e) => {
         e.preventDefault()
+        
+        if (cep && !verificarCep(cep)) {
+            setMensagem("CEP inválido")
+            return
+        }
 
         if (!verificarEmail(email)) {
             setMensagem("Email invalido")

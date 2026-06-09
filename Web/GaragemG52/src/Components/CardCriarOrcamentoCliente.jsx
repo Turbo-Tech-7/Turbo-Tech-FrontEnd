@@ -3,8 +3,12 @@ import { useEffect, useRef, useState } from "react"
 import { useFetch } from "../hooks/useFetch"
 import criardoc from "../assets/criardoc.png"
 import "./css/CardCriarOrcamentoCliente.css"
+<<<<<<< HEAD
 import ModalConfirmarCarro from "./ModalConfirmarCarro"
 import ListaPecasEncontradas from "./ListaPecasEncontradas"
+=======
+import { valorPositivo, descricaoValida } from "../hooks/utils"
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
 const CardCriarOrcamentoCliente = () => {
   const location = useLocation()
@@ -20,6 +24,7 @@ const CardCriarOrcamentoCliente = () => {
 
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   const[resLista, setResLista] = useState([])
   
   // Estados para robô de busca de carro
@@ -32,19 +37,22 @@ const CardCriarOrcamentoCliente = () => {
   const [pecasEncontradas, setPecasEncontradas] = useState([])
   const [loadingPecas, setLoadingPecas] = useState(false)
   const [buscandoPecas, setBuscandoPecas] = useState(false)
+=======
+  const [resLista, setResLista] = useState([])
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
   let dadosCliente = location.state?.DadosCliente
   const [Cliente, setCliente] = useState(
     dadosCliente || {
-            placa:"",
-            nome:"",
-            telefone:"",
-            email:"",
-            idClienteVeiculo:""
-        }
+      placa: "",
+      nome: "",
+      telefone: "",
+      email: "",
+      idClienteVeiculo: ""
+    }
   )
 
-  
+
   const descricaoRef = useRef();
   const pecaRef = useRef();
 
@@ -54,40 +62,40 @@ const CardCriarOrcamentoCliente = () => {
   ])
 
   const adicionarPeca = (peca) => {
-  const index = pecas.findIndex(item => item.id === peca.idPeca)
+    const index = pecas.findIndex(item => item.id === peca.idPeca)
 
-  if (index !== -1) {
-    const novasPecas = [...pecas]
-    novasPecas[index].quantidade += 1
-    setPecas(novasPecas)
-  } else {
-    setPecas([
-      ...pecas,
-      {
-        id: peca.idPeca,
-        nomePeca: peca.nomePeca,
-        descricao: peca.descricaoPeca,
-        valor: peca.precoPeca,
-        quantidade: 1,
-        fornecedor:peca.fornecedor,
-      }
-    ])
+    if (index !== -1) {
+      const novasPecas = [...pecas]
+      novasPecas[index].quantidade += 1
+      setPecas(novasPecas)
+    } else {
+      setPecas([
+        ...pecas,
+        {
+          id: peca.idPeca,
+          nomePeca: peca.nomePeca,
+          descricao: peca.descricaoPeca,
+          valor: peca.precoPeca,
+          quantidade: 1,
+          fornecedor: peca.fornecedor,
+        }
+      ])
+    }
   }
-}
 
   const removerPeca = (id) => {
-  const novasPecas = pecas.map((peca) => {
-    if (peca.id === id) {
-      return {
-        ...peca,
-        quantidade: peca.quantidade - 1
+    const novasPecas = pecas.map((peca) => {
+      if (peca.id === id) {
+        return {
+          ...peca,
+          quantidade: peca.quantidade - 1
+        }
       }
-    }
-    return peca
-  }).filter((peca) => peca.quantidade > 0)
+      return peca
+    }).filter((peca) => peca.quantidade > 0)
 
-  setPecas(novasPecas)
-}
+    setPecas(novasPecas)
+  }
 
   const atualizarPeca = (index, campo, valor) => {
 
@@ -99,18 +107,18 @@ const CardCriarOrcamentoCliente = () => {
   }
 
   const totalPecas = pecas.reduce((acc, item) => {
-  return acc + ((parseFloat(item.valor) || 0) * item.quantidade)
-}, 0)
+    return acc + ((parseFloat(item.valor) || 0) * item.quantidade)
+  }, 0)
 
   const valorMao = parseFloat(maoDeObra) || 0
 
   const total = totalPecas + valorMao
 
   async function buscarPeca(nomePeca) {
-      const res = await httpConfig("GET", `pecas/buscar-nome`, null, { nomePeca: nomePeca })
+    const res = await httpConfig("GET", `pecas/buscar-nome`, null, { nomePeca: nomePeca })
 
-      console.log(res.data)
-      setResLista(res.data.content)
+    console.log(res.data)
+    setResLista(res.data.content)
   }
 
   // ============================================================================
@@ -238,62 +246,75 @@ function fecharRobo() {
   async function enviarOrçamento(e) {
     e.preventDefault()
 
+    if (!descricaoValida(descricaoRef.current.value)) {
+      setMensagem("Descrição deve ter pelo menos 5 caracteres")
+      return
+    }
+    if (!valorPositivo(maoDeObra)) {
+      setMensagem("Valor de mão de obra inválido")
+      return
+    }
+
     const orcamento = {
-    "clienteVeiculoId":Cliente.idClienteVeiculo,
-    "descricaoServico":descricaoRef.current.value,
-    "valorMaoDeObra": Number(maoDeObra),
-    "itens": pecas
+      "clienteVeiculoId": Cliente.idClienteVeiculo,
+      "descricaoServico": descricaoRef.current.value,
+      "valorMaoDeObra": Number(maoDeObra),
+      "itens": pecas
     }
 
     console.log(orcamento)
 
-    const res = await httpConfig("POST","orcamentos",orcamento)
+    const res = await httpConfig("POST", "orcamentos", orcamento)
 
     console.log(res)
 
     const data = res.data
 
     if (res.status == 201) {
-        setMensagem("Orçamento cadastrado com sucesso!");
+      setMensagem("Orçamento cadastrado com sucesso!");
 
-        setTimeout(() => { navigate("/visualizar-orcamento", {state:{
-            Orcamento:{
-            clienteVeiculoId:Cliente.idClienteVeiculo,
-            descricaoServico:descricaoRef.current.value,
-            valorMaoDeObra:maoDeObra,
-            itens:[pecas],
-            idOrcamento: data.id,
-            DadosCliente:{
-                nome:Cliente.nome,
-                telefone:Cliente.telefone,
-                placa:Cliente.placa,
-                email:Cliente.email
-            },
-            DadosServico:{
-              pecas:pecas,
-              informacoes:{
-                descricao:descricaoRef.current.value
+      setTimeout(() => {
+        navigate("/visualizar-orcamento", {
+          state: {
+            Orcamento: {
+              clienteVeiculoId: Cliente.idClienteVeiculo,
+              descricaoServico: descricaoRef.current.value,
+              valorMaoDeObra: maoDeObra,
+              itens: [pecas],
+              idOrcamento: data.id,
+              DadosCliente: {
+                nome: Cliente.nome,
+                telefone: Cliente.telefone,
+                placa: Cliente.placa,
+                email: Cliente.email
+              },
+              DadosServico: {
+                pecas: pecas,
+                informacoes: {
+                  descricao: descricaoRef.current.value
+                }
+              },
+              DadosValor: {
+                maoDeObra: maoDeObra,
+                totalPecas: totalPecas
               }
-            },
-            DadosValor:{
-              maoDeObra:maoDeObra,
-              totalPecas:totalPecas
+
             }
-
           }
-            }})}, 2500)
+        })
+      }, 2500)
 
-      } else {
-            setMensagem("Erro ao cadastrar");
-            console.log("Erro do cliente:", error)
-      }
+    } else {
+      setMensagem("Erro ao cadastrar");
+      console.log("Erro do cliente:", error)
+    }
 
-    
+
 
   }
 
   async function buscarCliente(params) {
-    
+
     try {
 
       const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
@@ -307,18 +328,29 @@ function fecharRobo() {
         { placa: placaNormalized }
       )
 
+<<<<<<< HEAD
       // Verificar se a resposta e os dados existem
       if (res && res.data && res.data.length > 0) {
         setCliente({
+=======
+      setCliente(
+        {
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           placa: res.data[0].placaVeiculo,
           nome: res.data[0].nomeCliente,
           telefone: res.data[0].telefoneCliente,
           email: res.data[0].emailCliente,
           idClienteVeiculo: res.data[0].id
+<<<<<<< HEAD
         })
       } else {
         console.log("⚠️ Cliente não encontrado ou servidor não respondeu")
       }
+=======
+        }
+
+      )
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
     } catch (error) {
       console.log("❌ Erro ao buscar cliente:", error)
@@ -443,10 +475,11 @@ function fecharRobo() {
           </div>
 
           <input
-                  placeholder="Descrição do Serviço"
-                  ref={descricaoRef}
+            placeholder="Descrição do Serviço"
+            ref={descricaoRef}
           />
 
+<<<<<<< HEAD
           <div className="cocc_buscar_pecas">
             <label>🔍 Buscar peças (separadas por vírgula)</label>
             <div className="cocc_input_button">
@@ -481,6 +514,12 @@ function fecharRobo() {
               </div>
             )}
           </div>
+=======
+          <input
+            placeholder="Buscar peças"
+            ref={pecaRef}
+          />
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
 
           {/* Lista de peças encontradas pelo robô */}
           {pecasEncontradas.length > 0 && (
@@ -491,7 +530,31 @@ function fecharRobo() {
             />
           )}
 
+<<<<<<< HEAD
           {/* Peças adicionadas */}
+=======
+          <button
+            className="cocc_button"
+            onClick={() => buscarPeca(pecaRef.current.value)}
+          >
+            Buscar peça
+          </button>
+
+
+          {resLista?.length > 0
+            ? resLista.map((item) => (
+              <div className="cocc_peca_box_center" key={item.idPeca}>
+                <span>
+                  <strong>Peça</strong>: {item.nomePeca} ||
+                  <strong> Valor</strong>: R${item.precoPeca}
+                </span>
+                <button className="cocc_add_button" onClick={() => { adicionarPeca(item) }}>Adicionar Peça</button>
+              </div>
+            ))
+            : null
+          }
+
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           {
             pecas.map((item, index) => (
               <div key={item.id} className="cocc_peca_box">
@@ -500,16 +563,20 @@ function fecharRobo() {
                   <span className="cocc_peca_title">
                     Peça {index + 1} || Quantidade {item.quantidade}
                   </span>
-                      <button
-                        className="cocc_remove_button"
-                        onClick={() => removerPeca(item.id)}
-                      >
-                        −
-                      </button>
+                  <button
+                    className="cocc_remove_button"
+                    onClick={() => removerPeca(item.id)}
+                  >
+                    −
+                  </button>
                 </div>
                 <div>
                   <span>
+<<<<<<< HEAD
                     <strong>Peça</strong>: {item.nomePeca} <br /> 
+=======
+                    <strong>Peça</strong>: {item.nome} <br />
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
                     <strong> Valor</strong>: R${item.valor}
                   </span>
                 </div>
@@ -517,6 +584,11 @@ function fecharRobo() {
             ))
           }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
         </div>
 
         <div className="cocc_section">
@@ -553,9 +625,15 @@ function fecharRobo() {
           </div>
 
         </div>
+<<<<<<< HEAD
           {loading ? <p id="carregando">Carregando...</p> : ""}
           {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
         <button onClick={(e) => {enviarOrçamento(e); fecharRobo()}} className="cocc_button">
+=======
+        {loading ? <p id="carregando">Carregando...</p> : ""}
+        {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
+        <button onClick={(e) => enviarOrçamento(e)} className="cocc_button">
+>>>>>>> 7846702ee59dfbd65ccd87ff9050d48d0cfee52f
           Criar Orçamento
         </button>
 

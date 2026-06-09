@@ -3,6 +3,7 @@ import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
+import { senhaValida, senhasIguais, codigoValido } from "../hooks/utils"
 
 const RecuperarSenhaNova = () => {
 
@@ -23,7 +24,15 @@ const RecuperarSenhaNova = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (senha !== confirmarSenha) {
+   if (!codigoValido(codigo)) {
+      setMensagem("Código inválido")
+      return
+    }
+    if (!senhaValida(senha)) {
+      setMensagem("Senha deve ter no mínimo 6 caracteres")
+      return
+    }
+    if (!senhasIguais(senha, confirmarSenha)) {
       setMensagem("As senhas não coincidem")
       return
     }
