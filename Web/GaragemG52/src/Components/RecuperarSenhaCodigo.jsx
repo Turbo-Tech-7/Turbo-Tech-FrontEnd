@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
+import { codigoValido } from "../hooks/utils"
 
 const RecuperarSenhaCodigo = () => {
   const [codigo, setCodigo] = useState(["", "", "", "", "", ""])
@@ -58,6 +59,12 @@ const RecuperarSenhaCodigo = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     const codigoFinal = codigo.join("")
+
+    if (!codigoValido(codigoFinal)) {
+      setMensagem("Preencha todos os 6 dígitos")
+      return
+    }
+    
     console.log("Código:", codigoFinal)
   }
 

@@ -5,6 +5,7 @@ import userIcon from "../assets/user.png"
 import "./css/CardCadastrarCliente.css"
 import cccazul from "../assets/ccc-azul.png"
 import { useEffect, useState } from "react"
+import { verificarPlacaFormatada, nomeValido, verificarTelefone, verificarEmail } from "../hooks/utils"
 
 
 const CardCadastrarCliente = () => {
@@ -31,9 +32,21 @@ const CardCadastrarCliente = () => {
     setMensagem("")
     //Java utils
 
-    if(Placa.length != 7){
-      console.log("Placa invalida")
-      return 
+    if (!verificarPlacaFormatada(Placa)) {
+      setMensagem("Placa inválida")
+      return
+    }
+    if (!nomeValido(Nome)) {
+      setMensagem("Nome inválido")
+      return
+    }
+    if (!verificarTelefone(Telefone)) {
+      setMensagem("Telefone inválido")
+      return
+    }
+    if (!verificarEmail(Email)) {
+      setMensagem("Email inválido")
+      return
     }
 
     try {

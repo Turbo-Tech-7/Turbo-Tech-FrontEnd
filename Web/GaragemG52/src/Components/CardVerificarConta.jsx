@@ -5,6 +5,7 @@ import "./css/RecuperarSenhaEmail.css"
 //Hooks
 import { useFetch } from "../hooks/useFetch"
 import { useNavigate } from "react-router-dom"
+import { codigoValido } from "../hooks/utils"
 
 const CardVerificarConta = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const CardVerificarConta = () => {
 
   const email = location.state?.email
   //Processos em segundo plano
-    const [mensagem, setMensagem] = useState("")
+  const [mensagem, setMensagem] = useState("")
 
   const url = "http://localhost:8080"
   const { data, httpConfig, error, loading } = useFetch(url)
@@ -67,30 +68,35 @@ const CardVerificarConta = () => {
   const handleSubmit = async (e) => {
     setMensagem("")
     e.preventDefault()
-    
+
     let codigoString = codigo.join("");
 
+    if (!codigoValido(codigoString)) {
+      setMensagem("Preencha todos os 6 dígitos")
+      return
+    }
+    
     let verificar = {
-      codigo:codigoString
+      codigo: codigoString
     }
 
     const resposta = await httpConfig("POST", "auth/login/verify", verificar)
 
     const data = resposta.data
     const status = resposta.status
-    
-    if(status == 200){
+
+    if (status == 200) {
       setMensagem("Validação confirmada")
 
       sessionStorage.setItem("token", data.token);
 
-      setTimeout(() => {navigate("/home")},2500)
+      setTimeout(() => { navigate("/home") }, 2500)
     }
 
-    if(status == 500){
+    if (status == 500) {
       setMensagem("Codigo incorreto")
     }
-    
+
   }
 
   return (
@@ -146,8 +152,8 @@ const CardVerificarConta = () => {
           </div>
 
           <div id="div_button">
-            {loading ? <p id="carregando">Carregando...</p> : "" }
-            {mensagem ? <p id="mensagem">{mensagem}</p> : "" }
+            {loading ? <p id="carregando">Carregando...</p> : ""}
+            {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
             <button id="button_submit">
               Validar
             </button>
