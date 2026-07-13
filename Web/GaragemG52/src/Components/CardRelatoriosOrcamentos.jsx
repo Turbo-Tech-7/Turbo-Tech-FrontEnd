@@ -14,7 +14,7 @@ import "./css/CardRelatoriosOrcamentos.css"
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080"
 
-const COLORS_STATUS       = ["#4361EE", "#FF4D4D", "#22C55E"]
+const COLORS_STATUS       = ["#4361EE", "#22C55E", "#FF4D4D"]
 const COLORS_CANCELAMENTO = ["#F59E0B", "#EF4444", "#8B5CF6", "#6B7280"]
 
 const FILTRO_MAP = {

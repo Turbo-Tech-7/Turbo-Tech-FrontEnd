@@ -273,12 +273,12 @@ def buscar_carro_peca_ai(placa):
               # 200ms entre cada tecla
             
         time.sleep(2)
-        inputPlaca.send_keys(Keys.BACKSPACE)
+        # inputPlaca.send_keys(Keys.BACKSPACE)
 
         time.sleep(1)
 
         # digita novamente
-        inputPlaca.send_keys(placa[-1])
+        # inputPlaca.send_keys(placa[-1])
 
         dados = {}
 
@@ -389,7 +389,36 @@ def buscar_pecas_peca_ai(lista_pecas):
                     (By.XPATH, '//*[@id="__next"]/div[2]/main/div[2]/div[1]/div[2]/div/div/form/div/div[2]/input')
                 ))
                 print(f"✅ Campo de busca encontrado, digitando: {peca}")
-                inputPesquisaPeca.clear()
+                try:
+                    inputPesquisaPeca.click()
+                    inputPesquisaPeca.send_keys(Keys.CONTROL, "a")
+                    inputPesquisaPeca.send_keys(Keys.DELETE)
+                    time.sleep(0.2)
+                except Exception:
+                    try:
+                        inputPesquisaPeca.clear()
+                    except Exception:
+                        pass
+
+                # Forçar limpeza via JavaScript e disparar evento 'input'
+                try:
+                    driver.execute_script("arguments[0].value = '';", inputPesquisaPeca)
+                    driver.execute_script("arguments[0].dispatchEvent(new Event('input'));", inputPesquisaPeca)
+                except Exception:
+                    pass
+
+                # Verificar que o campo ficou vazio (tenta algumas vezes)
+                try:
+                    for _ in range(5):
+                        val = driver.execute_script("return arguments[0].value;", inputPesquisaPeca)
+                        if not val:
+                            break
+                        time.sleep(0.2)
+                    else:
+                        print("⚠️ Não foi possível limpar o campo de busca antes de pesquisar")
+                except Exception:
+                    pass
+
                 inputPesquisaPeca.send_keys(peca)
                 time.sleep(1)
                 
@@ -417,6 +446,8 @@ def buscar_pecas_peca_ai(lista_pecas):
                 for peca_encontrada in pecas_encontradas:
                     pecas_coletadas.append(peca_encontrada)
                     print(f"   → {peca_encontrada['nome']}: R$ {peca_encontrada['preco']:.2f}")
+
+                # elemento já foi usado acima; nada a fazer aqui
             
             except Exception as e:
                 print(f"❌ Erro ao buscar peça '{peca}': {e}")

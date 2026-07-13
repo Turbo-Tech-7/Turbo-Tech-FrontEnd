@@ -148,7 +148,7 @@ function Legend({ data, colors }) {
 }
 
 const BASE_URL = "http://localhost:8080"
-const STATUS_COLORS = ["#4361EE", "#CAF7FF", "#BCFFE9", "#FFD6A5", "#FFAFCC"]
+const STATUS_COLORS = ["#4361EE", "green", "red", "#FFD6A5", "#FFAFCC"]
 const CANCEL_COLORS = ["#FF6B6B", "#FFB347", "#FFD93D", "#6BCB77", "#4D96FF"]
 
 function CardVisaoGeralDashboard() {

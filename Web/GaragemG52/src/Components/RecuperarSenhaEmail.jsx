@@ -27,7 +27,7 @@ const RecuperarSenhaEmail = () => {
 
     try {
 
-            const res = await httpConfig("POST", "auth/forgot-password",null, `email=${email}`)
+            const res = await httpConfig("POST", "auth/forgot-password",null, { email })
 
             if (res.status == 200) {
                 setMensagem("Email Encontrado")

@@ -152,6 +152,7 @@ def buscar_pecas():
                 "pecas": []
             }), 404
 
+
     except Exception as e:
         print(f"❌ Erro ao buscar peças: {str(e)}")
         return jsonify({
@@ -160,7 +161,7 @@ def buscar_pecas():
             "pecas": []
         }), 500
 
-
+    
 # ============================================================================
 # 3️⃣ ENDPOINT: Health Check
 # ============================================================================

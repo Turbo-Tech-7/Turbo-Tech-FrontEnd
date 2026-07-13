@@ -129,8 +129,8 @@ const CardVisualizarOrcamento = () => {
         <div className="cvo_header_card">
 
           <div className="cvo_header_text">
-            <h2>Orçamento #0001</h2>
-            <p>15 de dezembro 2025</p>
+            <h2>Orçamento</h2>
+            {/* <p>15 de dezembro 2025</p> */}
             <span>Status: Aberto</span>
           </div>
 
