@@ -1,37 +1,37 @@
-// CardCadastrarCliente.jsx
-import { Link, useNavigate } from "react-router-dom"
-import { useFetch } from "../hooks/useFetch"
-import userIcon from "../assets/user.png"
-import "./css/CardCadastrarCliente.css"
-import cccazul from "../assets/ccc-azul.png"
+// Hooks
 import { useEffect, useState } from "react"
+
+//Router
+import { Link, useNavigate } from "react-router-dom"
+
+//Styles
+import "./css/CardCadastrarCliente.css"
+
+//Imagens
+import userIcon from "../assets/user.png"
+import cccazul from "../assets/ccc-azul.png"
+
+// Hooks personalizados
 import { verificarPlacaFormatada, nomeValido, verificarTelefone, verificarEmail } from "../hooks/utils"
+import { useClienteContext } from "../hooks/useClienteContext"
+import { useFetch } from "../hooks/useFetch"
 
 
 const CardCadastrarCliente = () => {
   const url = "http://localhost:8080"
 
-  
-  
-  const { data, httpConfig, error, loading } = useFetch(url)
+  const {Placa, Nome, Telefone, Email, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
+
+  const {httpConfig, error, loading } = useFetch(url)
 
   const navigate = useNavigate();
 
-  const [Placa, setPlaca] = useState("")
-  const [Nome, setNome] = useState("")
-  const [Telefone, setTelefone] = useState("")
-  const [Email, setEmail] = useState("")
-
-
   const [mensagem, setMensagem] = useState("")
-
- 
 
   async function handleSubmit(){ 
 
     setMensagem("")
     //Java utils
-
     if (!verificarPlacaFormatada(Placa)) {
       setMensagem("Placa inválida")
       return
@@ -50,30 +50,14 @@ const CardCadastrarCliente = () => {
     }
 
     try {
-      let Cliente = {
-            placaVeiculo:Placa,
-            nomeCliente:Nome,
-            telefoneCliente:Telefone,
-            emailCliente:Email
-        }
 
-        let respostaClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
+        let resClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
 
-        let dataClienteVeiculo = respostaClienteVeiculo.data
-
-        if (respostaClienteVeiculo.status == 201) {
+        if (resClienteVeiculo.status == 201) {
             setMensagem("Cadastro realizado com sucesso!");
-            setTimeout(() => { navigate("/criar-orcamento-cliente", {state:{
-            DadosCliente:{
-            nome:dataClienteVeiculo.nomeCliente,
-            telefone:dataClienteVeiculo.telefoneCliente,
-            placa:dataClienteVeiculo.placaVeiculo,
-            email:dataClienteVeiculo.emailCliente,
-            idClienteVeiculo:dataClienteVeiculo.id
-            }
-            }})}, 2500)
+            setTimeout(() => { navigate("/criar-orcamento-cliente")}, 2000)
         } else {
-            setMensagem("Erro ao cadastrar");
+            setMensagem("Erro ao cadastrar Cliente");
             console.log("Erro do cliente:", error)
         }
     } catch (error) {
@@ -82,7 +66,6 @@ const CardCadastrarCliente = () => {
 
   }
   async function procurarCliente(params){
-    console.log("Entrou na função")
     try {
       if(!params) return
       const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
@@ -95,11 +78,11 @@ const CardCadastrarCliente = () => {
     }
   }
 
-   useEffect(() => {
+  useEffect(() => {
 
-  procurarCliente(Placa)
+    procurarCliente(Placa)
 
-}, [Placa])
+  }, [Placa])
 
   return (
     <div className="ccc_container">
@@ -132,23 +115,26 @@ const CardCadastrarCliente = () => {
             <div className="ccc_input_group">
               <label>Placa do Veículo</label>
               <input onChange={(e) => {
-                setPlaca(e.target.value)
-              }} placeholder="Ex: ABC-1234" />
+                atualizarPlaca(e.target.value)
+              }} 
+              placeholder="Ex: ABC-1234" 
+              value={Placa || ""}
+              />
             </div>
 
             <div className="ccc_input_group">
               <label>Nome do Cliente</label>
-              <input onChange={(e) => {setNome(e.target.value)}} placeholder="Ex: João Silva" />
+              <input value={Nome || ""} onChange={(e) => {atualizarNome(e.target.value)}} placeholder="Ex: João Silva" />
             </div>
 
             <div className="ccc_input_group">
               <label>Telefone</label>
-              <input onChange={(e) => {setTelefone(e.target.value)}} placeholder="Ex: (11)98765-4321" />
+              <input value={Telefone || ""} onChange={(e) => {atualizarTelefone(e.target.value)}} placeholder="Ex: (11)98765-4321" />
             </div>
 
             <div className="ccc_input_group">
             <label>Email</label>
-            <input onChange={(e) => {setEmail(e.target.value)}} placeholder="Ex: joao@gmail.com" />
+            <input value={Email || ""} onChange={(e) => {atualizarEmail(e.target.value)}} placeholder="Ex: joao@gmail.com" />
             </div>
           </div>
 
