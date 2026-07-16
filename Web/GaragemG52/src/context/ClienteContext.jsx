@@ -12,15 +12,19 @@ export function ClienteContextProvider ({children}){
             placaVeiculo:null,
             nomeCliente:null,
             telefoneCliente:null,
-            emailCliente:null
+            emailCliente:null,
+            modeloCliente:null,
+            idClienteVeiculo:null
         }
         }
     )
 
-    const [Placa, setPlaca] = useState(Cliente.placaVeiculo ||"")
-    const [Nome, setNome] = useState( Cliente.nomeCliente ||"")
-    const [Telefone, setTelefone] = useState(Cliente.telefoneCliente ||"")
-    const [Email, setEmail] = useState(Cliente.emailCliente ||"")
+    const [Placa, setPlaca] = useState(Cliente.placaVeiculo || "")
+    const [Nome, setNome] = useState( Cliente.nomeCliente || "")
+    const [Telefone, setTelefone] = useState(Cliente.telefoneCliente || "")
+    const [Email, setEmail] = useState(Cliente.emailCliente || "")
+    const [Modelo, setModelo] = useState(Cliente.Modelo || "")
+    const [Id, setId] = useState(Cliente.idClienteVeiculo || "")
 
     function atualizarPlaca (Placa){
         setPlaca(Placa)
@@ -50,9 +54,28 @@ export function ClienteContextProvider ({children}){
             {...Cliente, emailCliente:Email}
         )
     }  
+    function atualizarId (Id){
+        setId(Id)
 
+        setCliente(
+            {...Cliente, idClienteVeiculo:Id}
+        )
+    } 
+    function atualizarModelo (Modelo){
+        setModelo(Modelo)
 
-    console.log(Cliente)
+        setCliente(
+            {...Cliente, modelo:Modelo}
+        )
+    } 
+    function limparCliente(){
+        setPlaca("")
+        setModelo("")
+        setNome("")
+        setTelefone("")
+        setEmail("")
+        setId("")
+    }  
 
     useEffect(() => {
         localStorage.setItem("CacheCliente", JSON.stringify(Cliente))
@@ -60,7 +83,7 @@ export function ClienteContextProvider ({children}){
 
     return(
         <ClienteContext.Provider 
-        value={{Placa, Nome, Telefone, Email, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente}}>
+        value={Placa, Nome, Telefone, Email, Id, Modelo, Cliente, atualizarModelo, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, limparCliente}>
             {children}
         </ClienteContext.Provider>
     )

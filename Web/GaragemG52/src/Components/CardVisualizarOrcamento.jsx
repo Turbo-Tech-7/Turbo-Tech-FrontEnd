@@ -1,15 +1,29 @@
-import { Link, useLocation, useNavigate } from "react-router-dom"
+//Hook
 import { useState } from "react"
+
+//Router
+import { Link, useNavigate } from "react-router-dom"
+
+//Imagens
 import criardoc from "../assets/criardoc.png"
+
+// Style
 import "./css/CardVisualizarOrcamento.css"
+
+// Hook personalizado
 import { useFetch } from "../hooks/useFetch"
+import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
+import { useClienteContext } from "../hooks/useClienteContext"
 
 const CardVisualizarOrcamento = () => {
   const url = "http://localhost:8080"
-  
-  const location = useLocation()
+
   const navigate = useNavigate()
   
+  const {Orcamento, Descricao, MaoDeObra, Pecas, IdOrcamento , totalPecas, total} = useOrcamentoContext()
+  const {Placa, Nome, Telefone, Email, Id, Cliente} = useClienteContext()
+
+
   const { data, httpConfig, error, loading } = useFetch(url)
 
   const [mensagem, setMensagem] = useState()
@@ -25,33 +39,22 @@ const CardVisualizarOrcamento = () => {
       setMostrarAviso(false)
     }, 5000)
   }
-  
-  let dadosOrcamentos = location.state
-  const [Orcamento, setOrcamento] = useState(
-    dadosOrcamentos
-  )
-
-  console.log(Orcamento)
-  
-  let maoDeObra = Number(Orcamento.Orcamento.DadosValor.maoDeObra)
 
   async function gerarPDF() {
   try {
     const res = await httpConfig(
       "GET",
-      `orcamentos/${Orcamento.Orcamento.idOrcamento}/pdf`
+      `orcamentos/${IdOrcamento}/pdf`
     );
-
-    console.log(res);
 
     if (res.status === 200) {
       // cria URL temporária do PDF
-      const pdfUrl = window.URL.createObjectURL(res.data);
+      const pdfUrl = window.URL.createObjectURL(data);
 
       // cria link invisível para download
       const link = document.createElement("a");
       link.href = pdfUrl;
-      link.download = `orcamento-${Orcamento.Orcamento.idOrcamento}.pdf`;
+      link.download = `orcamento-${IdOrcamento}.pdf`;
 
       document.body.appendChild(link);
       link.click();
@@ -76,13 +79,11 @@ const CardVisualizarOrcamento = () => {
     try {
       const res = await httpConfig(
       "POST",
-      `orcamentos/${Orcamento.Orcamento.idOrcamento}/pdf/email`
+      `orcamentos/${IdOrcamento}/pdf/email`
     );
 
-    console.log(res);
-
     if(res.status == 200){
-      setMensagem("O orçamento foi enviado por email para " + Orcamento.Orcamento.DadosCliente.email)
+      setMensagem("O orçamento foi enviado por email para " + Email)
     }
     } catch (err) {
     setMensagem("Erro ao mandar PDF");
@@ -91,10 +92,7 @@ const CardVisualizarOrcamento = () => {
  }
 
  function CancelarOrcamento(){
-    setTimeout(() => { navigate("/cancelar-orcamento", {state:{
-      idOrcamento:Orcamento.Orcamento.idOrcamento
-    }
-  })}, 2500)
+    setTimeout(() => { navigate("/cancelar-orcamento")}, 2500)
  }
 
   return (
@@ -130,7 +128,6 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_header_text">
             <h2>Orçamento</h2>
-            {/* <p>15 de dezembro 2025</p> */}
             <span>Status: Aberto</span>
           </div>
 
@@ -146,28 +143,27 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_row">
             <span>Placa do Veículo</span>
-            <span>{Orcamento.Orcamento.DadosCliente.placa
- || ""}</span>
+            <span>{Placa || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Nome do Cliente</span>
-            <span>{Orcamento.Orcamento.DadosCliente.nome || ""}</span>
+            <span>{Nome || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Telefone</span>
-            <span>{Orcamento.Orcamento.DadosCliente.telefone || ""}</span>
+            <span>{Telefone || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Email</span>
-            <span>{Orcamento.Orcamento.DadosCliente.email || ""}</span>
+            <span>{Email || ""}</span>
           </div>
 
           <div className="cvo_row">
             <span>Modelo do Veículo</span>
-            <span>{Orcamento.Orcamento.DadosCliente.modelo || ""}</span>
+            <span>{Modelo || ""}</span>
           </div>
 
         </div>
@@ -183,7 +179,7 @@ const CardVisualizarOrcamento = () => {
               flexDirection: "column",
               }}>
   
-              {Orcamento.Orcamento.itens[0]?.map(item => (
+              {Pecas[0]?.map(item => (
                 <span key={item.id}>
                   {item.nome} (R$ {Number(item.valor).toFixed(2)}) - Fornecedor: <a href={item.fornecedor}>Link</a> - Quantidade: {item.quantidade}
                 </span>
@@ -194,17 +190,17 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_row">
             <span>Valor da Peça(s)</span>
-            <span>R$ {Number(Orcamento.Orcamento.DadosValor.totalPecas).toFixed(2)}</span>
+            <span>R$ {Number(totalPecas).toFixed(2)}</span>
           </div>
 
           <div className="cvo_row">
             <span>Valor da Mão de obra</span>
-            <span>R$ {Number(Orcamento.Orcamento.DadosValor.maoDeObra).toFixed(2)}</span>
+            <span>R$ {Number(MaoDeObra).toFixed(2)}</span>
           </div>
 
           <div className="cvo_row total">
             <span>Total:</span>
-            <span>R$ {Number(maoDeObra + Orcamento.Orcamento.DadosValor.totalPecas).toFixed(2)}</span>
+            <span>R$ {Number(total).toFixed(2)}</span>
           </div>
 
         </div>
@@ -224,7 +220,7 @@ const CardVisualizarOrcamento = () => {
           <button
             className="cvo_button"
             onClick={() =>{
-              mostrarMensagem("O orçamento foi enviado por email para " + Orcamento.Orcamento.DadosCliente.email)
+              mostrarMensagem("O orçamento foi enviado por email para " + Email)
               mandarPDF()
             }
             }

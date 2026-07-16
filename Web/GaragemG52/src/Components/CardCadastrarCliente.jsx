@@ -20,7 +20,7 @@ import { useFetch } from "../hooks/useFetch"
 const CardCadastrarCliente = () => {
   const url = "http://localhost:8080"
 
-  const {Placa, Nome, Telefone, Email, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
+  const {Placa, Nome, Telefone, Email, Id, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
 
   const {httpConfig, error, loading } = useFetch(url)
 
@@ -52,6 +52,9 @@ const CardCadastrarCliente = () => {
     try {
 
         let resClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
+        let dataReq = resClienteVeiculo.data
+
+        atualizarId(dataReq.id)
 
         if (resClienteVeiculo.status == 201) {
             setMensagem("Cadastro realizado com sucesso!");
@@ -138,10 +141,9 @@ const CardCadastrarCliente = () => {
             </div>
           </div>
 
-          
-
           {loading ? <p id="carregando">Carregando...</p> : ""}
           {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
+
           <button className="ccc_button" onClick={handleSubmit}>
             Cadastrar Cliente
           </button>
