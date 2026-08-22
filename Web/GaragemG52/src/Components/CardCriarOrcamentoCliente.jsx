@@ -23,14 +23,17 @@ import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
 const CardCriarOrcamentoCliente = () => {
   const navigate = useNavigate();
 
-  const url = "http://localhost:8080"
-
-  const {data, httpConfig, error, loading } = useFetch(url)
+  const {data, httpConfig, error, loading } = useFetch()
   const [mensagem, setMensagem] = useState("")
 
-  const {Placa, Nome, Telefone, Email, Id,atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
+  const {Placa, Nome, Telefone, Email, Id, atualizarCliente, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
 
   const {Orcamento, Descricao, MaoDeObra, Pecas, atualizarDescricao, atualizarMaoDeObra, atualizarIdOrcamento, adicionarPeca, removerPeca, totalPecas, total } = useOrcamentoContext()
+
+  const pecasLista = Array.isArray(Pecas) ? Pecas : []
+  const valorMaoDeObra = Number(MaoDeObra || 0)
+  const valorTotalPecas = Number(totalPecas || 0)
+  const valorTotal = Number(total || 0)
 
   const [textoPecas, setTextoPecas] = useState("");
   
@@ -93,7 +96,6 @@ function fecharRobo() {
     })
     .then(res => res.json())
     .then(data => {
-        console.log(data);
         alert(data.message);
     })
     .catch(err => {
@@ -105,7 +107,7 @@ function fecharRobo() {
   // Confirmar dados do carro do robô
   function confirmarDadosCarro(dados) {
     setCarroConfirmado(true)
-    setCliente({
+    atualizarCliente({
       ...Cliente,
       placa: dados.placa,
     })
@@ -126,8 +128,6 @@ function fecharRobo() {
       })
       
       const data = await res.json()
-
-      console.log(data)
       
       if (res.ok && data.status === 200) {
         setPecasEncontradas(data.pecas || [])
@@ -271,7 +271,7 @@ function fecharRobo() {
             <button 
               className="cocc_button_robo"
               onClick={() => buscarCarroComRobo(Cliente.placa)}
-              disabled={loadingCarro || !Cliente.placa || Cliente.placa.length < 7}
+              disabled={loadingCarro || !Placa || Placa.length < 7}
             >
               {loadingCarro ? "⏳ Buscando..." : "🤖 Buscar Carro"}
             </button>
@@ -279,7 +279,7 @@ function fecharRobo() {
             <input
               type="text"
               placeholder="João Silva"
-              value={Cliente.nome || ""}
+              value={Nome || ""}
               onChange={(e) =>
                 atualizarNome(e.target.value)
               }
@@ -288,7 +288,7 @@ function fecharRobo() {
             <input
               type="text"
               placeholder="(11) 98765-4321"
-              value={Cliente.telefone || ""}
+              value={Telefone || ""}
               onChange={(e) =>
                 atualizarTelefone(e.target.value)
               }
@@ -297,7 +297,7 @@ function fecharRobo() {
             <input
               type="text"
               placeholder="exemplo@gmail.com"
-              value={Cliente.email || ""}
+              value={Email || ""}
               onChange={(e) =>
                 atualizarEmail(e.target.value)
               }
@@ -371,7 +371,7 @@ function fecharRobo() {
 
           {/* Peças adicionadas */}
           {
-            Pecas.map((item, index) => (
+            pecasLista.map((item, index) => (
               <div key={item.id} className="cocc_peca_box">
 
                 <div className="cocc_peca_top">
@@ -415,17 +415,17 @@ function fecharRobo() {
 
             <div>
               <span>Peças/Materiais</span>
-              <strong>R$ {totalPecas.toFixed(2)}</strong>
+              <strong>R$ {valorTotalPecas.toFixed(2)}</strong>
             </div>
 
             <div>
               <span>Mão de Obra</span>
-              <strong>R$ {MaoDeObra.toFixed(2)}</strong>
+              <strong>R$ {valorMaoDeObra.toFixed(2)}</strong>
             </div>
 
             <div>
               <span>Total</span>
-              <strong>R$ {total.toFixed(2)}</strong>
+              <strong>R$ {valorTotal.toFixed(2)}</strong>
             </div>
 
           </div>

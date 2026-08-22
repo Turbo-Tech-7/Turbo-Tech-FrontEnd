@@ -18,11 +18,10 @@ import { useFetch } from "../hooks/useFetch"
 
 
 const CardCadastrarCliente = () => {
-  const url = "http://localhost:8080"
 
   const {Placa, Nome, Telefone, Email, Id, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
 
-  const {httpConfig, error, loading } = useFetch(url)
+  const {httpConfig, error, loading } = useFetch()
 
   const navigate = useNavigate();
 
@@ -74,7 +73,6 @@ const CardCadastrarCliente = () => {
       const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
       if(placaNormalized.length === 7){
           const res = await httpConfig("GET", "clientes-veiculos/buscar-placa", null, {placa: placaNormalized})
-          console.log(res.data)
       }
     } catch (error) {
       console.log(error)

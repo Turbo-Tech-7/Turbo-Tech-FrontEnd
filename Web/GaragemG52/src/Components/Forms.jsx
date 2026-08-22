@@ -8,11 +8,7 @@ import "./css/Forms.css"
 
 const Forms = (prop) => {
 
-
-    const url = "http://localhost:8080"
-
-
-    const { data, httpConfig, error, loading } = useFetch(url)
+    const { data, httpConfig, error, loading } = useFetch()
 
     const navigate = useNavigate();
 

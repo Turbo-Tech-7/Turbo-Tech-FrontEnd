@@ -15,8 +15,7 @@ const CardVerificarConta = () => {
   //Processos em segundo plano
   const [mensagem, setMensagem] = useState("")
 
-  const url = "http://localhost:8080"
-  const { data, httpConfig, error, loading } = useFetch(url)
+  const { data, httpConfig, error, loading } = useFetch()
 
   const [codigo, setCodigo] = useState(["", "", "", "", "", ""])
 

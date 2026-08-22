@@ -10,6 +10,7 @@ import RelatorioFinanceiro from "./pages/RelatorioFinanceiro"
 //Component
 import Forms from './Components/forms'
 import QuadroMensagem from './Components/quadroMensagem'
+import PrivateRoute from "./Components/Routes/PrivateRoute.jsx"
 
 //Style
 
@@ -35,30 +36,81 @@ function App() {
   return (
     <main>
 
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Redirecionar link="login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-          <Route path="/recuperar-senha/verificar" element={<RecuperarSenhaVerificar />} />
-          <Route path="/recuperar-senha/nova" element={<RecuperarNovaSenha />} />
-          <Route path="/verificar-conta" element={<VerificarConta />} />
-          <Route path="/criar-orcamento" element={<CriarOrcamento />} />
-          <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
-          <Route path="/criar-orcamento-cliente" element={<CriarOrcamentoCliente />} />
-          <Route path="/visualizar-orcamento" element={<VisualizarOrcamento />} />
-          <Route path="/cancelar-orcamento" element={<CancelarOrcamento />} />
-          <Route path="/visao-geral" element={<VisaoGeral />} />
-          <Route path="/lista-orcamentos" element={<ListaOrcamento/>}/>
-          <Route path="/buscar-orcamentos" element={<BuscarOrcamentos/>}></Route>
-          <Route path="/relatorio-orcamentos" element={<RelatorioOrcamentos />} />
-          <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
-          <Route path="/buscar-clientes" element={<BuscarCliente/>}></Route>
-          <Route path="/lista-clientes" element={<ListarClientes/>}></Route>
-        </Routes>
-      </BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+
+    {/* Rotas públicas */}
+    <Route path="/" element={<Redirecionar link="login" />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/cadastro" element={<Cadastro />} />
+
+    <Route
+      path="/recuperar-senha"
+      element={<RecuperarSenha />}
+    />
+
+    <Route
+      path="/recuperar-senha/verificar"
+      element={<RecuperarSenhaVerificar />}
+    />
+
+    <Route
+      path="/recuperar-senha/nova"
+      element={<RecuperarNovaSenha />}
+    />
+
+    <Route
+      path="/verificar-conta"
+      element={<VerificarConta />}
+    />
+
+    {/* Rotas protegidas */}
+    <Route element={<PrivateRoute />}>
+
+      <Route path="/home" element={<Home />} />
+      <Route path="/criar-orcamento" element={<CriarOrcamento />} />
+      <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
+      <Route
+        path="/criar-orcamento-cliente"
+        element={<CriarOrcamentoCliente />}
+      />
+      <Route
+        path="/visualizar-orcamento"
+        element={<VisualizarOrcamento />}
+      />
+      <Route
+        path="/cancelar-orcamento"
+        element={<CancelarOrcamento />}
+      />
+      <Route path="/visao-geral" element={<VisaoGeral />} />
+      <Route
+        path="/lista-orcamentos"
+        element={<ListaOrcamento />}
+      />
+      <Route
+        path="/buscar-orcamentos"
+        element={<BuscarOrcamentos />}
+      />
+      <Route
+        path="/relatorio-orcamentos"
+        element={<RelatorioOrcamentos />}
+      />
+      <Route
+        path="/relatorio-financeiro"
+        element={<RelatorioFinanceiro />}
+      />
+      <Route
+        path="/buscar-clientes"
+        element={<BuscarCliente />}
+      />
+      <Route
+        path="/lista-clientes"
+        element={<ListarClientes />}
+      />
+
+    </Route>
+  </Routes>
+</BrowserRouter>
 
 
     </main>

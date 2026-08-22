@@ -68,6 +68,9 @@ export function ClienteContextProvider ({children}){
             {...Cliente, modelo:Modelo}
         )
     } 
+    function atualizarCliente(cliente){
+        setCliente(cliente)
+    }
     function limparCliente(){
         setPlaca("")
         setModelo("")
@@ -82,8 +85,25 @@ export function ClienteContextProvider ({children}){
     }, [Cliente])
 
     return(
-        <ClienteContext.Provider 
-        value={Placa, Nome, Telefone, Email, Id, Modelo, Cliente, atualizarModelo, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, limparCliente}>
+        <ClienteContext.Provider
+            value={{
+                Placa,
+                Nome,
+                Telefone,
+                Email,
+                Id,
+                Modelo,
+                Cliente,
+                atualizarModelo,
+                atualizarCliente,
+                atualizarId,
+                atualizarPlaca,
+                atualizarNome,
+                atualizarTelefone,
+                atualizarEmail,
+                limparCliente,
+            }}
+        >
             {children}
         </ClienteContext.Provider>
     )

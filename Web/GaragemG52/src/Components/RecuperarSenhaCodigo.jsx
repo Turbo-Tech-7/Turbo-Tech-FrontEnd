@@ -64,8 +64,6 @@ const RecuperarSenhaCodigo = () => {
       setMensagem("Preencha todos os 6 dígitos")
       return
     }
-    
-    console.log("Código:", codigoFinal)
   }
 
   return (

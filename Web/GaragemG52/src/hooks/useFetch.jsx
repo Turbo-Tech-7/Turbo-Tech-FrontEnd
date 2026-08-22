@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useFetch = (baseUrl) => {
+export const useFetch = (baseUrl = import.meta.env.VITE_BACK_URL) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,7 +11,7 @@ export const useFetch = (baseUrl) => {
     bodyData = null,
     queryParams = null,
     id = null,
-    extraOptions = {} // <- novo
+    extraOptions = {} 
   ) => {
     setLoading(true);
     setError(null);
@@ -73,19 +73,37 @@ export const useFetch = (baseUrl) => {
       }
 
       if (!res.ok) {
-        throw new Error(`Erro: ${res.status} - ${res.statusText}`);
+        setError(responseData);
+
+      return {
+        data: null,
+        error: responseData,
+        status,
+      };
       }
 
       setData(responseData);
 
-      return { data: responseData, status };
+      return { 
+        data: responseData,
+        error: null,
+        status,
+       };
 
     } catch (err) {
+
+      console.error("Erro na requisição:", err);
+
       setError(err.message);
+
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Erro inesperado na requisição";
 
       return {
         data: null,
-        status: 500,
+        error: errorMessage,
+        status: null,
       };
     } finally {
       setLoading(false);

@@ -1,11 +1,11 @@
-import { createContext,useEffect,useState } from "react";
-import { useClienteContext } from "../hooks/useClienteContext";
+import { createContext,useContext,useEffect,useState } from "react";
+import { ClienteContext } from "./ClienteContext";
 
 export const OrcamentoContext = createContext()
 
-export function OrcamentoProveider ({children}){
+export function OrcamentoContextProvider ({children}){
     
-    const {Cliente} = useClienteContext()
+    const { Id } = useContext(ClienteContext)
 
     const [Orcamento, setOrcamento] = useState(
         () => {
@@ -21,7 +21,7 @@ export function OrcamentoProveider ({children}){
         }
     )
 
-    const [IdCliente, setIdCliente] = useState(Cliente.idClienteVeiculo || "")
+    const [IdCliente, setIdCliente] = useState(Id || "")
     const [IdOrcamento, setIdOrcamento] = useState(Orcamento.idOrcamento || "")
     const [Descricao, setDescricao] = useState(Orcamento.descricaoServico || "")
     const [MaoDeObra, setMaoDeObra] = useState(Orcamento.valorMaoDeObra || 0)
@@ -108,7 +108,21 @@ export function OrcamentoProveider ({children}){
     }, [Orcamento])
     
     return(
-        <OrcamentoContext.Provider value={Orcamento, Descricao, MaoDeObra, Pecas, IdOrcamento ,atualizarDescricao, atualizarMaoDeObra, atualizarIdOrcamento, adicionarPeca, removerPeca, totalPecas, total, limparOrcamento }>
+        <OrcamentoContext.Provider value={{
+            Orcamento,
+            Descricao,
+            MaoDeObra,
+            Pecas,
+            IdOrcamento,
+            atualizarDescricao,
+            atualizarMaoDeObra,
+            atualizarIdOrcamento,
+            adicionarPeca,
+            removerPeca,
+            totalPecas,
+            total,
+            limparOrcamento,
+        }}>
             {children}
         </OrcamentoContext.Provider>
     )

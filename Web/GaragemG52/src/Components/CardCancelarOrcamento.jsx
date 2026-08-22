@@ -8,14 +8,13 @@ import { useEffect, useRef, useState } from "react"
 const CardCancelarOrcamento = () => {
   
   const [mensagem, setMensagem] = useState()
-  const url = "http://localhost:8080"
 
   const motivoRef = useRef();
 
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { data, httpConfig, error, loading } = useFetch(url)
+  const { data, httpConfig, error, loading } = useFetch()
 
   let dadosOrcamentos = location.state
   const [Orcamento, setOrcamento] = useState(
@@ -37,8 +36,6 @@ const CardCancelarOrcamento = () => {
       const Motivo = {motivo:motivo}
       
       const res = await httpConfig("PATCH", `orcamentos/${Orcamento.idOrcamento}/cancelar`, Motivo)
-
-      console.log(res.data)
 
       setMensagem("Orçamento cancelado")
 

@@ -22,7 +22,6 @@ const quadroMensagem = () => {
         const resVeiculo = await httpConfig("", "GET", "veiculo");
         const resServico = await httpConfig("", "GET", "servico");
 
-        console.log(resUsuario,resVeiculo,resServico)
         setDados({
             usuario: resUsuario,
             veiculo: resVeiculo,
