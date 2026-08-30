@@ -5,54 +5,55 @@ import { useFetch } from "../hooks/useFetch"
 import { verificarEmail, verificarTelefone, senhaValida, senhasIguais, nomeValido, verificarCep } from "../hooks/utils"
 import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
+import { removeAuthToken } from "../services/authStorage"
+import { authService } from "../services/authService"
 
-const Forms = (prop) => {
-
-    const { data, httpConfig, error, loading } = useFetch()
-
+function useLoginForm() {
+    const { httpConfig, loading } = useFetch()
     const navigate = useNavigate();
-
-    // Dados usuario - Login
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
+    const [mensagem, setMensagem] = useState("")
 
-    // Dados usuario - Cadastro
+    useEffect(() => {
+        removeAuthToken();
+    }, [])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setMensagem("")
+
+        const resposta = await authService.login(httpConfig, { email, senha })
+
+        if (resposta.status == 200) {
+            setMensagem("Login realizado com sucesso!")
+            setTimeout(() => { navigate("/verificar-conta", { state: { email: email } }) }, 2500)
+        } else {
+            setMensagem("Usuário ou senha incorretos.")
+        }
+    }
+
+    return { email, setEmail, senha, setSenha, mensagem, setMensagem, loading, handleSubmit }
+}
+
+function useCadastroForm() {
+    const { httpConfig, loading } = useFetch()
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("")
+    const [senha, setSenha] = useState("")
     const [confirmarSenha, setConfirmarSenha] = useState("")
     const [name, setName] = useState("")
     const [telefone, setTelefone] = useState("")
     const [cep, setCep] = useState("")
-
-    //Processos em segundo plano
     const [mensagem, setMensagem] = useState("")
 
-
     useEffect(() => {
-        sessionStorage.removeItem('token');
+        removeAuthToken();
     }, [])
 
-
-    const handleSubmitLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setMensagem("");
-        let credenciais = {
-            email,
-            senha
-        }
 
-        let resposta = await httpConfig("POST", "auth/login", credenciais)
-
-        if (resposta.status == 200) {
-            setMensagem("Login realizado com sucesso!");
-            setTimeout(() => { navigate("/verificar-conta", { state: { email: email } }) }, 2500)
-        } else {
-            setMensagem("Usuário ou senha incorretos.");
-            console.log("Erro do cliente:", error)
-        }
-    }
-
-    const handleSubmitCadastro = async (e) => {
-        e.preventDefault()
-        
         if (cep && !verificarCep(cep)) {
             setMensagem("CEP inválido")
             return
@@ -80,44 +81,56 @@ const Forms = (prop) => {
 
         if (!senhasIguais(senha, confirmarSenha)) {
             setMensagem("Senhas diferentes")
-            return false
+            return
         }
 
-        const usuario = {
-            name,
-            email,
-            telefone,
-            cep,
-            senha
-        }
+        const usuario = { name, email, telefone, cep, senha }
 
         try {
-
-            const res = await httpConfig("POST", "auth/register", usuario)
+            const res = await authService.register(httpConfig, usuario)
 
             if (res.status == 201) {
-                setName("");
-                setEmail("");
-                setSenha("");
-                setConfirmarSenha("");
-                setTelefone("");
-                setCep("");
+                setName("")
+                setEmail("")
+                setSenha("")
+                setConfirmarSenha("")
+                setTelefone("")
+                setCep("")
                 setMensagem("Cadastro realizado")
-
-
-                console.log("Cadastro realizado")
                 setTimeout(() => { navigate("/") }, 4000)
             }
-
         } catch (error) {
-            console.error("Erro ao enviar dados:", error);
+            console.error("Erro ao enviar dados:", error)
             setMensagem("Erro ao enviar os dados:", error)
         }
     }
 
-    function formLogin() {
-        return (
-            <form id="form_login" className="form" onSubmit={handleSubmitLogin}>
+    return {
+        email,
+        setEmail,
+        senha,
+        setSenha,
+        confirmarSenha,
+        setConfirmarSenha,
+        name,
+        setName,
+        telefone,
+        setTelefone,
+        cep,
+        setCep,
+        mensagem,
+        setMensagem,
+        loading,
+        handleSubmit,
+    }
+}
+
+function LoginForm() {
+    const { email, setEmail, senha, setSenha, mensagem, loading, handleSubmit } = useLoginForm()
+
+    return (
+        <div className="form_wrapper">
+            <form id="form_login" className="form" onSubmit={handleSubmit}>
                 <div id="div_dados">
                     <div className="div_label">
                         <label htmlFor="input_email">Email</label>
@@ -125,6 +138,7 @@ const Forms = (prop) => {
                             id="input_email"
                             type="text"
                             placeholder="  seu@email.com"
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
@@ -135,6 +149,7 @@ const Forms = (prop) => {
                             id="input_senha"
                             type="password"
                             placeholder="  ********"
+                            value={senha}
                             onChange={(e) => setSenha(e.target.value)}
                         />
                     </div>
@@ -152,12 +167,33 @@ const Forms = (prop) => {
 
                 </div>
             </form>
-        )
-    }
+            <br />
+        </div>
+    )
+}
 
-    function formCadastro() {
-        return (
-            <form id="form_cadastro" className="form" onSubmit={handleSubmitCadastro}>
+function CadastroForm() {
+    const {
+        email,
+        setEmail,
+        senha,
+        setSenha,
+        confirmarSenha,
+        setConfirmarSenha,
+        name,
+        setName,
+        telefone,
+        setTelefone,
+        cep,
+        setCep,
+        mensagem,
+        loading,
+        handleSubmit,
+    } = useCadastroForm()
+
+    return (
+        <div className="form_wrapper">
+            <form id="form_cadastro" className="form" onSubmit={handleSubmit}>
                 <div id="div_dados">
 
                     <div className="div_label">
@@ -166,6 +202,7 @@ const Forms = (prop) => {
                             id="input_email"
                             type="text"
                             placeholder="  seu@email.com"
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
@@ -176,6 +213,7 @@ const Forms = (prop) => {
                             id="input_nome"
                             type="text"
                             placeholder="  João Silva"
+                            value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
                     </div>
@@ -186,6 +224,7 @@ const Forms = (prop) => {
                             id="input_telefone"
                             type="text"
                             placeholder="  (xx) xxxxx-xxxx"
+                            value={telefone}
                             onChange={(e) => setTelefone(e.target.value)}
                         />
                     </div>
@@ -198,6 +237,7 @@ const Forms = (prop) => {
                             id="input_cep"
                             type="text"
                             placeholder="  00000-000"
+                            value={cep}
                             onChange={(e) => setCep(e.target.value)}
                         />
                     </div>
@@ -208,6 +248,7 @@ const Forms = (prop) => {
                             id="input_senha"
                             type="password"
                             placeholder="  ********"
+                            value={senha}
                             onChange={(e) => setSenha(e.target.value)}
                         />
                     </div>
@@ -218,6 +259,7 @@ const Forms = (prop) => {
                             id="input_confirmarSenha"
                             type="password"
                             placeholder="  ********"
+                            value={confirmarSenha}
                             onChange={(e) => setConfirmarSenha(e.target.value)}
                         />
                     </div>
@@ -234,15 +276,17 @@ const Forms = (prop) => {
 
                 </div>
             </form>
-        )
-    }
-
-    return (
-        <div className="form_wrapper" onLoad={() => setMensagem()}>
-            {prop.ambiente === "login" ? formLogin() : formCadastro()}
             <br />
         </div>
     )
+}
+
+const Forms = ({ ambiente = "login" }) => {
+    if (ambiente === "login") {
+        return <LoginForm />
+    }
+
+    return <CadastroForm />
 }
 
 export default Forms

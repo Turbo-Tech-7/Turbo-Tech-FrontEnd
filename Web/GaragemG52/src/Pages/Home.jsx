@@ -8,8 +8,13 @@ import CardRelatorios from '../Components/CardRelatorios'
 import CardBuscarOrcamentos from '../Components/CardBuscarOrcamentos'
 import CardBuscarClientes from '../Components/CardBuscarClientes'
 import CardVisaoGeral from '../Components/CardVisaoGeral'
+import { useEffect } from "react"
 
 function Home() {
+  useEffect(() => {
+    localStorage.removeItem('CacheCliente');
+    localStorage.removeItem('CacheOrcamento');
+  }, [])
   return (
     <>
       <div className='header'>

@@ -19,61 +19,35 @@ import { useFetch } from "../hooks/useFetch"
 import { descricaoValida, valorPositivo } from "../hooks/utils"
 import { useClienteContext } from "../hooks/useClienteContext"
 import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
+import {
+  buscarCarroNoRobo,
+  fecharRobo,
+  buscarPecasNoRobo,
+} from "../services/roboService"
 
-const CardCriarOrcamentoCliente = () => {
-  const navigate = useNavigate();
-
-  const {data, httpConfig, error, loading } = useFetch()
-  const [mensagem, setMensagem] = useState("")
-
-  const {Placa, Nome, Telefone, Email, Id, atualizarCliente, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
-
-  const {Orcamento, Descricao, MaoDeObra, Pecas, atualizarDescricao, atualizarMaoDeObra, atualizarIdOrcamento, adicionarPeca, removerPeca, totalPecas, total } = useOrcamentoContext()
-
-  const pecasLista = Array.isArray(Pecas) ? Pecas : []
-  const valorMaoDeObra = Number(MaoDeObra || 0)
-  const valorTotalPecas = Number(totalPecas || 0)
-  const valorTotal = Number(total || 0)
-
-  const [textoPecas, setTextoPecas] = useState("");
-  
-  // Estados para robô de busca de carro
+function useRoboBusca({ atualizarCliente, Cliente, adicionarPeca, setMensagem }) {
   const [showModalCarro, setShowModalCarro] = useState(false)
   const [dadosCarroBuscado, setDadosCarroBuscado] = useState(null)
   const [carroConfirmado, setCarroConfirmado] = useState(false)
   const [loadingCarro, setLoadingCarro] = useState(false)
-  
-  // Estados para robô de busca de peças
   const [pecasEncontradas, setPecasEncontradas] = useState([])
   const [loadingPecas, setLoadingPecas] = useState(false)
   const [buscandoPecas, setBuscandoPecas] = useState(false)
 
-  const pecaRef = useRef()
-  // ============================================================================
-  // 🤖 FUNÇÕES DO ROBÔ (API FLASK - localhost:5000)
-  // ============================================================================
-
-  // Buscar dados do carro via robô
-  async function buscarCarroComRobo(placa) {
+  const buscarCarroComRobo = async (placa) => {
     try {
       setLoadingCarro(true)
       const placaNormalized = placa.replace(/[^A-Za-z0-9]/g, "").toUpperCase()
-      
+
       if (placaNormalized.length !== 7) {
         setMensagem("Placa deve ter 7 caracteres")
         setLoadingCarro(false)
         return
       }
-      
-      // Chamar API Flask (robô)
-      const res = await fetch("http://localhost:5000/api/veiculo/buscar-robo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ placa: placaNormalized })
-      })
-      
+
+      const res = await buscarCarroNoRobo(placaNormalized)
       const data = await res.json()
-      
+
       if (res.ok && data.status === 200) {
         setDadosCarroBuscado(data)
         setShowModalCarro(true)
@@ -89,23 +63,7 @@ const CardCriarOrcamentoCliente = () => {
     }
   }
 
-// fechar navegador
-function fecharRobo() {
-    fetch("http://localhost:5000/api/robo/fechar", {
-        method: "POST"
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-    })
-    .catch(err => {
-        console.error(err);
-    });
-}
-
-
-  // Confirmar dados do carro do robô
-  function confirmarDadosCarro(dados) {
+  const confirmarDadosCarro = (dados) => {
     setCarroConfirmado(true)
     atualizarCliente({
       ...Cliente,
@@ -114,21 +72,14 @@ function fecharRobo() {
     setShowModalCarro(false)
   }
 
-  // Buscar peças via robô
-  async function buscarPecasComRobo(listaPecas) {
+  const buscarPecasComRobo = async (listaPecas) => {
     try {
       setBuscandoPecas(true)
       setLoadingPecas(true)
-      
-      // Chamar API Flask (robô)
-      const res = await fetch("http://localhost:5000/api/pecas/buscar-robo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pecas: listaPecas })
-      })
-      
+
+      const res = await buscarPecasNoRobo(listaPecas)
       const data = await res.json()
-      
+
       if (res.ok && data.status === 200) {
         setPecasEncontradas(data.pecas || [])
         setMensagem(`✅ ${data.total} peças encontradas!`)
@@ -146,14 +97,63 @@ function fecharRobo() {
     }
   }
 
-  // Adicionar peça encontrada pelo robô
   const adicionarPecaDoRobo = (peca) => {
-      adicionarPeca(peca)
-      setMensagem(`✅ ${peca.nomePeca} adicionado ao orçamento!`)
-    }
-  
+    adicionarPeca(peca)
+    setMensagem(`✅ ${peca.nomePeca} adicionado ao orçamento!`)
+  }
 
-  async function enviarOrçamento(e) {
+  return {
+    showModalCarro,
+    setShowModalCarro,
+    dadosCarroBuscado,
+    carroConfirmado,
+    loadingCarro,
+    pecasEncontradas,
+    loadingPecas,
+    buscandoPecas,
+    buscarCarroComRobo,
+    confirmarDadosCarro,
+    buscarPecasComRobo,
+    adicionarPecaDoRobo,
+  }
+}
+
+function useClienteLookup({ httpConfig, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, atualizarId, setMensagem }) {
+  const buscarCliente = async (params) => {
+    try {
+      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+
+      if (placaNormalized.length !== 7) return
+
+      const res = await httpConfig(
+        "GET",
+        "clientes-veiculos/buscar-placa",
+        null,
+        { placa: placaNormalized }
+      )
+
+      const dadosCliente = res?.data
+      if (Array.isArray(dadosCliente) && dadosCliente.length > 0) {
+        const cliente = dadosCliente[0]
+        atualizarPlaca(cliente.placaVeiculo)
+        atualizarNome(cliente.nomeCliente)
+        atualizarTelefone(cliente.telefoneCliente)
+        atualizarEmail(cliente.emailCliente)
+        atualizarId(cliente.id)
+      } else {
+        console.log("⚠️ Cliente não encontrado ou servidor não respondeu")
+      }
+    } catch (error) {
+      setMensagem("❌ Não foi possível buscar o cliente pelo veículo.")
+      console.log("❌ Erro ao buscar cliente:", error)
+    }
+  }
+
+  return { buscarCliente }
+}
+
+function useOrcamentoSubmit({ httpConfig, Descricao, MaoDeObra, Orcamento, atualizarIdOrcamento, navigate, setMensagem, error }) {
+  const enviarOrçamento = async (e) => {
     e.preventDefault()
 
     if (!descricaoValida(Descricao)) {
@@ -166,54 +166,72 @@ function fecharRobo() {
     }
 
     const res = await httpConfig("POST", "orcamentos", Orcamento)
+    const idCriado = res?.data?.id
 
-    atualizarIdOrcamento(data.id)
-    
-    if (res.status == 201) {
-      setMensagem("Orçamento cadastrado com sucesso!");
+    if (idCriado) {
+      atualizarIdOrcamento(idCriado)
+    }
 
+    if (res?.status === 201) {
+      setMensagem("Orçamento cadastrado com sucesso!")
       setTimeout(() => {
-        navigate("/visualizar-orcamento")}, 2500)
-
+        navigate("/visualizar-orcamento")
+      }, 2500)
     } else {
-      setMensagem("Erro ao cadastrar");
+      setMensagem("Erro ao cadastrar")
       console.log("Erro do cliente:", error)
     }
-
   }
 
-  async function buscarCliente(params) {
+  return { enviarOrçamento }
+}
 
-    try {
+const CardCriarOrcamentoCliente = () => {
+  const navigate = useNavigate();
 
-      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+  const { httpConfig, error, loading } = useFetch()
+  const [mensagem, setMensagem] = useState("")
 
-      if (placaNormalized.length !== 7) return
+  const { Placa, Nome, Telefone, Email, Id, atualizarCliente, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente } = useClienteContext()
 
-      const res = await httpConfig(
-        "GET",
-        "clientes-veiculos/buscar-placa",
-        null,
-        { placa: placaNormalized }
-      )
+  const { Orcamento, Descricao, MaoDeObra, Pecas, atualizarDescricao, atualizarMaoDeObra, atualizarIdOrcamento, adicionarPeca, removerPeca, totalPecas, total } = useOrcamentoContext()
 
-      // Verificar se a resposta e os dados existem
-      if (res && data && data.length > 0) {
-        
-        atualizarPlaca(data[0].placaVeiculo)
-        atualizarNome(data[0].nomeCliente)
-        atualizarTelefone(data[0].telefoneCliente)
-        atualizarEmail(data[0].emailCliente)
-        atualizarId(data[0].id)
-       
-      } else {
-        console.log("⚠️ Cliente não encontrado ou servidor não respondeu")
-      }
+  const pecasLista = Array.isArray(Pecas) ? Pecas : []
+  const valorMaoDeObra = Number(MaoDeObra || 0)
+  const valorTotalPecas = Number(totalPecas() || 0)
+  const valorTotal = Number(total() || 0)
 
-    } catch (error) {
-      console.log("❌ Erro ao buscar cliente:", error)
-    }
-  }
+  const [textoPecas, setTextoPecas] = useState("");
+
+  const { showModalCarro, setShowModalCarro, dadosCarroBuscado, carroConfirmado, loadingCarro, pecasEncontradas, loadingPecas, buscandoPecas, buscarCarroComRobo, confirmarDadosCarro, buscarPecasComRobo, adicionarPecaDoRobo } = useRoboBusca({
+    atualizarCliente,
+    Cliente,
+    adicionarPeca,
+    setMensagem,
+  })
+
+  const { buscarCliente } = useClienteLookup({
+    httpConfig,
+    atualizarPlaca,
+    atualizarNome,
+    atualizarTelefone,
+    atualizarEmail,
+    atualizarId,
+    setMensagem,
+  })
+
+  const { enviarOrçamento } = useOrcamentoSubmit({
+    httpConfig,
+    Descricao,
+    MaoDeObra,
+    Orcamento,
+    atualizarIdOrcamento,
+    navigate,
+    setMensagem,
+    error,
+  })
+
+  const pecaRef = useRef()
 
   return (
     <>

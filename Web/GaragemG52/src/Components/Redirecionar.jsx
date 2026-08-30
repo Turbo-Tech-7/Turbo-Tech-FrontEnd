@@ -5,13 +5,13 @@ import "../Components/css/Redirecionar.css";
 function Redirecionar(prop) {
   const navigate = useNavigate();
 
-  function redirecionar() {
-    navigate("/" + prop.link);
-  }
-
   useEffect(() => {
-    setTimeout(redirecionar, 50-0);
-  }, []);
+    const timeoutId = setTimeout(() => {
+      navigate("/" + prop.link);
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [navigate, prop.link]);
 
   return (
     <div className="redirect-container">

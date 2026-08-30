@@ -2,10 +2,10 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import BuscarClientesImg from "../assets/BuscarClientes.png"
 import { useFetch } from "../hooks/useFetch"
+import { getApiBaseUrl } from "../config/api"
 import "./css/BuscarClientesPage.css"
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080"
+const BASE_URL = getApiBaseUrl()
 
 const BuscarClientesPage = () => {
   const { httpConfig, loading } = useFetch(BASE_URL)
@@ -14,15 +14,6 @@ const BuscarClientesPage = () => {
 
   const [nome, setNome] = useState("")
   const [placa, setPlaca] = useState("")
-  const [mensagem, setMensagem] = useState("")
-
-  const exibirMensagem = (msg) => {
-    setMensagem(msg)
-
-    setTimeout(() => {
-      setMensagem("")
-    }, 4000)
-  }
 
   const buscar = async () => {
     let res = null
@@ -74,12 +65,6 @@ const BuscarClientesPage = () => {
 
   return (
     <div className="bcp_container">
-
-      {mensagem && (
-        <div className="bcp_mensagem">
-          {mensagem}
-        </div>
-      )}
 
       <div className="bcp_top_bar">
         <div className="bcp_top_left">

@@ -2,10 +2,10 @@ import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import BuscarClientesImg from "../assets/BuscarClientes.png"
 import { useFetch } from "../hooks/useFetch"
+import { getApiBaseUrl } from "../config/api"
 import "./css/BuscarClientesPage.css"
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080"
+const BASE_URL = getApiBaseUrl()
 
 function ListaClientesPage() {
   const location = useLocation()

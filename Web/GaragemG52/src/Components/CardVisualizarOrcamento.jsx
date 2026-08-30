@@ -2,7 +2,7 @@
 import { useState } from "react"
 
 //Router
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
 //Imagens
 import criardoc from "../assets/criardoc.png"
@@ -17,7 +17,12 @@ import { useClienteContext } from "../hooks/useClienteContext"
 
 const CardVisualizarOrcamento = () => {
 
+  const location = useLocation()
   const navigate = useNavigate()
+
+  const resultados = location.state?.Orcamento || []
+  const itens = Array.isArray(resultados.itens) ? resultados.itens : []
+  console.log(resultados)
   
   const { Descricao, MaoDeObra, Pecas, IdOrcamento , totalPecas, total } = useOrcamentoContext()
   const {Placa, Nome, Telefone, Email, Id, Cliente} = useClienteContext()
@@ -126,11 +131,11 @@ const CardVisualizarOrcamento = () => {
         <div className="cvo_header_card">
 
           <div className="cvo_header_text">
-            <h2>Orçamento</h2>
-            <span>Status: Aberto</span>
+            <h2>Orçamento #{String(resultados.id).slice(-4).padStart(4, "0")}</h2>
+            <span>Status {String(resultados.status)}</span>
           </div>
 
-          <button className="cvo_edit">
+          <button className="cvo_edit" onClick={() => navigate("/buscar-orcamentos")}>
             Voltar
           </button>
 
@@ -147,22 +152,22 @@ const CardVisualizarOrcamento = () => {
 
           <div className="cvo_row">
             <span>Nome do Cliente</span>
-            <span>{Nome || "-"}</span>
+            <span>{resultados.nomeCliente || Nome || "-"}</span>
           </div>
 
           <div className="cvo_row">
             <span>Telefone</span>
-            <span>{Telefone || "-"}</span>
+            <span>{resultados.telefoneCliente || Telefone || "-"}</span>
           </div>
 
           <div className="cvo_row">
             <span>Email</span>
-            <span>{Email || "-"}</span>
+            <span>{resultados.emailCliente || Email || "-"}</span>
           </div>
 
           <div className="cvo_row">
             <span>Modelo do Veículo</span>
-            <span>{"-"}</span>
+            <span>{resultados.veiculo.marca || "-"}</span>
           </div>
 
         </div>
@@ -184,22 +189,35 @@ const CardVisualizarOrcamento = () => {
                 </span>
               )) : "-"}
 
+              {Pecas?.[0]?.map(item => (
+                <span key={item.id}>
+                  {item.nome} (R$ {Number(item.valor).toFixed(2)}) - Fornecedor: <a href={item.fornecedor}>Link</a> - Quantidade: {item.quantidade}
+                </span>
+              )) || itens.map(item => (
+                <span key={item.id}>
+                  {item.nome} (R$ {Number(item.valor).toFixed(2)}) - Fornecedor: <a href={item.fornecedor}>Link</a> - Quantidade: {item.quantidade}
+                </span>
+              )) || "-"}
+
             </div>
           </div>
 
           <div className="cvo_row">
             <span>Valor da Peça(s)</span>
-            <span>R$ {totalPecas ? Number(totalPecas).toFixed(2) : 0}</span>
+            <span>R$ {(itens.length > 0
+              ? itens.reduce((acc, atual) => acc + (Number(atual.quantidade) || 0) * (Number(atual.valor) || 0), 0)
+              : Number(totalPecas) || 0
+            ).toFixed(2)}</span>
           </div>
 
           <div className="cvo_row">
             <span>Valor da Mão de obra</span>
-            <span>R$ {MaoDeObra ? Number(MaoDeObra).toFixed(2) : 0}</span>
+            <span>R$ {resultados.valorMaoDeObra || Number(MaoDeObra).toFixed(2) || 0}</span>
           </div>
 
           <div className="cvo_row total">
             <span>Total:</span>
-            <span>R$ {total ? Number(total).toFixed(2) : 0}</span>
+            <span>R$ {resultados.valorTotal || Number(total).toFixed(2) || 0}</span>
           </div>
 
         </div>

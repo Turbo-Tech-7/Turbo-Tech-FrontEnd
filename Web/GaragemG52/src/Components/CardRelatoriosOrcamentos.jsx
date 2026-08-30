@@ -11,8 +11,9 @@ import {
 } from "recharts"
 
 import "./css/CardRelatoriosOrcamentos.css"
+import { getApiBaseUrl } from "../config/api"
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080"
+const BASE_URL = getApiBaseUrl()
 
 const COLORS_STATUS       = ["#4361EE", "#22C55E", "#FF4D4D"]
 const COLORS_CANCELAMENTO = ["#F59E0B", "#EF4444", "#8B5CF6", "#6B7280"]
@@ -75,7 +76,10 @@ const CardRelatoriosOrcamentos = () => {
   }
 
   useEffect(() => {
+    // O efeito dispara a busca inicial e a atualização do filtro.
     carregarDados(filtro)
+    // A função de busca usa o cliente HTTP do hook e não deve recriar este efeito.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro])
 
   const handleFiltroChange = (e) => {

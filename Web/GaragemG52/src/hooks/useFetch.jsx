@@ -1,11 +1,29 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { getApiBaseUrl } from "../config/api";
+import { getAuthToken } from "../services/authStorage";
 
-export const useFetch = (baseUrl = import.meta.env.VITE_BACK_URL) => {
+const responseStrategies = [
+  { matches: (contentType) => contentType?.includes("application/json"), parse: (response) => response.json() },
+  { matches: (contentType) => contentType?.includes("application/pdf"), parse: (response) => response.blob() },
+  { matches: (contentType) => contentType?.includes("application/octet-stream"), parse: (response) => response.blob() },
+  { matches: () => true, parse: (response) => response.text() },
+]
+
+async function parseResponse(response) {
+  if (response.status === 204) return null
+
+  const contentType = response.headers.get("content-type")
+  const strategy = responseStrategies.find(({ matches }) => matches(contentType))
+
+  return strategy.parse(response)
+}
+
+export const useFetch = (baseUrl = getApiBaseUrl()) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const httpConfig = async (
+  const httpConfig = useCallback(async (
     method,
     route,
     bodyData = null,
@@ -23,7 +41,7 @@ export const useFetch = (baseUrl = import.meta.env.VITE_BACK_URL) => {
       url += `?${searchParams.toString()}`;
     }
 
-    const token = sessionStorage.getItem("token");
+    const token = getAuthToken();
 
     const headers = {};
 
@@ -53,24 +71,7 @@ export const useFetch = (baseUrl = import.meta.env.VITE_BACK_URL) => {
       const res = await fetch(url, options);
       const status = res.status;
 
-      let responseData = null;
-
-      if (status !== 204) {
-        const contentType = res.headers.get("content-type");
-
-        if (contentType?.includes("application/json")) {
-          responseData = await res.json();
-        } 
-        else if (contentType?.includes("application/pdf")) {
-          responseData = await res.blob();
-        } 
-        else if (contentType?.includes("application/octet-stream")) {
-          responseData = await res.blob();
-        } 
-        else {
-          responseData = await res.text();
-        }
-      }
+      const responseData = await parseResponse(res);
 
       if (!res.ok) {
         setError(responseData);
@@ -108,7 +109,7 @@ export const useFetch = (baseUrl = import.meta.env.VITE_BACK_URL) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [baseUrl]);
 
   return { data, httpConfig, error, loading };
 };

@@ -4,9 +4,6 @@ import BuscarOrcamentosImg from "../assets/BuscarOrcamentos.png"
 import { useFetch } from "../hooks/useFetch"
 import "./css/BuscarOrcamentosPage.css"
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080"
-
 const STATUS_OPCOES = [
   { value: "", label: "Todos os status" },
   { value: "ABERTO", label: "Aberto" },
@@ -15,7 +12,7 @@ const STATUS_OPCOES = [
 ]
 
 const BuscarOrcamentosPage = () => {
-  const { httpConfig, loading } = useFetch(BASE_URL)
+  const { httpConfig, loading } = useFetch()
 
   const navigate = useNavigate()
 

@@ -5,7 +5,7 @@ import { useFetch } from "../hooks/useFetch"
 //CSS
 
 
-const quadroMensagem = () => {
+const QuadroMensagem = () => {
 
     //Dado da respota
 
@@ -75,4 +75,4 @@ const quadroMensagem = () => {
   )
 }
 
-export default quadroMensagem
+export default QuadroMensagem

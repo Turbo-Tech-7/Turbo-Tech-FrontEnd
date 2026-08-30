@@ -1,24 +1,17 @@
 import Login from "./Pages/Login"
 import Cadastro from "./Pages/Cadastro"
-import CriarOrcamento from "./pages/CriarOrcamento"
-import CadastrarCliente from "./pages/CadastrarCliente"
-import CriarOrcamentoCliente from "./pages/CriarOrcamentoCliente"
-import VisualizarOrcamento from "./pages/VisualizarOrcamento"
-import CancelarOrcamento from "./pages/CancelarOrcamento"
-import RelatorioOrcamentos from "./pages/RelatorioOrcamentos"
-import RelatorioFinanceiro from "./pages/RelatorioFinanceiro"
-//Component
-import Forms from './Components/forms'
-import QuadroMensagem from './Components/quadroMensagem'
+import CriarOrcamento from "./Pages/CriarOrcamento"
+import CadastrarCliente from "./Pages/CadastrarCliente"
+import CriarOrcamentoCliente from "./Pages/CriarOrcamentoCliente"
+import VisualizarOrcamento from "./Pages/VisualizarOrcamento"
+import CancelarOrcamento from "./Pages/CancelarOrcamento"
+import RelatorioOrcamentos from "./Pages/RelatorioOrcamentos"
+import RelatorioFinanceiro from "./Pages/RelatorioFinanceiro"
 import PrivateRoute from "./Components/Routes/PrivateRoute.jsx"
 
-//Style
-
-//Hook
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import Redirecionar from "./Components/Redirecionar.jsx"
-import { Component } from 'react'
 import './App.css'
 import Home from "./Pages/Home.jsx"
 import RecuperarSenha from "./Pages/RecuperarSenha.jsx"

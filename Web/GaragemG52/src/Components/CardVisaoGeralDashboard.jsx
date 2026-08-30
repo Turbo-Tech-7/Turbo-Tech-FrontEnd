@@ -147,7 +147,9 @@ function Legend({ data, colors }) {
   )
 }
 
-const BASE_URL = "http://localhost:8080"
+import { getApiBaseUrl } from "../config/api"
+
+const BASE_URL = getApiBaseUrl()
 const STATUS_COLORS = ["#4361EE", "green", "red", "#FFD6A5", "#FFAFCC"]
 const CANCEL_COLORS = ["#FF6B6B", "#FFB347", "#FFD93D", "#6BCB77", "#4D96FF"]
 
@@ -183,7 +185,7 @@ function CardVisaoGeralDashboard() {
       }
     }
     fetchDados()
-  }, [filtro])
+  }, [filtro, httpConfig])
 
   const fmt = (val) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val ?? 0)
