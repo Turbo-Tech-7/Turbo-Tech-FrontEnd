@@ -1,0 +1,168 @@
+.sop_page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #DFE8FF;
+    font-family: "Poppins", sans-serif;
+}
+
+.sop_top-bar {
+    width: min(80%, 900px);
+    margin-top: 30px;
+    box-sizing: border-box;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sop_top-bar__title { display: flex; align-items: center; gap: 10px; }
+.sop_top-bar__icon { width: 28px; height: 28px; display: grid; place-items: center; }
+.sop_top-bar__icon img { width: 100%; height: 100%; object-fit: contain; }
+.sop_top-bar h1, .sop_top-bar p, .sop_card h2, .sop_card p { margin: 0; }
+.sop_top-bar h1 { font-size: 22px; line-height: 1.1; }
+.sop_top-bar p, .sop_card__header p { color: #666666; font-size: 13px; }
+
+.sop_back { color: #4361EE; font-size: 15px; font-weight: 500; text-decoration: none; }
+
+.sop_card {
+    width: min(420px, calc(100% - 32px));
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 60px;
+    padding: 35px 20px 21px;
+    background: #ffffff;
+    border-radius: 18px;
+}
+
+.sop_card__icon {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    transform: translateX(-50%);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #4361EE;
+}
+
+.sop_card__icon img { width: 38px; filter: brightness(0) invert(1); }
+.sop_card__header { margin-bottom: 17px; text-align: center; }
+.sop_card__header h2 { margin-bottom: 3px; font-size: 20px; }
+
+.sop_form { display: flex; flex-direction: column; gap: 4px; }
+.sop_form label { margin-top: 3px; color: #333333; font-size: 13px; font-weight: 500; }
+
+.sop_form input {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #B3B3B3;
+    border-radius: 8px;
+    color: #333333;
+    font: inherit;
+    font-size: 14px;
+}
+
+.sop_form input:focus { outline: none; border-color: #4361EE; }
+.sop_form input::placeholder { color: #AAAAAA; }
+.sop_form button {
+    width: 100%;
+    height: 42px;
+    margin-top: 13px;
+    border: 0;
+    border-radius: 7px;
+    background: #4361EE;
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sop_form button:hover { background: #3550D6; }
+
+.sop_results {
+    width: min(674px, calc(100% - 32px));
+    min-height: 280px;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 60px;
+    padding: 27px;
+    background: #ffffff;
+    border-radius: 18px;
+}
+
+.sop_results__icon {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    transform: translateX(-50%);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #4361EE;
+}
+
+.sop_results__icon img { width: 38px; filter: brightness(0) invert(1); }
+.sop_results h2 { margin: 0 0 14px; font-size: 20px; text-align: center; }
+
+.sop_budget {
+    width: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #B3B3B3;
+    border-radius: 6px;
+    background: #FAFAFA;
+}
+
+.sop_budget__info { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+.sop_budget__info strong { font-size: 13px; }
+.sop_budget__info span { font-size: 11px; }
+
+.sop_view {
+    padding: 5px 11px;
+    border-radius: 5px;
+    background: #4361EE;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.sop_status-select {
+    height: 25px;
+    padding: 0 4px;
+    border: 1px solid #777777;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #333333;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.sop_status-dot { width: 11px; height: 11px; flex: 0 0 11px; border-radius: 50%; }
+.sop_status-dot--aberto { background: #F2D800; }
+.sop_status-dot--fechado { background: #28A745; }
+.sop_status-dot--cancelado { background: #E04444; }
+
+@media (max-width: 560px) {
+    .sop_top-bar { width: calc(100% - 32px); }
+    .sop_top-bar h1 { font-size: 18px; }
+    .sop_results { padding: 27px 16px; }
+    .sop_budget { gap: 5px; padding: 0 7px; }
+    .sop_budget__info strong { font-size: 12px; }
+}
