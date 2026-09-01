@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
 import { codigoValido } from "../hooks/utils"
 
-const RecuperarSenhaCodigo = () => {
+function useRecuperarSenhaCodigo() {
   const [codigo, setCodigo] = useState(["", "", "", "", "", ""])
+  const [mensagem, setMensagem] = useState("")
+  const navigate = useNavigate()
 
-  // Digitação normal
   const handleChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return
 
@@ -16,16 +17,15 @@ const RecuperarSenhaCodigo = () => {
     setCodigo(novoCodigo)
 
     if (value && index < 5) {
-      document.getElementById(`input-${index + 1}`).focus()
+      document.getElementById(`input-${index + 1}`)?.focus()
     }
   }
 
-  // Backspace inteligente
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       if (codigo[index] === "") {
         if (index > 0) {
-          document.getElementById(`input-${index - 1}`).focus()
+          document.getElementById(`input-${index - 1}`)?.focus()
         }
       } else {
         const novoCodigo = [...codigo]
@@ -35,7 +35,6 @@ const RecuperarSenhaCodigo = () => {
     }
   }
 
-  // Colar código
   const handlePaste = (e) => {
     const paste = e.clipboardData.getData("text").replace(/\D/g, "")
 
@@ -51,11 +50,10 @@ const RecuperarSenhaCodigo = () => {
 
     const lastIndex = novoCodigo.findLastIndex((n) => n !== "")
     if (lastIndex >= 0) {
-      document.getElementById(`input-${lastIndex}`).focus()
+      document.getElementById(`input-${lastIndex}`)?.focus()
     }
   }
 
-  // Submit
   const handleSubmit = (e) => {
     e.preventDefault()
     const codigoFinal = codigo.join("")
@@ -64,9 +62,30 @@ const RecuperarSenhaCodigo = () => {
       setMensagem("Preencha todos os 6 dígitos")
       return
     }
-    
-    console.log("Código:", codigoFinal)
+
+    setMensagem("Código validado")
+    setTimeout(() => navigate("/recuperar-senha/nova", { state: { codigo: codigoFinal } }), 800)
   }
+
+  return {
+    codigo,
+    mensagem,
+    handleChange,
+    handleKeyDown,
+    handlePaste,
+    handleSubmit,
+  }
+}
+
+const RecuperarSenhaCodigo = () => {
+  const {
+    codigo,
+    mensagem,
+    handleChange,
+    handleKeyDown,
+    handlePaste,
+    handleSubmit,
+  } = useRecuperarSenhaCodigo()
 
   return (
     <div className="login_container">
@@ -121,7 +140,8 @@ const RecuperarSenhaCodigo = () => {
           </div>
 
           <div id="div_button">
-            <button id="button_submit">
+            {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
+            <button id="button_submit" type="submit">
               Validar
             </button>
           </div>

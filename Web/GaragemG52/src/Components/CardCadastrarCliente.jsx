@@ -1,5 +1,5 @@
 // Hooks
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 //Router
 import { Link, useNavigate } from "react-router-dom"
@@ -16,76 +16,102 @@ import { verificarPlacaFormatada, nomeValido, verificarTelefone, verificarEmail 
 import { useClienteContext } from "../hooks/useClienteContext"
 import { useFetch } from "../hooks/useFetch"
 
-
-const CardCadastrarCliente = () => {
-  const url = "http://localhost:8080"
-
-  const {Placa, Nome, Telefone, Email, Id, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente} = useClienteContext()
-
-  const {httpConfig, error, loading } = useFetch(url)
-
-  const navigate = useNavigate();
-
+function useCadastroCliente() {
+  const { Placa, Nome, Telefone, Email, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente } = useClienteContext()
+  const { httpConfig, error, loading } = useFetch()
+  const navigate = useNavigate()
   const [mensagem, setMensagem] = useState("")
 
-  async function handleSubmit(){ 
-
-    setMensagem("")
-    //Java utils
+  async function validarCliente() {
     if (!verificarPlacaFormatada(Placa)) {
       setMensagem("Placa inválida")
-      return
+      return false
     }
     if (!nomeValido(Nome)) {
       setMensagem("Nome inválido")
-      return
+      return false
     }
     if (!verificarTelefone(Telefone)) {
       setMensagem("Telefone inválido")
-      return
+      return false
     }
     if (!verificarEmail(Email)) {
       setMensagem("Email inválido")
-      return
+      return false
     }
 
-    try {
-
-        let resClienteVeiculo = await httpConfig("POST", `clientes-veiculos`, Cliente)
-        let dataReq = resClienteVeiculo.data
-
-        atualizarId(dataReq.id)
-
-        if (resClienteVeiculo.status == 201) {
-            setMensagem("Cadastro realizado com sucesso!");
-            setTimeout(() => { navigate("/criar-orcamento-cliente")}, 2000)
-        } else {
-            setMensagem("Erro ao cadastrar Cliente");
-            console.log("Erro do cliente:", error)
-        }
-    } catch (error) {
-      console.log(error)
-    }
-
+    return true
   }
-  async function procurarCliente(params){
+
+  async function handleSubmit() {
+    setMensagem("")
+
+    const ok = await validarCliente()
+    if (!ok) return
+
     try {
-      if(!params) return
-      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
-      if(placaNormalized.length === 7){
-          const res = await httpConfig("GET", "clientes-veiculos/buscar-placa", null, {placa: placaNormalized})
-          console.log(res.data)
+      const resClienteVeiculo = await httpConfig("POST", "clientes-veiculos", Cliente)
+      const dataReq = resClienteVeiculo.data
+
+      atualizarId(dataReq.id)
+
+      if (resClienteVeiculo.status == 201) {
+        setMensagem("Cadastro realizado com sucesso!")
+        setTimeout(() => { navigate("/criar-orcamento-cliente") }, 2000)
+      } else {
+        setMensagem("Erro ao cadastrar Cliente")
+        console.log("Erro do cliente:", error)
       }
     } catch (error) {
       console.log(error)
     }
   }
 
+  const procurarCliente = useCallback(async (params) => {
+    try {
+      if (!params) return
+      const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
+      if (placaNormalized.length === 7) {
+        await httpConfig("GET", "clientes-veiculos/buscar-placa", null, { placa: placaNormalized })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [httpConfig])
+
   useEffect(() => {
-
     procurarCliente(Placa)
+  }, [Placa, procurarCliente])
 
-  }, [Placa])
+  return {
+    Placa,
+    Nome,
+    Telefone,
+    Email,
+    atualizarPlaca,
+    atualizarNome,
+    atualizarTelefone,
+    atualizarEmail,
+    mensagem,
+    loading,
+    handleSubmit,
+  }
+}
+
+const CardCadastrarCliente = () => {
+  const {
+    Placa,
+    Nome,
+    Telefone,
+    Email,
+    atualizarPlaca,
+    atualizarNome,
+    atualizarTelefone,
+    atualizarEmail,
+    mensagem,
+    loading,
+    handleSubmit,
+  } = useCadastroCliente()
 
   return (
     <div className="ccc_container">
@@ -119,25 +145,25 @@ const CardCadastrarCliente = () => {
               <label>Placa do Veículo</label>
               <input onChange={(e) => {
                 atualizarPlaca(e.target.value)
-              }} 
-              placeholder="Ex: ABC-1234" 
-              value={Placa || ""}
+              }}
+                placeholder="Ex: ABC-1234"
+                value={Placa || ""}
               />
             </div>
 
             <div className="ccc_input_group">
               <label>Nome do Cliente</label>
-              <input value={Nome || ""} onChange={(e) => {atualizarNome(e.target.value)}} placeholder="Ex: João Silva" />
+              <input value={Nome || ""} onChange={(e) => { atualizarNome(e.target.value) }} placeholder="Ex: João Silva" />
             </div>
 
             <div className="ccc_input_group">
               <label>Telefone</label>
-              <input value={Telefone || ""} onChange={(e) => {atualizarTelefone(e.target.value)}} placeholder="Ex: (11)98765-4321" />
+              <input value={Telefone || ""} onChange={(e) => { atualizarTelefone(e.target.value) }} placeholder="Ex: (11)98765-4321" />
             </div>
 
             <div className="ccc_input_group">
-            <label>Email</label>
-            <input value={Email || ""} onChange={(e) => {atualizarEmail(e.target.value)}} placeholder="Ex: joao@gmail.com" />
+              <label>Email</label>
+              <input value={Email || ""} onChange={(e) => { atualizarEmail(e.target.value) }} placeholder="Ex: joao@gmail.com" />
             </div>
           </div>
 

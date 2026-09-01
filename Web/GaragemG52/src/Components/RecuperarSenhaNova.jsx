@@ -4,27 +4,23 @@ import "./css/RecuperarSenhaEmail.css"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { senhaValida, senhasIguais, codigoValido } from "../hooks/utils"
+import { authService } from "../services/authService"
 
-const RecuperarSenhaNova = () => {
-
-  const url = "http://localhost:8080"
-  const { data, httpConfig, error, loading } = useFetch(url)
-
+function useRecuperarSenhaNova() {
+  const { httpConfig, loading } = useFetch()
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email
 
   const [senha, setSenha] = useState("")
   const [codigo, setCodigo] = useState("")
   const [confirmarSenha, setConfirmarSenha] = useState("")
-
-  const location = useLocation();
-  const email = location.state?.email
-
   const [mensagem, setMensagem] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-   if (!codigoValido(codigo)) {
+    if (!codigoValido(codigo)) {
       setMensagem("Código inválido")
       return
     }
@@ -38,20 +34,48 @@ const RecuperarSenhaNova = () => {
     }
 
     try {
+      const res = await authService.resetPassword(httpConfig, {
+        codigo,
+        novaSenha: senha,
+      })
 
-            const res = await httpConfig("POST", "auth/reset-password",null, `token=${codigo}&novaSenha=${senha}`)
-
-            if (res.status == 200) {
-                setMensagem("Senha atualizada")
-                setTimeout(() => { navigate("/") }, 2000)
-            }
-
-        } catch (error) {
-            console.error("Erro ao enviar dados:", error);
-            setMensagem("Erro ao enviar os dados:", error)
-        }
-
+      if (res.status == 200) {
+        setMensagem("Senha atualizada")
+        setTimeout(() => { navigate("/") }, 2000)
+      }
+    } catch (error) {
+      console.error("Erro ao enviar dados:", error)
+      setMensagem("Erro ao enviar os dados:")
+    }
   }
+
+  return {
+    email,
+    senha,
+    setSenha,
+    codigo,
+    setCodigo,
+    confirmarSenha,
+    setConfirmarSenha,
+    mensagem,
+    loading,
+    handleSubmit,
+  }
+}
+
+const RecuperarSenhaNova = () => {
+  const {
+    email,
+    senha,
+    setSenha,
+    codigo,
+    setCodigo,
+    confirmarSenha,
+    setConfirmarSenha,
+    mensagem,
+    loading,
+    handleSubmit,
+  } = useRecuperarSenhaNova()
 
   return (
     <div className="login_container">
@@ -104,7 +128,7 @@ const RecuperarSenhaNova = () => {
           <div id="div_button">
             {loading ? <p id="carregando">Carregando...</p> : ""}
             {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
-            <button id="button_submit">
+            <button id="button_submit" type="submit">
               Validar
             </button>
           </div>

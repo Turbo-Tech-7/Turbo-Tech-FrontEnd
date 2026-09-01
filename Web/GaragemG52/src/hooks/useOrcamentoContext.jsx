@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { OrcamentoContext } from "../context/OrcamentoContext";
+import { OrcamentoContext } from "../context/orcamentoContextDefinition";
 
 export const useOrcamentoContext = () => {
     const context = useContext(OrcamentoContext)
 
     if(!context){
-        console.log("Contexto não encontrado")
+        throw new Error("useOrcamentoContext deve ser usado dentro de OrcamentoContextProvider")
     }
 
     return context;

@@ -1,23 +1,18 @@
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
-//Hooks
 import { useFetch } from "../hooks/useFetch"
-import { useNavigate } from "react-router-dom"
 import { codigoValido } from "../hooks/utils"
+import { setAuthToken } from "../services/authStorage"
+import { authService } from "../services/authService"
 
-const CardVerificarConta = () => {
+function useVerificarConta() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const email = location.state?.email
-  //Processos em segundo plano
   const [mensagem, setMensagem] = useState("")
-
-  const url = "http://localhost:8080"
-  const { data, httpConfig, error, loading } = useFetch(url)
-
+  const { httpConfig, loading } = useFetch()
   const [codigo, setCodigo] = useState(["", "", "", "", "", ""])
 
   const handleChange = (value, index) => {
@@ -28,7 +23,7 @@ const CardVerificarConta = () => {
     setCodigo(novoCodigo)
 
     if (value && index < 5) {
-      document.getElementById(`input-${index + 1}`).focus()
+      document.getElementById(`input-${index + 1}`)?.focus()
     }
   }
 
@@ -36,7 +31,7 @@ const CardVerificarConta = () => {
     if (e.key === "Backspace") {
       if (codigo[index] === "") {
         if (index > 0) {
-          document.getElementById(`input-${index - 1}`).focus()
+          document.getElementById(`input-${index - 1}`)?.focus()
         }
       } else {
         const novoCodigo = [...codigo]
@@ -61,7 +56,7 @@ const CardVerificarConta = () => {
 
     const lastIndex = novoCodigo.findLastIndex((n) => n !== "")
     if (lastIndex >= 0) {
-      document.getElementById(`input-${lastIndex}`).focus()
+      document.getElementById(`input-${lastIndex}`)?.focus()
     }
   }
 
@@ -69,35 +64,52 @@ const CardVerificarConta = () => {
     setMensagem("")
     e.preventDefault()
 
-    let codigoString = codigo.join("");
+    const codigoString = codigo.join("")
 
     if (!codigoValido(codigoString)) {
       setMensagem("Preencha todos os 6 dígitos")
       return
     }
-    
-    let verificar = {
-      codigo: codigoString
-    }
 
-    const resposta = await httpConfig("POST", "auth/login/verify", verificar)
-
+    const resposta = await authService.verifyLoginCode(httpConfig, codigoString)
     const data = resposta.data
     const status = resposta.status
 
     if (status == 200) {
       setMensagem("Validação confirmada")
-
-      sessionStorage.setItem("token", data.token);
-
+      setAuthToken(data.token)
       setTimeout(() => { navigate("/home") }, 2500)
+      return
     }
 
     if (status == 500) {
       setMensagem("Codigo incorreto")
     }
-
   }
+
+  return {
+    email,
+    codigo,
+    mensagem,
+    loading,
+    handleChange,
+    handleKeyDown,
+    handlePaste,
+    handleSubmit,
+  }
+}
+
+const CardVerificarConta = () => {
+  const {
+    email,
+    codigo,
+    mensagem,
+    loading,
+    handleChange,
+    handleKeyDown,
+    handlePaste,
+    handleSubmit,
+  } = useVerificarConta()
 
   return (
     <div className="login_container">
@@ -154,7 +166,7 @@ const CardVerificarConta = () => {
           <div id="div_button">
             {loading ? <p id="carregando">Carregando...</p> : ""}
             {mensagem ? <p id="mensagem">{mensagem}</p> : ""}
-            <button id="button_submit">
+            <button id="button_submit" type="submit">
               Validar
             </button>
           </div>

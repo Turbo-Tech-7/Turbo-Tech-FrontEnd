@@ -5,7 +5,7 @@ import { useFetch } from "../hooks/useFetch"
 //CSS
 
 
-const quadroMensagem = () => {
+const QuadroMensagem = () => {
 
     //Dado da respota
 
@@ -22,7 +22,6 @@ const quadroMensagem = () => {
         const resVeiculo = await httpConfig("", "GET", "veiculo");
         const resServico = await httpConfig("", "GET", "servico");
 
-        console.log(resUsuario,resVeiculo,resServico)
         setDados({
             usuario: resUsuario,
             veiculo: resVeiculo,
@@ -76,4 +75,4 @@ const quadroMensagem = () => {
   )
 }
 
-export default quadroMensagem
+export default QuadroMensagem

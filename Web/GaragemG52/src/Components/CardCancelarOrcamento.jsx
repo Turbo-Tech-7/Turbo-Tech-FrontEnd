@@ -3,26 +3,21 @@ import cancel from "../assets/DeleteFile.png"
 import cancelB from "../assets/Delete_File_Branco.png"
 import "./css/CardCancelarOrcamento.css"
 import { useFetch } from "../hooks/useFetch"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 
 const CardCancelarOrcamento = () => {
   
   const [mensagem, setMensagem] = useState()
-  const url = "http://localhost:8080"
 
   const motivoRef = useRef();
 
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { data, httpConfig, error, loading } = useFetch(url)
+  const { httpConfig, loading } = useFetch()
 
   let dadosOrcamentos = location.state
-  const [Orcamento, setOrcamento] = useState(
-    dadosOrcamentos
-  )
-
-  useEffect(() => {console.log(motivoRef)},[motivoRef])
+  const [Orcamento] = useState(dadosOrcamentos)
 
   async function cancelarOrçamento(){
     try {
@@ -36,9 +31,7 @@ const CardCancelarOrcamento = () => {
 
       const Motivo = {motivo:motivo}
       
-      const res = await httpConfig("PATCH", `orcamentos/${Orcamento.idOrcamento}/cancelar`, Motivo)
-
-      console.log(res.data)
+      await httpConfig("PATCH", `orcamentos/${Orcamento.idOrcamento}/cancelar`, Motivo)
 
       setMensagem("Orçamento cancelado")
 

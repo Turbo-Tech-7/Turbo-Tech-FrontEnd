@@ -29,6 +29,8 @@ function ListaOrcamentosPage() {
     })
   }
 
+  console.log(resultados)
+
   return (
     <div className="bop_container">
       <div className="bop_top_bar">

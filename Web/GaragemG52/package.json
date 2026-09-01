@@ -1,11 +1,10 @@
 {
   "name": "garagemg52",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "npx json-server --watch data/db.json",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

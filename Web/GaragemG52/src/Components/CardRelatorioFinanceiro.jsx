@@ -13,11 +13,12 @@ Legend,
 } from "recharts"
 import { Link } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
-import criardoc from "../assets/criardoc.png"
 import relatorios from "../assets/relatorios.png"
 import "./css/CardRelatorioFinanceiro.css"
 
-const BASE_URL = "http://localhost:8080"
+import { getApiBaseUrl } from "../config/api"
+
+const BASE_URL = getApiBaseUrl()
 
 const FILTRO_OPTIONS = [
 { label: "Hoje", value: "DIA" },
@@ -47,7 +48,10 @@ if (data) setRelatorio(data)
 }
 
 useEffect(() => {
+// O efeito dispara a busca inicial e a atualização do filtro.
 fetchRelatorio(filtro)
+// A função de busca usa o cliente HTTP do hook e não deve recriar este efeito.
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [filtro])
 
 const faturamentoVsCancelamentoData = (relatorio?.faturamentoVsCancelamento ?? []).map((item) => ({

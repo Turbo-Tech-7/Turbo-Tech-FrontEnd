@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { ClienteContext } from "../context/ClienteContext";
+import { ClienteContext } from "../context/clienteContextDefinition";
 
 export function useClienteContext () {
     const context = useContext(ClienteContext)
 
     if(!context){
-        console.log("Contexto não encontrado")
+        throw new Error("useClienteContext deve ser usado dentro de ClienteContextProvider")
     }
 
     return context

@@ -62,8 +62,16 @@ function App() {
           <Route element={<PrivateRoute />}>
 
             <Route path="/home" element={<Home />} />
-            <Route path="/criar-orcamento" element={<CriarOrcamento />} />
-            <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
+
+            <Route
+              path="/criar-orcamento"
+              element={<CriarOrcamento />}
+            />
+
+            <Route
+              path="/cadastrar-cliente"
+              element={<CadastrarCliente />}
+            />
 
             <Route
               path="/criar-orcamento-cliente"
@@ -80,7 +88,10 @@ function App() {
               element={<CancelarOrcamento />}
             />
 
-            <Route path="/visao-geral" element={<VisaoGeral />} />
+            <Route
+              path="/visao-geral"
+              element={<VisaoGeral />}
+            />
 
             <Route
               path="/lista-orcamentos"

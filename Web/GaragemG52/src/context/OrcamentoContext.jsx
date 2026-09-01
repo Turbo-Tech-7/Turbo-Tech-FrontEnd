@@ -1,17 +1,18 @@
-import { createContext,useEffect,useState } from "react";
-import { useClienteContext } from "../hooks/useClienteContext";
+import { useContext, useEffect, useState } from "react";
+import { ClienteContext } from "./clienteContextDefinition";
+import { readCache, writeCache } from "../services/cacheStorage";
+import { calcularTotal, calcularTotalPecas } from "../domain/orcamentoTotais";
+import { OrcamentoContext } from "./orcamentoContextDefinition";
 
-export const OrcamentoContext = createContext()
-
-export function OrcamentoProveider ({children}){
+export function OrcamentoContextProvider ({children}){
     
-    const {Cliente} = useClienteContext()
+    const { Id } = useContext(ClienteContext)
 
     const [Orcamento, setOrcamento] = useState(
         () => {
-        const CacheOrcamento = localStorage.getItem("CacheOrcamento")
+        const CacheOrcamento = readCache("CacheOrcamento")
 
-        return CacheOrcamento ? JSON.parse(CacheOrcamento) : {
+        return CacheOrcamento ? CacheOrcamento : {
             idOrcamento:null,
             clienteVeiculoId: null,
             descricaoServico: null,
@@ -21,21 +22,20 @@ export function OrcamentoProveider ({children}){
         }
     )
 
-    const [IdCliente, setIdCliente] = useState(Cliente.idClienteVeiculo || "")
     const [IdOrcamento, setIdOrcamento] = useState(Orcamento.idOrcamento || "")
     const [Descricao, setDescricao] = useState(Orcamento.descricaoServico || "")
     const [MaoDeObra, setMaoDeObra] = useState(Orcamento.valorMaoDeObra || 0)
-    const [Pecas, setPecas] = useState(Orcamento.pecas || [])
+    const [Pecas, setPecas] = useState(Orcamento.pecas || Orcamento.itens || [])
 
     function adicionarPeca(peca){
     const index = Pecas.findIndex(item => item.id === peca.idPeca)
+        let novasPecas
 
     if (index !== -1) {
-      const novasPecas = [...Pecas]
+            novasPecas = [...Pecas]
       novasPecas[index].quantidade += 1
-      setPecas(novasPecas)
     } else {
-      setPecas([
+            novasPecas = [
         ...Pecas,
         {
           id: peca.idPeca,
@@ -45,8 +45,10 @@ export function OrcamentoProveider ({children}){
           quantidade: 1,
           fornecedor: peca.fornecedor,
         }
-      ])
+            ]
     }
+        setPecas(novasPecas)
+        setOrcamento((orcamentoAtual) => ({ ...orcamentoAtual, pecas: novasPecas }))
         return (`✅ ${peca.nomePeca} adicionado ao orçamento!`)
     }
 
@@ -62,41 +64,42 @@ export function OrcamentoProveider ({children}){
     }).filter((peca) => peca.quantidade > 0)
 
     setPecas(novasPecas)
+    setOrcamento((orcamentoAtual) => ({ ...orcamentoAtual, pecas: novasPecas }))
     }
 
     function atualizarDescricao(Descricao){
         setDescricao(Descricao)
-
-        setOrcamento(
-            {...Orcamento,descricaoServico: Descricao }
-        )
+        setOrcamento((orcamentoAtual) => ({ ...orcamentoAtual, descricaoServico: Descricao }))
     }
 
     function atualizarMaoDeObra(MaoDeObra){
         setMaoDeObra(MaoDeObra)
-
-        setOrcamento(
-            {...Orcamento,valorMaoDeObra: MaoDeObra }
-        )
+        setOrcamento((orcamentoAtual) => ({ ...orcamentoAtual, valorMaoDeObra: MaoDeObra }))
     }
 
     function atualizarIdOrcamento(IdOrcamento){
         setIdOrcamento(IdOrcamento)
-
-        setOrcamento(
-            {...Orcamento,idOrcamento: IdOrcamento }
-        )
+        setOrcamento((orcamentoAtual) => ({ ...orcamentoAtual, idOrcamento: IdOrcamento }))
     }
 
     function totalPecas(){
-       return Pecas.reduce((acc, item) => {return acc + ((parseFloat(item.valor) || 0) * item.quantidade)}, 0)
+       return calcularTotalPecas(Pecas)
     } 
 
     function total(){
-        return totalPecas + MaoDeObra
+        return calcularTotal(Pecas, MaoDeObra)
     }
 
     function limparOrcamento(){
+        const orcamentoLimpo = {
+            idOrcamento: "",
+            clienteVeiculoId: null,
+            descricaoServico: "",
+            valorMaoDeObra: 0,
+            itens: []
+        }
+
+        setOrcamento(orcamentoLimpo)
         setIdOrcamento("")
         setDescricao("")
         setMaoDeObra(0)
@@ -104,11 +107,25 @@ export function OrcamentoProveider ({children}){
     }
     
     useEffect(() => {
-        localStorage.setItem("CacheOrcamento", JSON.stringify(Orcamento))
+        writeCache("CacheOrcamento", Orcamento)
     }, [Orcamento])
     
     return(
-        <OrcamentoContext.Provider value={Orcamento, Descricao, MaoDeObra, Pecas, IdOrcamento ,atualizarDescricao, atualizarMaoDeObra, atualizarIdOrcamento, adicionarPeca, removerPeca, totalPecas, total, limparOrcamento }>
+        <OrcamentoContext.Provider value={{
+            Orcamento,
+            Descricao,
+            MaoDeObra,
+            Pecas,
+            IdOrcamento,
+            atualizarDescricao,
+            atualizarMaoDeObra,
+            atualizarIdOrcamento,
+            adicionarPeca,
+            removerPeca,
+            totalPecas,
+            total,
+            limparOrcamento,
+        }}>
             {children}
         </OrcamentoContext.Provider>
     )

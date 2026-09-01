@@ -1,5 +1,5 @@
 //Componentes
-import Forms from "../Components/forms"
+import Forms from "../Components/Forms"
 import user from "../assets/user.png"
 //Style
 import "./CSS/Login.css"
