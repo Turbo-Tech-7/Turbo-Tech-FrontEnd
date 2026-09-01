@@ -29,6 +29,7 @@ import BuscarOrcamentos from "./Pages/BuscarOrcamento.jsx"
 import ListaOrcamento from "./Pages/ListaOrcamento.jsx"
 import BuscarCliente from "./Pages/BuscarClientes.jsx"
 import ListarClientes from "./Pages/ListaClientes.jsx"
+import StatusOrcamento from "./Pages/StatusOrcamento.jsx"
 
 function App() {
 
@@ -57,6 +58,7 @@ function App() {
           <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
           <Route path="/buscar-clientes" element={<BuscarCliente/>}></Route>
           <Route path="/lista-clientes" element={<ListarClientes/>}></Route>
+          <Route path="/status-orcamento" element={<StatusOrcamento />} />
         </Routes>
       </BrowserRouter>
 
