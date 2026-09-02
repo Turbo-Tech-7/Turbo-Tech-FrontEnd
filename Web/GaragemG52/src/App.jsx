@@ -1,3 +1,4 @@
+
 import Login from "./Pages/Login"
 import Cadastro from "./Pages/Cadastro"
 import CriarOrcamento from "./Pages/CriarOrcamento"
@@ -33,7 +34,7 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* Rotas públicas */}
+          // Rotas públicas
           <Route path="/" element={<Redirecionar link="login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
@@ -58,7 +59,7 @@ function App() {
             element={<VerificarConta />}
           />
 
-          {/* Rotas protegidas */}
+          // Rotas protegidas
           <Route element={<PrivateRoute />}>
 
             <Route path="/home" element={<Home />} />
@@ -138,3 +139,9 @@ function App() {
 }
 
 export default App
+
+
+
+
+
+
