@@ -4,9 +4,9 @@ import { getAuthToken } from "../../services/authStorage";
 const PrivateRoute = () => {
   const token = getAuthToken();
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!token) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   return <Outlet />;
 };
