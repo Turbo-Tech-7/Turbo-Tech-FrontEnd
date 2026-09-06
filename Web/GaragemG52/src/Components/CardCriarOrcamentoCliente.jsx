@@ -15,10 +15,11 @@ import ModalConfirmarCarro from "./ModalConfirmarCarro"
 import ListaPecasEncontradas from "./ListaPecasEncontradas"
 
 // Hooks persoinalizados
-import { useFetch } from "../hooks/useFetch"
 import { descricaoValida, valorPositivo } from "../hooks/utils"
 import { useClienteContext } from "../hooks/useClienteContext"
 import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
+import { useClienteService } from "../services/clienteService"
+import { useOrcamentoService } from "../services/orcamentoService"
 import {
   buscarCarroNoRobo,
   fecharRobo,
@@ -118,19 +119,14 @@ function useRoboBusca({ atualizarCliente, Cliente, adicionarPeca, setMensagem })
   }
 }
 
-function useClienteLookup({ httpConfig, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, atualizarId, setMensagem }) {
+function useClienteLookup({ buscarPorPlaca, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, atualizarId, setMensagem }) {
   const buscarCliente = async (params) => {
     try {
       const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
 
       if (placaNormalized.length !== 7) return
 
-      const res = await httpConfig(
-        "GET",
-        "clientes-veiculos/buscar-placa",
-        null,
-        { placa: placaNormalized }
-      )
+      const res = await buscarPorPlaca(placaNormalized)
 
       const dadosCliente = res?.data
       if (Array.isArray(dadosCliente) && dadosCliente.length > 0) {
@@ -152,7 +148,7 @@ function useClienteLookup({ httpConfig, atualizarPlaca, atualizarNome, atualizar
   return { buscarCliente }
 }
 
-function useOrcamentoSubmit({ httpConfig, Descricao, MaoDeObra, Orcamento, atualizarIdOrcamento, navigate, setMensagem, error }) {
+function useOrcamentoSubmit({ criar, Descricao, MaoDeObra, Orcamento, atualizarIdOrcamento, navigate, setMensagem, error }) {
   const enviarOrçamento = async (e) => {
     e.preventDefault()
 
@@ -165,7 +161,7 @@ function useOrcamentoSubmit({ httpConfig, Descricao, MaoDeObra, Orcamento, atual
       return
     }
 
-    const res = await httpConfig("POST", "orcamentos", Orcamento)
+    const res = await criar(Orcamento)
     const idCriado = res?.data?.id
 
     if (idCriado) {
@@ -189,7 +185,8 @@ function useOrcamentoSubmit({ httpConfig, Descricao, MaoDeObra, Orcamento, atual
 const CardCriarOrcamentoCliente = () => {
   const navigate = useNavigate();
 
-  const { httpConfig, error, loading } = useFetch()
+  const { buscarPorPlaca } = useClienteService()
+  const { criar, error, loading } = useOrcamentoService()
   const [mensagem, setMensagem] = useState("")
 
   const { Placa, Nome, Telefone, Email, Id, atualizarCliente, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente } = useClienteContext()
@@ -211,7 +208,7 @@ const CardCriarOrcamentoCliente = () => {
   })
 
   const { buscarCliente } = useClienteLookup({
-    httpConfig,
+    buscarPorPlaca,
     atualizarPlaca,
     atualizarNome,
     atualizarTelefone,
@@ -221,7 +218,7 @@ const CardCriarOrcamentoCliente = () => {
   })
 
   const { enviarOrçamento } = useOrcamentoSubmit({
-    httpConfig,
+    criar,
     Descricao,
     MaoDeObra,
     Orcamento,

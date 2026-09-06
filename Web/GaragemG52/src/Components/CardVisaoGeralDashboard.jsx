@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
-import { useFetch } from "../hooks/useFetch"
+import { useDashboardService } from "../services/dashboardService"
 import './css/CardVisaoGeralDashboard.css'
 import VisaoGeralIcon from '../assets/VisaoGeral.png'
 
@@ -147,9 +147,6 @@ function Legend({ data, colors }) {
   )
 }
 
-import { getApiBaseUrl } from "../config/api"
-
-const BASE_URL = getApiBaseUrl()
 const STATUS_COLORS = ["#4361EE", "green", "red", "#FFD6A5", "#FFAFCC"]
 const CANCEL_COLORS = ["#FF6B6B", "#FFB347", "#FFD93D", "#6BCB77", "#4D96FF"]
 
@@ -160,7 +157,7 @@ function CardVisaoGeralDashboard() {
   const [erro, setErro] = useState(null)
   const dropdownRef = useRef(null)
 
-  const { httpConfig, loading } = useFetch(BASE_URL)
+  const { buscarVisaoGeral, loading } = useDashboardService()
 
   const filtroLabels = { dia: "Dia", mes: "Mês", ano: "Ano" }
 
@@ -177,7 +174,7 @@ function CardVisaoGeralDashboard() {
   useEffect(() => {
     const fetchDados = async () => {
       setErro(null)
-      const resposta = await httpConfig("GET", "dashboard/visao-geral", null, { filtro })
+      const resposta = await buscarVisaoGeral(filtro)
       if (resposta.status === 200) {
         setDados(resposta.data)
       } else {
@@ -185,7 +182,7 @@ function CardVisaoGeralDashboard() {
       }
     }
     fetchDados()
-  }, [filtro, httpConfig])
+  }, [filtro, buscarVisaoGeral])
 
   const fmt = (val) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val ?? 0)

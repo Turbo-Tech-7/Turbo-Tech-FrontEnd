@@ -11,7 +11,7 @@ import criardoc from "../assets/criardoc.png"
 import "./css/CardVisualizarOrcamento.css"
 
 // Hook personalizado
-import { useFetch } from "../hooks/useFetch"
+import { useOrcamentoService } from "../services/orcamentoService"
 import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
 import { useClienteContext } from "../hooks/useClienteContext"
 
@@ -28,7 +28,7 @@ const CardVisualizarOrcamento = () => {
   const {Placa, Nome, Telefone, Email, Id, Cliente} = useClienteContext()
 
 
-  const { data, httpConfig, error, loading } = useFetch()
+  const { gerarPdf, enviarPdfPorEmail, error, loading } = useOrcamentoService()
 
   const [mensagem, setMensagem] = useState()
 
@@ -46,14 +46,11 @@ const CardVisualizarOrcamento = () => {
 
   async function gerarPDF() {
   try {
-    const res = await httpConfig(
-      "GET",
-      `orcamentos/${IdOrcamento}/pdf`
-    );
+    const res = await gerarPdf(IdOrcamento)
 
     if (res.status === 200) {
       // cria URL temporária do PDF
-      const pdfUrl = window.URL.createObjectURL(data);
+      const pdfUrl = window.URL.createObjectURL(res.data);
 
       // cria link invisível para download
       const link = document.createElement("a");
@@ -81,10 +78,7 @@ const CardVisualizarOrcamento = () => {
 
  async function mandarPDF() {
     try {
-      const res = await httpConfig(
-      "POST",
-      `orcamentos/${IdOrcamento}/pdf/email`
-    );
+      const res = await enviarPdfPorEmail(IdOrcamento)
 
     if(res.status == 200){
       setMensagem("O orçamento foi enviado por email para " + Email)
