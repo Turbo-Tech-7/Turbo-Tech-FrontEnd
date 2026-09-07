@@ -1,5 +1,7 @@
 import StatusOrcamentoPage from "../Components/StatusOrcamentoPage"
 
-const StatusOrcamento = () => <StatusOrcamentoPage />
+function StatusOrcamento() {
+  return <StatusOrcamentoPage />
+}
 
 export default StatusOrcamento

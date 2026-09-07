@@ -8,10 +8,9 @@ const StatusOrcamentoPage = () => {
   const [telefone, setTelefone] = useState("")
   const [numero, setNumero] = useState("")
   const [mostrarResultado, setMostrarResultado] = useState(false)
-
   const [status, setStatus] = useState("aberto")
   const [acaoSelecionada, setAcaoSelecionada] = useState("")
-  const [modalFinalizar, setModalFinalizar] = useState(false)
+  const [modalAprovar, setModalAprovar] = useState(false)
   const [modalCancelar, setModalCancelar] = useState(false)
   const [motivoCancelamento, setMotivoCancelamento] = useState("")
 
@@ -22,7 +21,7 @@ const StatusOrcamentoPage = () => {
 
   const statusTexto = {
     aberto: "Aberto",
-    finalizado: "Finalizado",
+    aprovado: "Aprovado",
     cancelado: "Cancelado"
   }
 
@@ -31,8 +30,8 @@ const StatusOrcamentoPage = () => {
 
     setAcaoSelecionada(valor)
 
-    if (valor === "finalizado") {
-      setModalFinalizar(true)
+    if (valor === "aprovado") {
+      setModalAprovar(true)
     }
 
     if (valor === "cancelado") {
@@ -40,14 +39,14 @@ const StatusOrcamentoPage = () => {
     }
   }
 
-  const fecharModalFinalizar = () => {
-    setModalFinalizar(false)
+  const fecharModalAprovar = () => {
+    setModalAprovar(false)
     setAcaoSelecionada("")
   }
 
-  const confirmarFinalizacao = () => {
-    setStatus("finalizado")
-    setModalFinalizar(false)
+  const confirmarAprovacao = () => {
+    setStatus("aprovado")
+    setModalAprovar(false)
     setAcaoSelecionada("")
   }
 
@@ -77,13 +76,13 @@ const StatusOrcamentoPage = () => {
           </div>
 
           <div>
-            <h1>Status dos orçamentos</h1>
-            <p>Buscar um orçamento de serviço</p>
+            <h1>Status dos Orçamentos</h1>
+            <p>Busque um orçamento e atualize seu status</p>
           </div>
 
         </div>
 
-        <Link to="/home" className="sop_back">
+        <Link to="/status" className="sop_back">
           Voltar
         </Link>
 
@@ -91,22 +90,15 @@ const StatusOrcamentoPage = () => {
 
       {!mostrarResultado ? (
 
-        <section className="sop_card" aria-labelledby="sop-title">
+        <section className="sop_card">
 
           <div className="sop_card__icon">
             <img src={buscarpecas} alt="" />
           </div>
 
           <div className="sop_card__header">
-
-            <h2 id="sop-title">
-              Buscar Orçamento
-            </h2>
-
-            <p>
-              Preencha pelo menos um campo
-            </p>
-
+            <h2>Buscar Orçamento</h2>
+            <p>Preencha pelo menos um campo</p>
           </div>
 
           <form
@@ -163,17 +155,14 @@ const StatusOrcamentoPage = () => {
 
       ) : (
 
-        <section
-          className="sop_results"
-          aria-labelledby="sop-results-title"
-        >
+        <section className="sop_results">
 
           <div className="sop_results__icon">
             <img src={buscarpecas} alt="" />
           </div>
 
-          <h2 id="sop-results-title">
-            Status dos orçamentos
+          <h2>
+            Status dos Orçamentos
           </h2>
 
           <div className="sop_status">
@@ -220,8 +209,8 @@ const StatusOrcamentoPage = () => {
                   Status
                 </option>
 
-                <option value="finalizado">
-                  Finalizar orçamento
+                <option value="aprovado">
+                  Aprovar orçamento
                 </option>
 
                 <option value="cancelado">
@@ -237,7 +226,7 @@ const StatusOrcamentoPage = () => {
 
       )}
 
-      {modalFinalizar && (
+      {modalAprovar && (
 
         <div className="sop_modal_overlay">
 
@@ -248,11 +237,11 @@ const StatusOrcamentoPage = () => {
             </div>
 
             <h2>
-              Finalizar orçamento?
+              Aprovar orçamento?
             </h2>
 
             <p className="sop_modal_subtitle">
-              Confirme a finalização do serviço
+              Confirme a alteração do status
             </p>
 
             <div className="sop_modal_cliente">
@@ -263,30 +252,30 @@ const StatusOrcamentoPage = () => {
               </div>
 
               <div>
-                <span>E-mail</span>
-                <strong>joaosilva@gmail.com</strong>
+                <span>Orçamento</span>
+                <strong>#0001</strong>
               </div>
 
             </div>
 
             <div className="sop_modal_aviso">
-              Ao confirmar, o cliente receberá um e-mail informando que o veículo está pronto para retirada.
+              Ao confirmar, o orçamento será marcado como aprovado.
             </div>
 
             <div className="sop_modal_actions">
 
               <button
                 className="sop_modal_btn sop_modal_btn_secundario"
-                onClick={fecharModalFinalizar}
+                onClick={fecharModalAprovar}
               >
                 Voltar
               </button>
 
               <button
                 className="sop_modal_btn sop_modal_btn_confirmar"
-                onClick={confirmarFinalizacao}
+                onClick={confirmarAprovacao}
               >
-                Confirmar finalização
+                Confirmar aprovação
               </button>
 
             </div>
