@@ -5,21 +5,18 @@
     align-items: center;
     background: #DFE8FF;
     font-family: "Poppins", sans-serif;
-}
+}   
 
 .sop_top-bar {
     width: min(80%, 900px);
     margin-top: 30px;
     box-sizing: border-box;
     padding: 12px 20px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     background: #ffffff;
     border-radius: 10px;
-
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -74,11 +71,9 @@
 .sop_card {
     width: min(420px, calc(100% - 32px));
     box-sizing: border-box;
-
     position: relative;
     margin-top: 60px;
     padding: 35px 20px 21px;
-
     background: #ffffff;
     border-radius: 18px;
 }
@@ -87,15 +82,11 @@
     position: absolute;
     top: -35px;
     left: 50%;
-
     width: 70px;
     height: 70px;
-
     transform: translateX(-50%);
-
     display: grid;
     place-items: center;
-
     border-radius: 50%;
     background: #4361EE;
 }
@@ -132,15 +123,11 @@
     width: 100%;
     height: 42px;
     box-sizing: border-box;
-
     padding: 0 12px;
-
     border: 1px solid #B3B3B3;
     border-radius: 8px;
-
     background: #FAFAFA;
     color: #333333;
-
     font: inherit;
     font-size: 14px;
 }
@@ -157,20 +144,14 @@
 .sop_form button {
     width: 100%;
     height: 42px;
-
     margin-top: 13px;
-
     border: 0;
     border-radius: 8px;
-
     background: #4361EE;
     color: #ffffff;
-
     font: inherit;
     font-size: 14px;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
 
@@ -181,93 +162,65 @@
 .sop_results {
     width: min(674px, calc(100% - 32px));
     min-height: 280px;
-
     box-sizing: border-box;
-
     position: relative;
-
     margin-top: 60px;
     padding: 27px;
-
     background: #ffffff;
     border-radius: 18px;
 }
 
 .sop_results__icon {
     position: absolute;
-
     top: -35px;
     left: 50%;
-
     width: 70px;
     height: 70px;
-
     transform: translateX(-50%);
-
     display: grid;
     place-items: center;
-
     border-radius: 50%;
-
     background: #4361EE;
 }
 
 .sop_results__icon img {
     width: 38px;
-
     filter: brightness(0) invert(1);
 }
 
 .sop_results h2 {
-    margin: 0 0 25px;
-
     font-size: 20px;
     text-align: center;
 }
 
 .sop_status {
     width: 100%;
-
     display: flex;
     justify-content: flex-end;
     align-items: center;
-
     gap: 5px;
-
     margin-bottom: 3px;
-
     color: #333333;
-
     font-size: 12px;
 }
 
 .sop_budget {
     width: 100%;
-
     min-height: 64px;
-
     box-sizing: border-box;
-
     padding: 0 16px;
-
     display: flex;
     align-items: center;
-
     gap: 7px;
-
     border: 1px solid #B3B3B3;
     border-radius: 8px;
-
     background: #FAFAFA;
 }
 
 .sop_budget__info {
     display: flex;
-
     flex: 1;
-
     flex-direction: column;
-
     gap: 2px;
 }
 
@@ -281,18 +234,12 @@
 
 .sop_view {
     padding: 7px 12px;
-
     border-radius: 7px;
-
     background: #4361EE;
-
     color: #ffffff;
-
     font-size: 11px;
     font-weight: 500;
-
     text-decoration: none;
-
     transition: 0.2s;
 }
 
@@ -302,19 +249,13 @@
 
 .sop_status-select {
     height: 32px;
-
     padding: 0 8px;
-
     border: 1px solid #777777;
     border-radius: 7px;
-
     background: #ffffff;
-
     color: #333333;
-
     font: inherit;
     font-size: 11px;
-
     cursor: pointer;
 }
 
@@ -326,9 +267,7 @@
 .sop_status-dot {
     width: 11px;
     height: 11px;
-
     flex: 0 0 11px;
-
     border-radius: 50%;
 }
 
@@ -336,7 +275,7 @@
     background: #28A745;
 }
 
-.sop_status-dot--finalizado {
+.sop_status-dot--aprovado {
     background: #4361EE;
 }
 
@@ -346,119 +285,81 @@
 
 .sop_modal_overlay {
     position: fixed;
-
     inset: 0;
-
     background: rgba(0, 0, 0, 0.28);
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     z-index: 1000;
-
     padding: 20px;
-
     box-sizing: border-box;
-
     animation: sopOverlayEntrada 0.2s ease;
 }
 
 .sop_modal {
     width: 420px;
     max-width: 100%;
-
     box-sizing: border-box;
-
     position: relative;
-
     background: #ffffff;
-
     border-radius: 18px;
-
     padding: 35px 28px 25px;
-
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
-
     text-align: center;
-
     animation: sopModalEntrada 0.25s ease;
 }
 
 .sop_modal_icon {
     width: 58px;
     height: 58px;
-
     margin: -64px auto 15px;
-
     border-radius: 50%;
-
     background: #4361EE;
-
     color: #ffffff;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 26px;
     font-weight: 600;
-
     box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
 }
 
 .sop_modal_icon_cancelar {
     background: #E04444;
-
     box-shadow: 0 4px 12px rgba(224, 68, 68, 0.22);
 }
 
 .sop_modal h2 {
     margin: 0;
-
     font-size: 21px;
     font-weight: 600;
-
     color: #111111;
 }
 
 .sop_modal_subtitle {
     margin: 4px 0 20px;
-
     color: #666666;
-
     font-size: 13px;
 }
 
 .sop_modal_cliente {
     width: 100%;
-
     box-sizing: border-box;
-
     display: flex;
     flex-direction: column;
-
     gap: 10px;
-
     margin-bottom: 14px;
-
     padding: 13px 15px;
-
     background: #FAFAFA;
-
     border: 1px solid #E3E3E3;
-
     border-radius: 10px;
-
     text-align: left;
 }
 
 .sop_modal_cliente div {
     display: flex;
     justify-content: space-between;
-
     gap: 15px;
-
     font-size: 12px;
 }
 
@@ -468,49 +369,34 @@
 
 .sop_modal_cliente strong {
     color: #222222;
-
     font-weight: 500;
 }
 
 .sop_modal_aviso {
     padding: 12px 14px;
-
     border-left: 4px solid #4361EE;
-
     border-radius: 8px;
-
     background: #F3F6FF;
-
     color: #555555;
-
     font-size: 12px;
     line-height: 1.5;
-
     text-align: left;
 }
 
 .sop_modal_actions {
     display: flex;
-
     gap: 10px;
-
     margin-top: 20px;
 }
 
 .sop_modal_btn {
     flex: 1;
-
     min-height: 42px;
-
     border-radius: 8px;
-
     font-family: "Poppins", sans-serif;
-
     font-size: 13px;
     font-weight: 500;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
 
@@ -520,90 +406,63 @@
 
 .sop_modal_btn_secundario {
     border: 1px solid #D1D5DB;
-
     background: #F3F4F6;
-
     color: #374151;
 }
 
 .sop_modal_btn_secundario:hover {
     background: #E5E7EB;
-
     border-color: #C7CBD1;
-
-    transform: scale(1.02);
 }
 
 .sop_modal_btn_confirmar {
     border: none;
-
     background: #4361EE;
-
     color: #ffffff;
 }
 
 .sop_modal_btn_cancelar {
     border: none;
-
     background: #E04444;
-
     color: #ffffff;
 }
 
 .sop_modal_btn_cancelar:disabled {
     opacity: 0.45;
-
     cursor: not-allowed;
-
     transform: none;
 }
 
 .sop_motivos {
     display: grid;
-
     grid-template-columns: 1fr 1fr;
-
     gap: 9px;
-
     margin-top: 5px;
 }
 
 .sop_motivo_btn {
     min-height: 44px;
-
     padding: 8px;
-
     border: 1px solid #B3B3B3;
-
     border-radius: 8px;
-
     background: #ffffff;
-
     color: #333333;
-
     font-family: "Poppins", sans-serif;
-
     font-size: 12px;
     font-weight: 500;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
 
 .sop_motivo_btn:hover {
     border-color: #4361EE;
-
     background: #F3F6FF;
 }
 
 .sop_motivo_btn.selecionado {
     border-color: #4361EE;
-
     background: #EEF2FF;
-
     color: #4361EE;
-
     font-weight: 600;
 }
 

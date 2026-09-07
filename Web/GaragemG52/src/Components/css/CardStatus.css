@@ -1,4 +1,4 @@
-.card-mudar-orcamento {
+.card-status {
     width: 380px;
     height: 180px;
     display: flex;
@@ -9,19 +9,19 @@
     transition: 0.3s;
 }
 
-.card-mudar-orcamento:hover {
+.card-status:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-.card-mudar-orcamento__content {
+.card-status__content {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin: 20px 0 20px 20px;
 }
 
-.card-mudar-orcamento__icon {
+.card-status__icon {
     width: 60px;
     height: 60px;
     display: flex;
@@ -31,6 +31,6 @@
     background: #895BF55E;
 }
 
-.card-mudar-orcamento__icon img { width: 35px; }
-.card-mudar-orcamento__text h2 { margin: 0; font-size: 1.3rem; }
-.card-mudar-orcamento__text p { margin: 0; }
+.card-status__icon img { width: 35px; }
+.card-status__text h2 { margin: 0; font-size: 1.3rem; }
+.card-status__text p { margin: 0; }

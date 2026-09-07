@@ -1,34 +1,35 @@
 import { Link } from "react-router-dom"
-import './css/Home.css'
+import "./css/Home.css"
 
-import CardCentral from '../Components/CardCentral'
-import CardCriarOrcamento from '../Components/CardCriarOrcamento'
-import CardMudarOrcamento from '../Components/CardMudarOrcamento'
-import CardRelatorios from '../Components/CardRelatorios'
-import CardBuscarOrcamentos from '../Components/CardBuscarOrcamentos'
-import CardBuscarClientes from '../Components/CardBuscarClientes'
-import CardVisaoGeral from '../Components/CardVisaoGeral'
+import CardCentral from "../Components/CardCentral"
+import CardCriarOrcamento from "../Components/CardCriarOrcamento"
+import CardStatus from "../Components/CardStatus"
+import CardRelatorios from "../Components/CardRelatorios"
+import CardBuscarOrcamentos from "../Components/CardBuscarOrcamentos"
+import CardBuscarClientes from "../Components/CardBuscarClientes"
+import CardVisaoGeral from "../Components/CardVisaoGeral"
 import { useEffect } from "react"
 
 function Home() {
   useEffect(() => {
-    localStorage.removeItem('CacheCliente');
-    localStorage.removeItem('CacheOrcamento');
+    localStorage.removeItem("CacheCliente")
+    localStorage.removeItem("CacheOrcamento")
   }, [])
+
   return (
     <>
-      <div className='header'>
+      <div className="header">
         <CardCentral />
       </div>
 
-      <div className='menu'>
+      <div className="menu">
 
         <Link to="/criar-orcamento">
           <CardCriarOrcamento />
         </Link>
 
-        <Link to="/status-orcamento">
-          <CardMudarOrcamento />
+        <Link to="/status">
+          <CardStatus />
         </Link>
 
         <Link to="/relatorio-financeiro">
@@ -39,10 +40,10 @@ function Home() {
           <CardBuscarOrcamentos />
         </Link>
 
-        <Link to= "/buscar-clientes">
-        <CardBuscarClientes />
+        <Link to="/buscar-clientes">
+          <CardBuscarClientes />
         </Link>
-        
+
         <Link to="/visao-geral">
           <CardVisaoGeral />
         </Link>
