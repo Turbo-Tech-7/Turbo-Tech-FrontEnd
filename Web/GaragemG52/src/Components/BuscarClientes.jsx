@@ -1,14 +1,11 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import BuscarClientesImg from "../assets/BuscarClientes.png"
-import { useFetch } from "../hooks/useFetch"
-import { getApiBaseUrl } from "../config/api"
+import { clienteService } from "../services/clienteService"
 import "./css/BuscarClientesPage.css"
 
-const BASE_URL = getApiBaseUrl()
-
 const BuscarClientesPage = () => {
-  const { httpConfig, loading } = useFetch(BASE_URL)
+  const {buscarPorNome, buscarPorPlaca, listarClientes, loading} = clienteService()
 
   const navigate = useNavigate()
 
@@ -19,29 +16,17 @@ const BuscarClientesPage = () => {
     let res = null
 
     if (nome.trim()) {
-      res = await httpConfig(
-        "GET",
-        "clientes-veiculos/buscar-nome",
-        null,
-        {
-          nome: nome.trim(),
-        }
-      )
+      res = await buscarPorNome(nome.trim())
+      console.log("Pesquisa por nome")
     }
-
     else if (placa.trim()) {
-      res = await httpConfig(
-        "GET",
-        "clientes-veiculos/buscar-placa",
-        null,
-        {
-          placa: placa.trim().toUpperCase(),
-        }
-      )
+      res = await buscarPorPlaca(placa.trim().toUpperCase())
+      console.log(res)
+      console.log("Pesquisa por placa")
     }
 
     else {
-      res = await httpConfig("GET", "clientes-veiculos")
+      res = listarClientes()
     }
 
     const lista = res?.data

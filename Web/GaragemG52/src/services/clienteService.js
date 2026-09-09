@@ -1,21 +1,41 @@
-export const clienteService = {
-  async listar(httpConfig) {
-    return httpConfig("GET", "clientes-veiculos");
-  },
+import { useFetch } from "../hooks/UseFetch"
 
-  async buscarPorPlaca(httpConfig, placa) {
-    return httpConfig("GET", "clientes-veiculos/buscar-placa", null, { placa });
-  },
+const useClienteService = () => {
 
-  async buscarPorNome(httpConfig, nome) {
-    return httpConfig("GET", "clientes-veiculos/buscar-nome", null, { nome });
-  },
+  const { httpConfig, loading, error, data} = useFetch()
 
-  async criar(httpConfig, cliente) {
-    return httpConfig("POST", "clientes-veiculos", cliente);
-  },
+  return {
+    loading,
+    error,
+    data,
 
-  async remover(httpConfig, id) {
-    return httpConfig("DELETE", `clientes-veiculos/${id}`);
-  },
+    listarClientes: async () => {
+      return httpConfig("GET", "clientes-veiculos");
+    },
+
+    buscarPorId: async (id) => {
+      return httpConfig("GET", "clientes-veiculos", null, null, id);
+    },
+
+    buscarPorPlaca: async (placa) => {
+      return httpConfig("GET", "clientes-veiculos/buscar-placa", null, { placa });
+    },
+
+    buscarPorNome: async (nome) => {
+      return httpConfig("GET", "clientes-veiculos/buscar-nome", null, { nome });
+    },
+
+    criar: async (cliente) => {
+      return httpConfig("POST", "clientes-veiculos", cliente);
+    },
+
+    remover: async (id) => {
+      return httpConfig("DELETE", `clientes-veiculos`, null, null, id);
+    }
+
+    }
+  
 };
+
+export { useClienteService };
+export const clienteService = useClienteService;

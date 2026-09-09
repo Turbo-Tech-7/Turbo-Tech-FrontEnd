@@ -14,11 +14,11 @@ import cccazul from "../assets/ccc-azul.png"
 // Hooks personalizados
 import { verificarPlacaFormatada, nomeValido, verificarTelefone, verificarEmail } from "../hooks/utils"
 import { useClienteContext } from "../hooks/useClienteContext"
-import { useFetch } from "../hooks/useFetch"
+import { useClienteService } from "../services/clienteService"
 
 function useCadastroCliente() {
   const { Placa, Nome, Telefone, Email, atualizarId, atualizarPlaca, atualizarNome, atualizarTelefone, atualizarEmail, Cliente } = useClienteContext()
-  const { httpConfig, error, loading } = useFetch()
+  const { criar, buscarPorPlaca, error, loading } = useClienteService()
   const navigate = useNavigate()
   const [mensagem, setMensagem] = useState("")
 
@@ -50,7 +50,7 @@ function useCadastroCliente() {
     if (!ok) return
 
     try {
-      const resClienteVeiculo = await httpConfig("POST", "clientes-veiculos", Cliente)
+      const resClienteVeiculo = await criar(Cliente)
       const dataReq = resClienteVeiculo.data
 
       atualizarId(dataReq.id)
@@ -72,12 +72,12 @@ function useCadastroCliente() {
       if (!params) return
       const placaNormalized = params.replace(/[^A-Za-z0-9]/g, "")
       if (placaNormalized.length === 7) {
-        await httpConfig("GET", "clientes-veiculos/buscar-placa", null, { placa: placaNormalized })
+        await buscarPorPlaca(placaNormalized)
       }
     } catch (error) {
       console.log(error)
     }
-  }, [httpConfig])
+  }, [buscarPorPlaca])
 
   useEffect(() => {
     procurarCliente(Placa)

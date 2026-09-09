@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import relatorios from "../assets/relatorios.png"
-import { useFetch } from "../hooks/useFetch"
+import { useDashboardService } from "../services/dashboardService"
 
 import {
   PieChart,
@@ -11,9 +11,6 @@ import {
 } from "recharts"
 
 import "./css/CardRelatoriosOrcamentos.css"
-import { getApiBaseUrl } from "../config/api"
-
-const BASE_URL = getApiBaseUrl()
 
 const COLORS_STATUS       = ["#4361EE", "#22C55E", "#FF4D4D"]
 const COLORS_CANCELAMENTO = ["#F59E0B", "#EF4444", "#8B5CF6", "#6B7280"]
@@ -27,7 +24,7 @@ const fmt = (n) => Number(n ?? 0).toLocaleString("pt-BR")
 
 const CardRelatoriosOrcamentos = () => {
   const [filtro, setFiltro] = useState("mes")
-  const { httpConfig, loading, error } = useFetch(BASE_URL)
+  const { buscarRelatorioOrcamentos: buscarRelatorio, loading, error } = useDashboardService()
 
   const [totais, setTotais] = useState({
     totalOrcamentos: 0,
@@ -39,9 +36,7 @@ const CardRelatoriosOrcamentos = () => {
   const [cancelamentoData, setCancelamentoData] = useState([])
 
   const carregarDados = async (f) => {
-    const { data } = await httpConfig("GET", "dashboard/orcamentos", null, {
-      filtro: FILTRO_MAP[f],
-    })
+    const { data } = await buscarRelatorio(FILTRO_MAP[f])
 
     if (!data) return
 
