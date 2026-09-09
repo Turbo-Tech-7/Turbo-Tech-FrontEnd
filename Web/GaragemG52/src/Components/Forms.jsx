@@ -1,15 +1,14 @@
 //hooks
 import { useEffect, useState } from "react"
 
-import { useFetch } from "../hooks/useFetch"
+import { useAuthService } from "../services/authService"
 import { verificarEmail, verificarTelefone, senhaValida, senhasIguais, nomeValido, verificarCep } from "../hooks/utils"
 import { Link, useNavigate } from "react-router-dom"
 import "./css/Forms.css"
 import { removeAuthToken } from "../services/authStorage"
-import { authService } from "../services/authService"
 
 function useLoginForm() {
-    const { httpConfig, loading } = useFetch()
+    const { login, loading } = useAuthService()
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
@@ -23,7 +22,7 @@ function useLoginForm() {
         e.preventDefault()
         setMensagem("")
 
-        const resposta = await authService.login(httpConfig, { email, senha })
+        const resposta = await login({ email, senha })
 
         if (resposta.status == 200) {
             setMensagem("Login realizado com sucesso!")
@@ -37,7 +36,7 @@ function useLoginForm() {
 }
 
 function useCadastroForm() {
-    const { httpConfig, loading } = useFetch()
+    const { register, loading } = useAuthService()
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
@@ -87,7 +86,7 @@ function useCadastroForm() {
         const usuario = { name, email, telefone, cep, senha }
 
         try {
-            const res = await authService.register(httpConfig, usuario)
+            const res = await register(usuario)
 
             if (res.status == 201) {
                 setName("")

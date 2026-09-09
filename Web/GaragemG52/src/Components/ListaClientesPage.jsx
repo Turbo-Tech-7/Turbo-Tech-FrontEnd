@@ -1,16 +1,13 @@
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import BuscarClientesImg from "../assets/BuscarClientes.png"
-import { useFetch } from "../hooks/useFetch"
-import { getApiBaseUrl } from "../config/api"
+import { useClienteService } from "../services/clienteService"
 import "./css/BuscarClientesPage.css"
-
-const BASE_URL = getApiBaseUrl()
 
 function ListaClientesPage() {
   const location = useLocation()
 
-  const { httpConfig, loading } = useFetch(BASE_URL)
+  const { remover: removerCliente, loading } = useClienteService()
 
   const [resultados, setResultados] = useState(
     location.state?.resultados || []
@@ -37,10 +34,7 @@ function ListaClientesPage() {
   const excluir = async () => {
     if (!modalCliente) return
 
-    const res = await httpConfig(
-      "DELETE",
-      `clientes-veiculos/${modalCliente.id}`
-    )
+    const res = await removerCliente(modalCliente.id)
 
     setModalCliente(null)
 

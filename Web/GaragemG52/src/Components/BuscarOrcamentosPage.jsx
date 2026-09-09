@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import BuscarOrcamentosImg from "../assets/BuscarOrcamentos.png"
-import { useFetch } from "../hooks/useFetch"
+import { useOrcamentoService } from "../services/orcamentoService"
 import "./css/BuscarOrcamentosPage.css"
 
 const STATUS_OPCOES = [
@@ -12,7 +12,7 @@ const STATUS_OPCOES = [
 ]
 
 const BuscarOrcamentosPage = () => {
-  const { httpConfig, loading } = useFetch()
+  const { listarOrçamentos, listarOrçamentosPorStatus, loading } = useOrcamentoService()
 
   const navigate = useNavigate()
 
@@ -22,16 +22,11 @@ const BuscarOrcamentosPage = () => {
     let res = null
 
     if (status) {
-      res = await httpConfig(
-        "GET",
-        "orcamentos/por-status",
-        null,
-        { status }
-      )
+      res = await listarOrçamentosPorStatus(status)
     }
 
     else {
-      res = await httpConfig("GET", "orcamentos")
+      res = await listarOrçamentos()
     }
 
     navigate("/lista-orcamentos", {

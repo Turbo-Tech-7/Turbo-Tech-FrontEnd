@@ -12,13 +12,10 @@ Line,
 Legend,
 } from "recharts"
 import { Link } from "react-router-dom"
-import { useFetch } from "../hooks/useFetch"
+import { useDashboardService } from "../services/dashboardService"
 import relatorios from "../assets/relatorios.png"
 import "./css/CardRelatorioFinanceiro.css"
 
-import { getApiBaseUrl } from "../config/api"
-
-const BASE_URL = getApiBaseUrl()
 
 const FILTRO_OPTIONS = [
 { label: "Hoje", value: "DIA" },
@@ -32,18 +29,13 @@ value != null
 : "R$ —"
 
 const CardRelatorioFinanceiro = () => {
-const { httpConfig, loading, error } = useFetch(BASE_URL)
+const { buscarRelatorioFinanceiro, loading, error } = useDashboardService()
 
 const [filtro, setFiltro] = useState("MES")
 const [relatorio, setRelatorio] = useState(null)
 
 const fetchRelatorio = async (filtroSelecionado) => {
-const { data } = await httpConfig(
-"GET",
-"dashboard/relatorio-financeiro",
-null,
-{ filtro: filtroSelecionado }
-)
+const { data } = await buscarRelatorioFinanceiro(filtroSelecionado)
 if (data) setRelatorio(data)
 }
 

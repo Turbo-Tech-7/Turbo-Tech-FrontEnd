@@ -2,17 +2,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
-import { useFetch } from "../hooks/useFetch"
 import { codigoValido } from "../hooks/utils"
 import { setAuthToken } from "../services/authStorage"
-import { authService } from "../services/authService"
+import { useAuthService } from "../services/authService"
 
 function useVerificarConta() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email
   const [mensagem, setMensagem] = useState("")
-  const { httpConfig, loading } = useFetch()
+  const { verifyLoginCode: verificarCodigo, loading } = useAuthService()
   const [codigo, setCodigo] = useState(["", "", "", "", "", ""])
 
   const handleChange = (value, index) => {
@@ -71,7 +70,7 @@ function useVerificarConta() {
       return
     }
 
-    const resposta = await authService.verifyLoginCode(httpConfig, codigoString)
+    const resposta = await verificarCodigo(codigoString)
     const data = resposta.data
     const status = resposta.status
 

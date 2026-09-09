@@ -1,6 +1,8 @@
 //hooks
 import { useState } from "react"
-import { useFetch } from "../hooks/useFetch"
+import { useUsuarioService } from "../services/usuarioService"
+import { useVeiculoService } from "../services/veiculoService"
+import { useServicoService } from "../services/servicoService"
 
 //CSS
 
@@ -11,21 +13,23 @@ const QuadroMensagem = () => {
 
     const [dados, setDados] = useState({ usuario: null, veiculo: null, servico: null });
 
-    const url = "http://localhost:3000"
-
-    const {httpConfig} = useFetch(url)
+    const { listarUsuarios, remover: removerUsuario } = useUsuarioService()
+    const { listar: listarVeiculos, remover: removerVeiculo } = useVeiculoService()
+    const { listar: listarServicos, remover: removerServico } = useServicoService()
 
   async function getData() {
 
     try {
-        const resUsuario = await httpConfig("", "GET", "usuario");
-        const resVeiculo = await httpConfig("", "GET", "veiculo");
-        const resServico = await httpConfig("", "GET", "servico");
+        const [resUsuario, resVeiculo, resServico] = await Promise.all([
+            listarUsuarios(),
+            listarVeiculos(),
+            listarServicos(),
+        ])
 
         setDados({
-            usuario: resUsuario,
-            veiculo: resVeiculo,
-            servico: resServico
+            usuario: resUsuario.data || [],
+            veiculo: resVeiculo.data || [],
+            servico: resServico.data || []
         })
         
         console.log("Dados carregados com sucesso!");
@@ -34,11 +38,13 @@ const QuadroMensagem = () => {
     }
 }
 
-    const deleteCard = (id) => {
-        httpConfig(id, "DELETE", "usuario")
-        httpConfig(id, "DELETE", "veiculo")
-        httpConfig(id, "DELETE", "servico")
-        getData(Event)
+    const deleteCard = async (id) => {
+        await Promise.all([
+            removerUsuario(id),
+            removerVeiculo(id),
+            removerServico(id),
+        ])
+        getData()
     }
 
   return (

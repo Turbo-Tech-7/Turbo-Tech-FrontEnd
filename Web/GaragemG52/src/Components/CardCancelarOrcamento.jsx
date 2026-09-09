@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import cancel from "../assets/DeleteFile.png"
 import cancelB from "../assets/Delete_File_Branco.png"
 import "./css/CardCancelarOrcamento.css"
-import { useFetch } from "../hooks/useFetch"
+import { useOrcamentoService } from "../services/orcamentoService"
 import { useRef, useState } from "react"
 
 const CardCancelarOrcamento = () => {
@@ -14,7 +14,7 @@ const CardCancelarOrcamento = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { httpConfig, loading } = useFetch()
+  const { cancelarOrçamento: cancelarNoService, loading } = useOrcamentoService()
 
   let dadosOrcamentos = location.state
   const [Orcamento] = useState(dadosOrcamentos)
@@ -31,7 +31,7 @@ const CardCancelarOrcamento = () => {
 
       const Motivo = {motivo:motivo}
       
-      await httpConfig("PATCH", `orcamentos/${Orcamento.idOrcamento}/cancelar`, Motivo)
+      await cancelarNoService(Motivo, Orcamento.idOrcamento)
 
       setMensagem("Orçamento cancelado")
 

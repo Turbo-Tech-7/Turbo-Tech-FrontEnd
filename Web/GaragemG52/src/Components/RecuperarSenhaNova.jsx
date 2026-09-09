@@ -2,12 +2,11 @@ import { useState } from "react"
 import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useFetch } from "../hooks/useFetch"
 import { senhaValida, senhasIguais, codigoValido } from "../hooks/utils"
-import { authService } from "../services/authService"
+import { useAuthService } from "../services/authService"
 
 function useRecuperarSenhaNova() {
-  const { httpConfig, loading } = useFetch()
+  const { resetPassword, loading } = useAuthService()
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email
@@ -34,10 +33,7 @@ function useRecuperarSenhaNova() {
     }
 
     try {
-      const res = await authService.resetPassword(httpConfig, {
-        codigo,
-        novaSenha: senha,
-      })
+      const res = await resetPassword(codigo, senha)
 
       if (res.status == 200) {
         setMensagem("Senha atualizada")

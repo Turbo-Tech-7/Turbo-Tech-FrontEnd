@@ -3,15 +3,14 @@ import cadeado from "../assets/cadeado.png"
 import "./css/RecuperarSenhaEmail.css"
 import { verificarEmail } from "../hooks/utils"
 import { useState } from "react"
-import { useFetch } from "../hooks/useFetch"
-import { authService } from "../services/authService"
+import { useAuthService } from "../services/authService"
 
 function useRecuperarSenhaEmail() {
-  const { httpConfig, loading } = useFetch()
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("")
   const [mensagem, setMensagem] = useState("")
+  const { forgotPassword, loading } = useAuthService()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,7 +22,7 @@ function useRecuperarSenhaEmail() {
     }
 
     try {
-      const res = await authService.forgotPassword(httpConfig, email)
+      const res = await forgotPassword(email)
 
       if (res.status == 200) {
         setMensagem("Email Encontrado")
