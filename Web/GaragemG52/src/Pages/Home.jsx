@@ -28,7 +28,7 @@ function Home() {
           <CardCriarOrcamento />
         </Link>
 
-        <Link to="/status">
+        <Link to="/status-orcamento">
           <CardStatus />
         </Link>
 
