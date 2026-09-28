@@ -11,7 +11,16 @@ const useServicoService = () => {
     buscarPorId: async (id) => httpConfig("GET", "servicos", null, null, id),
     listar: async () => httpConfig("GET", "servicos"),
     listarPorVeiculo: async (veiculoId) => httpConfig("GET", "servicos/por-veiculo", null, { veiculoId }),
-    atualizarStatus: async (id, status) => httpConfig("PATCH", "servicos", null, { status }, `${id}/status`),
+    atualizarStatus: async (id, status, motivoCancelamento = null) =>
+      httpConfig(
+        "PATCH",
+        "servicos",
+        null,
+        motivoCancelamento
+          ? { status, motivoCancelamento }
+          : { status },
+        `${id}/status`
+      ),
     remover: async (id) => httpConfig("DELETE", "servicos", null, null, id),
   };
 };
