@@ -4,6 +4,33 @@ import buscarpecas from "../assets/buscarpecas.png"
 import "./css/StatusOrcamentoPage.css"
 import { useBuscarServico } from "../hooks/useBuscarServico"
 import { servicoService } from "../services/servicoService"
+import { clienteService } from "../services/clienteService"
+import { veiculoService } from "../services/veiculoService"
+
+const TAMANHO_PAGINA = 7
+
+const extrairLista = (resposta) => {
+  const dados = resposta && Object.prototype.hasOwnProperty.call(resposta, "data")
+    ? resposta.data
+    : resposta
+  if (Array.isArray(dados?.content)) return dados.content
+  if (Array.isArray(dados)) return dados
+  return dados ? [dados] : []
+}
+
+const extrairPagina = (resposta) => {
+  const dados = resposta && Object.prototype.hasOwnProperty.call(resposta, "data")
+    ? resposta.data
+    : resposta
+
+  return {
+    content: Array.isArray(dados?.content) ? dados.content : [],
+    totalPages: Number(dados?.totalPages) || 0,
+  }
+}
+
+const normalizarPlaca = (valor) =>
+  String(valor ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase()
 
 const StatusOrcamentoPage = () => {
   const [placa, setPlaca] = useState("")
@@ -16,52 +43,190 @@ const StatusOrcamentoPage = () => {
   const [modalCancelarId, setModalCancelarId] = useState(null)
   const [modalVisualizar, setModalVisualizar] = useState(false)
   const [servicoSelecionado, setServicoSelecionado] = useState(null)
-  const [motivoCancelamento, setMotivoCancelamento] = useState("")
   const [orcamento, setOrcamentos] = useState([])
-  const [resultadoBusca, setResultadoBusca] = useState(null)
+  const [servicosFiltrados, setServicosFiltrados] = useState([])
+  const [paginaAtual, setPaginaAtual] = useState(0)
+  const [totalPaginas, setTotalPaginas] = useState(0)
+  const [paginacaoLocal, setPaginacaoLocal] = useState(false)
+  const [carregandoServicos, setCarregandoServicos] = useState(false)
   const [mensagem, setMensagem] = useState("")
-  const { buscarPorPlaca, buscarPoIdVeiculo, error } = useBuscarServico()
+  const { buscarPorPlaca } = useBuscarServico()
   const servicoApi = servicoService()
+  const clienteApi = clienteService()
+  const veiculoApi = veiculoService()
 
+  const enriquecerServicos = async (servicos) => {
+    if (!servicos.length) return []
+
+    const [respostaVeiculos, respostaClientes] = await Promise.all([
+      veiculoApi.listar(),
+      clienteApi.listarClientes(),
+    ])
+    const veiculos = extrairLista(respostaVeiculos)
+    const clientes = extrairLista(respostaClientes)
+
+    return servicos.map((servico) => {
+      const veiculoId = servico.veiculoId ?? servico.veiculo?.id
+      const veiculo = servico.veiculo ?? veiculos.find(
+        (item) => String(item.id) === String(veiculoId)
+      ) ?? null
+      const placaServico = normalizarPlaca(
+        veiculo?.placa ?? servico.placa ?? servico.placaVeiculo
+      )
+      const clienteVeiculo = servico.clienteVeiculo ?? servico.cliente ?? clientes.find((cliente) => {
+        const mesmoCliente =
+          servico.clienteVeiculoId != null &&
+          String(cliente.id) === String(servico.clienteVeiculoId)
+        const mesmoVeiculo =
+          cliente.veiculoId != null &&
+          String(cliente.veiculoId) === String(veiculoId)
+        const mesmaPlaca = placaServico &&
+          normalizarPlaca(cliente.placaVeiculo ?? cliente.veiculo?.placa) === placaServico
+
+        return mesmoCliente || mesmoVeiculo || mesmaPlaca
+      }) ?? null
+
+      return { ...servico, veiculo, clienteVeiculo }
+    })
+  }
 
   const buscarOrcamento = async (event) => {
     event.preventDefault()
-
-    if (placa.length !== 7) {
-      setMensagem("Placa obrigatória")
-      return
-    }
-
-    const resultado = await buscarPorPlaca(placa)
-    const resultadoFiltrado = filtrarResultadoPorContato(resultado, email, telefone)
-    const servicosEncontrados = Array.isArray(resultadoFiltrado?.servicos)
-      ? resultadoFiltrado.servicos
-      : []
-
-    if (!servicosEncontrados.length) {
-      setMensagem(
-        email || telefone
-          ? "Nenhum serviço encontrado para os dados informados"
-          : error || "Nenhum serviço encontrado"
-      )
-      setMostrarResultado(false)
-      return
-    }
-
     setMensagem("")
-    setResultadoBusca(resultadoFiltrado)
-    setOrcamentos(servicosEncontrados)
-    setStatusPorServico(
-      Object.fromEntries(servicosEncontrados.map((servico) => [servico.id, servico.status || "ABERTO"]))
-    )
-    setAcaoSelecionadaPorServico({})
-    setModalAprovarId(null)
-    setModalCancelarId(null)
+    setCarregandoServicos(true)
 
-    const dadosVeiculo = await buscarPoIdVeiculo(servicosEncontrados[0].veiculoId)
-    console.log(dadosVeiculo)
-    setMostrarResultado(true)
+    const placaNormalizada = normalizarPlaca(placa)
+    if (placaNormalizada && placaNormalizada.length !== 7) {
+      setMensagem("Informe uma placa válida ou deixe o campo em branco.")
+      setCarregandoServicos(false)
+      return
+    }
+
+    let servicosEncontrados = []
+    const temFiltroContato = Boolean(email.trim() || normalizarTelefone(telefone))
+    let usarPaginacaoLocal = Boolean(placaNormalizada || temFiltroContato)
+    let paginasDaApi = 0
+
+    try {
+      if (placaNormalizada && !temFiltroContato) {
+        const resultado = await buscarPorPlaca(placaNormalizada)
+        servicosEncontrados = Array.isArray(resultado?.servicos)
+          ? resultado.servicos.map((servico) => ({
+              ...servico,
+              veiculo: resultado.veiculo,
+              clienteVeiculo: resultado.clienteVeiculo,
+            }))
+          : []
+      } else {
+        const respostaInicial = await servicoApi.listar(0, TAMANHO_PAGINA)
+        if (respostaInicial?.error) {
+          setMensagem("Não foi possível carregar os serviços.")
+          setMostrarResultado(false)
+          return
+        }
+
+        const paginaInicial = extrairPagina(respostaInicial)
+        paginasDaApi = paginaInicial.totalPages
+        let listaCompleta = paginaInicial.content
+
+        if (temFiltroContato && paginasDaApi > 1) {
+          const respostasRestantes = await Promise.all(
+            Array.from({ length: paginasDaApi - 1 }, (_, index) =>
+              servicoApi.listar(index + 1, TAMANHO_PAGINA)
+            )
+          )
+
+          if (respostasRestantes.some((resposta) => resposta?.error)) {
+            setMensagem("Não foi possível carregar todos os serviços para aplicar o filtro.")
+            setMostrarResultado(false)
+            return
+          }
+
+          listaCompleta = [
+            ...listaCompleta,
+            ...respostasRestantes.flatMap((resposta) => extrairPagina(resposta).content),
+          ]
+        }
+
+        usarPaginacaoLocal = temFiltroContato || Boolean(placaNormalizada)
+        servicosEncontrados = await enriquecerServicos(listaCompleta)
+      }
+
+      servicosEncontrados = filtrarServicosPorContato(servicosEncontrados, email, telefone, placa)
+      if (!servicosEncontrados.length) {
+        setMensagem("Nenhum serviço encontrado para os dados informados.")
+        setMostrarResultado(false)
+        return
+      }
+
+      setMensagem("")
+      setPaginacaoLocal(usarPaginacaoLocal)
+      setServicosFiltrados(servicosEncontrados)
+      setPaginaAtual(0)
+      setTotalPaginas(usarPaginacaoLocal
+        ? Math.ceil(servicosEncontrados.length / TAMANHO_PAGINA)
+        : paginasDaApi
+      )
+      setOrcamentos(usarPaginacaoLocal
+        ? servicosEncontrados.slice(0, TAMANHO_PAGINA)
+        : servicosEncontrados
+      )
+      setStatusPorServico(
+        Object.fromEntries(servicosEncontrados.map((servico) => [servico.id, servico.status || "ABERTO"]))
+      )
+      setAcaoSelecionadaPorServico({})
+      setModalAprovarId(null)
+      setModalCancelarId(null)
+      setMostrarResultado(true)
+    } catch (err) {
+      setMensagem(err?.message || "Não foi possível carregar os serviços.")
+      setMostrarResultado(false)
+    } finally {
+      setCarregandoServicos(false)
+    }
   }
+
+  const mudarPagina = async (pagina) => {
+    if (carregandoServicos || pagina < 0 || pagina >= totalPaginas || pagina === paginaAtual) return
+
+    setCarregandoServicos(true)
+
+    try {
+      if (paginacaoLocal) {
+        const inicio = pagina * TAMANHO_PAGINA
+        setOrcamentos(servicosFiltrados.slice(inicio, inicio + TAMANHO_PAGINA))
+        setPaginaAtual(pagina)
+        return
+      }
+
+      const resposta = await servicoApi.listar(pagina, TAMANHO_PAGINA)
+      if (resposta?.error) {
+        setMensagem("Não foi possível carregar esta página de serviços.")
+        return
+      }
+
+      const servicosPagina = await enriquecerServicos(extrairPagina(resposta).content)
+      setOrcamentos(servicosPagina)
+      setServicosFiltrados(servicosPagina)
+      setPaginaAtual(pagina)
+      setStatusPorServico((anterior) => ({
+        ...anterior,
+        ...Object.fromEntries(servicosPagina.map((servico) => [servico.id, servico.status || "ABERTO"])),
+      }))
+    } catch (err) {
+      setMensagem(err?.message || "Não foi possível carregar esta página de serviços.")
+    } finally {
+      setCarregandoServicos(false)
+    }
+  }
+
+  const paginasVisiveis = totalPaginas <= 5
+    ? Array.from({ length: totalPaginas }, (_, index) => index)
+    : paginaAtual < 3
+      ? [...Array.from({ length: 5 }, (_, index) => index), " reticencias "]
+      : paginaAtual >= totalPaginas - 3
+        ? [" reticencias ", ...Array.from({ length: 5 }, (_, index) => totalPaginas - 5 + index)]
+        : [0, " reticencias-inicio ", paginaAtual - 1, paginaAtual, paginaAtual + 1, " reticencias-fim ", totalPaginas - 1]
 
   const statusTexto = {
     aberto: "Aberto",
@@ -87,35 +252,32 @@ const StatusOrcamentoPage = () => {
   const normalizarEmail = (valor) => String(valor ?? "").trim().toLowerCase()
   const normalizarTelefone = (valor) => String(valor ?? "").replace(/\D/g, "")
 
-  const filtrarResultadoPorContato = (resultado, emailInput, telefoneInput) => {
-    if (!resultado) return resultado
-
+  const filtrarServicosPorContato = (servicos, emailInput, telefoneInput, placaInput) => {
     const temEmail = normalizarEmail(emailInput).length > 0
     const temTelefone = normalizarTelefone(telefoneInput).length > 0
 
-    if (!temEmail && !temTelefone) return resultado
+    return servicos.filter((servico) => {
+      const cliente = servico.clienteVeiculo ?? servico.cliente ?? {}
+      const emailCliente = normalizarEmail(
+        cliente.email ?? cliente.emailCliente ?? cliente.emailUsuario ?? servico.email
+      )
+      const telefoneCliente = normalizarTelefone(
+        cliente.telefone ?? cliente.telefoneCliente ?? cliente.telefoneUsuario ?? servico.telefone
+      )
+      const placaServico = normalizarPlaca(
+        servico.veiculo?.placa ?? servico.placa ?? servico.placaVeiculo
+      )
 
-    const cliente = resultado?.clienteVeiculo ?? {}
-    const emailCliente = normalizarEmail(cliente.email ?? cliente.emailCliente ?? cliente.emailUsuario)
-    const telefoneCliente = normalizarTelefone(cliente.telefone ?? cliente.telefoneCliente ?? cliente.telefoneUsuario)
-
-    const emailOk = !temEmail || emailCliente === normalizarEmail(emailInput)
-    const telefoneOk = !temTelefone || telefoneCliente === normalizarTelefone(telefoneInput)
-
-    if (emailOk && telefoneOk) return resultado
-
-    return {
-      ...resultado,
-      clienteVeiculo: null,
-      servicos: [],
-    }
+      return (!temEmail || emailCliente === normalizarEmail(emailInput)) &&
+        (!temTelefone || telefoneCliente === normalizarTelefone(telefoneInput)) &&
+        (!normalizarPlaca(placaInput) || placaServico === normalizarPlaca(placaInput))
+    })
   }
 
   const getDadosCliente = (servico = null) => {
     const cliente =
       servico?.clienteVeiculo ??
       servico?.cliente ??
-      resultadoBusca?.clienteVeiculo ??
       {}
 
     const nome = cliente.nomeCliente || cliente.nome || "Cliente"
@@ -202,7 +364,6 @@ const StatusOrcamentoPage = () => {
 
   const fecharModalCancelar = (servicoId) => {
     setModalCancelarId(null)
-    setMotivoCancelamento("")
     setAcaoSelecionadaPorServico((prev) => ({
       ...prev,
       [servicoId]: "",
@@ -210,14 +371,8 @@ const StatusOrcamentoPage = () => {
   }
 
   const confirmarCancelamento = async (servicoId) => {
-    if (!motivoCancelamento) return
-
     try {
-      const resposta = await servicoApi.atualizarStatus(
-        servicoId,
-        "CANCELADO",
-        motivoCancelamento
-      )
+      const resposta = await servicoApi.atualizarStatus(servicoId, "CANCELADO")
 
       if (resposta?.status && resposta.status >= 400) {
         setMensagem("Não foi possível cancelar o serviço.")
@@ -234,7 +389,6 @@ const StatusOrcamentoPage = () => {
       return
     } finally {
       setModalCancelarId(null)
-      setMotivoCancelamento("")
       setAcaoSelecionadaPorServico((prev) => ({
         ...prev,
         [servicoId]: "",
@@ -276,7 +430,7 @@ const StatusOrcamentoPage = () => {
 
           <div className="sop_card__header">
             <h2>Buscar Serviço</h2>
-            <p>Preencha os demais para uma melhor busca</p>
+            <p>Todos os campos são opcionais. Sem filtros, serão exibidos todos os serviços.</p>
           </div>
 
           <form
@@ -285,7 +439,7 @@ const StatusOrcamentoPage = () => {
           >
 
             <label htmlFor="placa">
-              Placa do veículo (Obrigatório)
+              Placa do veículo
             </label>
 
             <input
@@ -323,8 +477,8 @@ const StatusOrcamentoPage = () => {
               placeholder="email@gmail.com"
             />
 
-            <button type="submit">
-              Realizar procura
+            <button type="submit" disabled={carregandoServicos}>
+              {carregandoServicos ? "Buscando..." : "Realizar procura"}
             </button>
               {mensagem ? <p>{mensagem}</p> : ""}
           </form>
@@ -347,61 +501,106 @@ const StatusOrcamentoPage = () => {
           Voltar
           </div>
 
+          {carregandoServicos && <p className="sop_pagination__loading">Carregando serviços...</p>}
 
-          {orcamento.map((servico, index) => {
-            const nomeCliente = resultadoBusca?.clienteVeiculo?.nomeCliente || "Cliente"
-            const placaVeiculo = resultadoBusca?.veiculo?.placa || "—"
-            const statusAtual = getStatusAtual(servico)
-            const acaoAtual = acaoSelecionadaPorServico[servico.id] || ""
+          <div className="sop_results__list">
+            {orcamento.map((servico, index) => {
+              const cliente = servico.clienteVeiculo ?? servico.cliente ?? {}
+              const nomeCliente = cliente.nomeCliente || cliente.nome || "Cliente"
+              const placaVeiculo = servico.veiculo?.placa || servico.placa || servico.placaVeiculo || "—"
+              const statusAtual = getStatusAtual(servico)
+              const acaoAtual = acaoSelecionadaPorServico[servico.id] || ""
 
-            return (
-              <article className="sop_budget" key={servico?.id || `${placaVeiculo}-${index}`}>
-                <div className="sop_budget__info">
-                  <strong>
-                    #{String(servico?.id || index + 1).slice(0, 4)} - {nomeCliente}
-                  </strong>
+              return (
+                <article className="sop_budget" key={servico?.id || `${placaVeiculo}-${index}`}>
+                  <div className="sop_budget__info">
+                    <strong>
+                      #{String(servico?.id || index + 1).slice(0, 4)} - {nomeCliente}
+                    </strong>
 
-                  <span>
-                    {placaVeiculo}
-                  </span>
-                </div>
+                    <span>
+                      {placaVeiculo}
+                    </span>
+                  </div>
 
-                <div className="sop_status-group">
-                  <span>{statusTexto[statusAtual] || statusTexto.ABERTO}</span>
-                  <span className={`sop_status-dot sop_status-dot--${statusAtual}`} />
-                </div>
+                  <div className="sop_status-group">
+                    <span>{statusTexto[statusAtual] || statusTexto.ABERTO}</span>
+                    <span className={`sop_status-dot sop_status-dot--${statusAtual}`} />
+                  </div>
 
-                <button
-                  type="button"
-                  className="sop_view"
-                  onClick={() => abrirModalVisualizacao(servico)}
-                >
-                  Visualizar
-                </button>
-
-                {statusAtual === "aberto" && (
-                  <select
-                    className="sop_status-select"
-                    value={acaoAtual}
-                    onChange={(event) => selecionarStatus(event, servico.id)}
+                  <button
+                    type="button"
+                    className="sop_view"
+                    onClick={() => abrirModalVisualizacao(servico)}
                   >
-                    <option value="" disabled>
-                      Status
-                    </option>
+                    Visualizar
+                  </button>
 
-                    <option value="FINALIZADO">
-                      Finalizar orçamento
-                    </option>
+                  {statusAtual === "aberto" && (
+                    <select
+                      className="sop_status-select"
+                      value={acaoAtual}
+                      onChange={(event) => selecionarStatus(event, servico.id)}
+                    >
+                      <option value="" disabled>
+                        Status
+                      </option>
 
-                    <option value="CANCELADO">
-                      Cancelar orçamento
-                    </option>
-                  </select>
-                )}
-              </article>
-            )
-          })}
-          
+                      <option value="FINALIZADO">
+                        Finalizar orçamento
+                      </option>
+
+                      <option value="CANCELADO">
+                        Cancelar orçamento
+                      </option>
+                    </select>
+                  )}
+                </article>
+              )
+            })}
+          </div>
+
+          {totalPaginas > 1 && (
+            <nav className="sop_pagination" aria-label="Paginação dos serviços">
+              <button
+                type="button"
+                className="sop_pagination__step"
+                onClick={() => mudarPagina(paginaAtual - 1)}
+                disabled={paginaAtual === 0 || carregandoServicos}
+                aria-label="Página anterior"
+                title="Página anterior"
+              >
+                ‹
+              </button>
+
+              {paginasVisiveis.map((pagina, index) => (
+                typeof pagina === "string"
+                  ? <span className="sop_pagination__ellipsis" key={`${pagina}-${index}`}>…</span>
+                  : <button
+                      type="button"
+                      className={`sop_pagination__number ${pagina === paginaAtual ? "is-active" : ""}`}
+                      key={pagina}
+                      onClick={() => mudarPagina(pagina)}
+                      disabled={carregandoServicos}
+                      aria-current={pagina === paginaAtual ? "page" : undefined}
+                      aria-label={`Página ${pagina + 1}`}
+                    >
+                      {pagina + 1}
+                    </button>
+              ))}
+
+              <button
+                type="button"
+                className="sop_pagination__step"
+                onClick={() => mudarPagina(paginaAtual + 1)}
+                disabled={paginaAtual >= totalPaginas - 1 || carregandoServicos}
+                aria-label="Próxima página"
+                title="Próxima página"
+              >
+                ›
+              </button>
+            </nav>
+          )}
 
         </section>
 
@@ -435,7 +634,12 @@ const StatusOrcamentoPage = () => {
 
               <div>
                 <span>Placa</span>
-                <strong>{resultadoBusca?.veiculo?.placa || "—"}</strong>
+                <strong>
+                  {servicoSelecionado.veiculo?.placa ||
+                    servicoSelecionado.placa ||
+                    servicoSelecionado.placaVeiculo ||
+                    "—"}
+                </strong>
               </div>
 
               <div>
@@ -509,8 +713,12 @@ const StatusOrcamentoPage = () => {
             <div className="sop_modal_cliente">
               {(() => {
                 const servicoAtual = orcamento.find((servico) => servico.id === modalAprovarId)
-                const nomeCliente = resultadoBusca?.clienteVeiculo?.nomeCliente || "Cliente"
-                const placaVeiculo = resultadoBusca?.veiculo?.placa || "—"
+                const cliente = servicoAtual?.clienteVeiculo ?? servicoAtual?.cliente ?? {}
+                const nomeCliente = cliente.nomeCliente || cliente.nome || "Cliente"
+                const placaVeiculo = servicoAtual?.veiculo?.placa ||
+                  servicoAtual?.placa ||
+                  servicoAtual?.placaVeiculo ||
+                  "—"
                 const codigoServico = String(servicoAtual?.id || "#0000").slice(0, 4)
                 const problema = servicoAtual?.descricaoProblema || "—"
 
@@ -570,8 +778,19 @@ const StatusOrcamentoPage = () => {
       )}
 
       {modalCancelarId && orcamento.find((servico) => servico.id === modalCancelarId) && (
+        (() => {
+          const servicoAtual = orcamento.find((servico) => servico.id === modalCancelarId)
+          const cliente = servicoAtual?.clienteVeiculo ?? servicoAtual?.cliente ?? {}
+          const nomeCliente = cliente.nomeCliente || cliente.nome || "Cliente"
+          const placaVeiculo = servicoAtual?.veiculo?.placa ||
+            servicoAtual?.placa ||
+            servicoAtual?.placaVeiculo ||
+            "—"
+          const codigoServico = String(servicoAtual?.id || "#0000").slice(0, 4)
+          const problema = servicoAtual?.descricaoProblema || "—"
 
-        <div className="sop_modal_overlay">
+          return (
+            <div className="sop_modal_overlay">
 
           <div className="sop_modal">
 
@@ -584,63 +803,33 @@ const StatusOrcamentoPage = () => {
             </h2>
 
             <p className="sop_modal_subtitle">
-              Informe o motivo do cancelamento
+              Confirme o cancelamento deste serviço
             </p>
 
-            <div className="sop_motivos">
+            <div className="sop_modal_cliente">
+              <div>
+                <span>Cliente</span>
+                <strong>{nomeCliente}</strong>
+              </div>
 
-              <button
-                className={`sop_motivo_btn ${
-                  motivoCancelamento === "cliente-desistiu"
-                    ? "selecionado"
-                    : ""
-                }`}
-                onClick={() =>
-                  setMotivoCancelamento("cliente-desistiu")
-                }
-              >
-                Cliente desistiu
-              </button>
+              <div>
+                <span>Serviço</span>
+                <strong>#{codigoServico}</strong>
+              </div>
 
-              <button
-                className={`sop_motivo_btn ${
-                  motivoCancelamento === "demora-peca"
-                    ? "selecionado"
-                    : ""
-                }`}
-                onClick={() =>
-                  setMotivoCancelamento("demora-peca")
-                }
-              >
-                Demora na peça
-              </button>
+              <div>
+                <span>Placa</span>
+                <strong>{placaVeiculo}</strong>
+              </div>
 
-              <button
-                className={`sop_motivo_btn ${
-                  motivoCancelamento === "preco-alto"
-                    ? "selecionado"
-                    : ""
-                }`}
-                onClick={() =>
-                  setMotivoCancelamento("preco-alto")
-                }
-              >
-                Preço alto
-              </button>
+              <div>
+                <span>Problema</span>
+                <strong>{problema}</strong>
+              </div>
+            </div>
 
-              <button
-                className={`sop_motivo_btn ${
-                  motivoCancelamento === "outros"
-                    ? "selecionado"
-                    : ""
-                }`}
-                onClick={() =>
-                  setMotivoCancelamento("outros")
-                }
-              >
-                Outros
-              </button>
-
+            <div className="sop_modal_aviso">
+              Ao confirmar, o serviço será marcado como cancelado.
             </div>
 
             <div className="sop_modal_actions">
@@ -655,7 +844,6 @@ const StatusOrcamentoPage = () => {
               <button
                 className="sop_modal_btn sop_modal_btn_cancelar"
                 onClick={() => confirmarCancelamento(modalCancelarId)}
-                disabled={!motivoCancelamento}
               >
                 Confirmar cancelamento
               </button>
@@ -664,7 +852,10 @@ const StatusOrcamentoPage = () => {
 
           </div>
 
-        </div>
+            </div>
+          )
+          }
+        )()
 
       )}
 

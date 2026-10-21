@@ -1,9 +1,10 @@
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import cancel from "../assets/DeleteFile.png"
 import cancelB from "../assets/Delete_File_Branco.png"
 import "./css/CardCancelarOrcamento.css"
 import { useOrcamentoService } from "../services/orcamentoService"
 import { useRef, useState } from "react"
+import { useOrcamentoContext } from "../hooks/useOrcamentoContext"
 
 const CardCancelarOrcamento = () => {
   
@@ -13,11 +14,11 @@ const CardCancelarOrcamento = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
+  const { OrcamentoSelecionado, setOrcamentoSelecionado } = useOrcamentoContext()
 
   const { cancelarOrçamento: cancelarNoService, loading } = useOrcamentoService()
 
-  let dadosOrcamentos = location.state
-  const [Orcamento] = useState(dadosOrcamentos)
+  const Orcamento = location.state?.Orcamento ?? OrcamentoSelecionado
 
   async function cancelarOrçamento(){
     try {
@@ -30,9 +31,20 @@ const CardCancelarOrcamento = () => {
       } 
 
       const Motivo = {motivo:motivo}
-      
-      await cancelarNoService(Motivo, Orcamento.idOrcamento)
+      const idOrcamento = Orcamento?.id ?? Orcamento?.idOrcamento
 
+      if (!idOrcamento) {
+        setMensagem("Não foi possível identificar o orçamento para cancelar.")
+        return
+      }
+
+      const resposta = await cancelarNoService(Motivo, idOrcamento)
+      if (resposta?.error || (resposta?.status && resposta.status >= 400)) {
+        setMensagem("Não foi possível cancelar o orçamento.")
+        return
+      }
+
+      setOrcamentoSelecionado({ ...Orcamento, status: "CANCELADO" })
       setMensagem("Orçamento cancelado")
 
       setTimeout(() => {
@@ -109,7 +121,9 @@ const CardCancelarOrcamento = () => {
 
           <button
             className="cco_button cancel"
-            onClick={() => navigate("/visualizar-orcamento")}
+            onClick={() => navigate("/visualizar-orcamento", {
+              state: { Orcamento },
+            })}
           >
             ✖ Voltar para orçamento
           </button>
