@@ -18,3 +18,50 @@
     text-decoration: none;
     color: inherit;
 }
+
+@media (max-width: 1240px) {
+    .menu {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+        max-width: 1160px;
+        margin-inline: auto;
+        padding: 0 20px 24px;
+        align-items: stretch;
+    }
+
+    .menu > a {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .menu :is(.container_menu1, .card-status) {
+        width: 100%;
+        min-height: 180px;
+        height: 100%;
+        transition-property: transform, box-shadow;
+    }
+
+    .menu :is(.div_img1, .card-status__content) {
+        min-width: 0;
+        margin: 20px;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 16px 8px;
+    }
+
+    .menu {
+        padding-inline: 8px;
+        gap: 14px;
+    }
+
+    .menu :is(.container_menu1, .card-status) {
+        min-height: 160px;
+    }
+
+    .menu :is(.doc h2, .card-status__text h2) {
+        font-size: 1.2rem;
+    }
+}

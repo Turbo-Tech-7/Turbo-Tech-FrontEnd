@@ -63,4 +63,51 @@
     font-size: 14px;
     color: #666;
     margin-top: -2px;
-}   
+}
+
+/* Keep the complete form reachable on small screens and short viewports. */
+@media (max-width: 768px), (max-height: 600px) {
+    .login_container:not(:has(> .top_bar)) {
+        box-sizing: border-box;
+        height: auto;
+        min-height: calc(100vh - 16px);
+        min-height: calc(100dvh - 16px);
+        padding: 56px 8px 24px;
+    }
+
+    .login_card,
+    .login_container .recuperar_card {
+        box-sizing: border-box;
+        width: min(470px, 100%);
+        min-width: 0;
+        padding-inline: clamp(16px, 4vw, 25px);
+    }
+
+    .login_header,
+    .login_card .form_wrapper {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .login_header h2 {
+        text-align: center;
+    }
+
+    .login_card :is(input, button),
+    .recuperar_card :is(input, button) {
+        min-width: 0;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .login_card #div_action a,
+    .recuperar_card #div_action a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        font-size: 14px;
+        text-align: center;
+    }
+}

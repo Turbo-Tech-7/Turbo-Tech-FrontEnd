@@ -208,3 +208,156 @@
     height: 14px;
     border-radius: 4px;
 }
+
+@media (max-width: 1100px) {
+    .cro_container {
+        min-height: 100vh;
+        padding-bottom: 32px;
+    }
+
+    .cro_top_bar,
+    .cro_nav,
+    .cro_cards,
+    .cro_graphs,
+    .cro_feedback {
+        box-sizing: border-box;
+        width: calc(100% - 48px);
+        min-width: 0;
+    }
+
+    .cro_top_bar,
+    .cro_nav {
+        gap: 16px;
+    }
+
+    .cro_top_left,
+    .cro_top_left > div,
+    .cro_card_small,
+    .cro_graph_card,
+    .cro_legenda,
+    .cro_legenda p {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .cro_top_icon,
+    .cro_dot {
+        flex-shrink: 0;
+    }
+
+    .cro_nav,
+    .cro_nav_links {
+        flex-wrap: wrap;
+    }
+
+    .cro_nav_links {
+        gap: 12px 24px;
+    }
+
+    .cro_link,
+    .cro_nav_item {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        flex-shrink: 0;
+    }
+
+    .cro_select {
+        min-height: 44px;
+        max-width: 100%;
+        font-size: 16px;
+    }
+
+    .cro_cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cro_graphs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .cro_graph_content {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .cro_chart {
+        max-width: 100%;
+        flex-shrink: 0;
+    }
+
+    .cro_legenda {
+        width: 100%;
+    }
+
+    .cro_feedback {
+        margin-top: 24px;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 600px) {
+    .cro_top_bar,
+    .cro_nav,
+    .cro_cards,
+    .cro_graphs,
+    .cro_feedback {
+        width: calc(100% - 24px);
+        margin-top: 16px;
+    }
+
+    .cro_top_bar,
+    .cro_nav,
+    .cro_card_small,
+    .cro_graph_card {
+        padding: 16px;
+    }
+
+    .cro_top_bar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 8px 16px;
+    }
+
+    .cro_top_left {
+        flex: 1 1 210px;
+    }
+
+    .cro_top_left h3 {
+        font-size: 20px;
+    }
+
+    .cro_nav_links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px 12px;
+        width: 100%;
+    }
+
+    .cro_nav_links > span {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    .cro_select {
+        width: 100%;
+    }
+
+    .cro_graphs {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .cro_cards {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .cro_cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

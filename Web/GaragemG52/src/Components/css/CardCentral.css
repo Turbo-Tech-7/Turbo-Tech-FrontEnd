@@ -64,3 +64,45 @@
 .img_engrenagem {
     width: 40px;
 }
+
+@media (max-width: 768px) {
+    .header .container {
+        min-width: 0;
+        height: auto;
+        min-height: 90px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .header .container_2 {
+        flex: 1 1 210px;
+        min-width: 0;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .header .img_engrenagem {
+        flex-shrink: 0;
+    }
+
+    .header .gestao {
+        min-width: 0;
+        padding: 0;
+        gap: 6px;
+        overflow-wrap: anywhere;
+    }
+
+    .header .gestao h2 {
+        font-size: clamp(1.15rem, 3vw, 1.5rem);
+    }
+
+    .header .gestao p {
+        line-height: 1.4;
+    }
+
+    .header .logout_link {
+        min-height: 44px;
+        margin-left: 16px;
+        flex-shrink: 0;
+    }
+}
