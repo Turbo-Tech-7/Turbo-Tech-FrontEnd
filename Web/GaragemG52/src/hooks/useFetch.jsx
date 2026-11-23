@@ -107,7 +107,7 @@ export const useFetch = (baseUrl = getApiBaseUrl()) => {
         status: null,
       };
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }, [baseUrl]);
 
