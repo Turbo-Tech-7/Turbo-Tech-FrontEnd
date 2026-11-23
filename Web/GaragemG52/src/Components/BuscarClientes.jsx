@@ -11,41 +11,49 @@ const BuscarClientesPage = () => {
 
   const [nome, setNome] = useState("")
   const [placa, setPlaca] = useState("")
+  const [mensagem, setMensagem] = useState("")
 
-  const buscar = async () => {
-    let res = null
+  const buscar = async (event) => {
+    event.preventDefault()
+    setMensagem("")
 
-    if (nome.trim()) {
-      res = await buscarPorNome(nome.trim())
-      console.log("Pesquisa por nome")
+    try {
+      let res
+      let filtro
+
+      if (nome.trim()) {
+        res = await buscarPorNome(nome.trim())
+        filtro = `Nome: ${nome.trim()}`
+      } else if (placa.trim()) {
+        res = await buscarPorPlaca(placa.trim().toUpperCase())
+        filtro = `Placa: ${placa.trim().toUpperCase()}`
+      } else {
+        res = await listarClientes()
+        filtro = "Todos os Clientes"
+      }
+
+      if (res?.error) {
+        setMensagem("Não foi possível buscar os clientes. Tente novamente.")
+        return
+      }
+
+      const dados = res?.data ?? res
+      const lista = Array.isArray(dados)
+        ? dados
+        : dados
+          ? [dados]
+          : []
+
+      navigate("/lista-clientes", {
+        state: {
+          resultados: lista,
+          filtro,
+        },
+      })
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error)
+      setMensagem("Ocorreu um erro ao buscar os clientes.")
     }
-    else if (placa.trim()) {
-      res = await buscarPorPlaca(placa.trim().toUpperCase())
-      console.log(res)
-      console.log("Pesquisa por placa")
-    }
-
-    else {
-      res = listarClientes()
-    }
-
-    const lista = res?.data
-      ? Array.isArray(res.data)
-        ? res.data
-        : [res.data]
-      : []
-
-    navigate("/lista-clientes", {
-      state: {
-        resultados: lista,
-
-        filtro: nome.trim()
-          ? `Nome: ${nome}`
-          : placa.trim()
-          ? `Placa: ${placa}`
-          : "Todos os Clientes",
-      },
-    })
   }
 
   return (
@@ -87,10 +95,10 @@ const BuscarClientesPage = () => {
 
         <div className="bcp_card_header">
           <h2>Buscar Cliente</h2>
-          <p>Preencha pelo menos um campo</p>
+          <p>Busque por nome ou placa, ou deixe os campos vazios para listar todos</p>
         </div>
 
-        <div className="bcp_form">
+        <form className="bcp_form" onSubmit={buscar}>
 
           <div className="bcp_field">
             <label>Placa do Veículo</label>
@@ -120,8 +128,8 @@ const BuscarClientesPage = () => {
           </div>
 
           <button
+            type="submit"
             className="bcp_btn"
-            onClick={buscar}
             disabled={loading}
           >
             {loading
@@ -129,7 +137,8 @@ const BuscarClientesPage = () => {
               : "Realizar Busca"}
           </button>
 
-        </div>
+          {mensagem && <p className="bcp_search_error" role="alert">{mensagem}</p>}
+        </form>
       </div>
     </div>
   )

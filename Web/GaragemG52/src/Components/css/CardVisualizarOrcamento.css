@@ -118,6 +118,12 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 12px;
+}
+
+.cvo_header_actions {
+    display: flex;
+    gap: 8px;
 }
 
 .cvo_header_text h2 {

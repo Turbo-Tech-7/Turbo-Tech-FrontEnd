@@ -13,7 +13,7 @@ function CardStatus() {
 
         <div className="card-status__text">
           <h2>Gerenciar Status</h2>
-          <p>Consulte e atualize orçamentos e serviços</p>
+          <p>Consulte e atualize serviços</p>
         </div>
 
       </div>

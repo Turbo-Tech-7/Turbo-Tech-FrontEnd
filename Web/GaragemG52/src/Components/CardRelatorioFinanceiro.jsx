@@ -13,7 +13,7 @@ Legend,
 } from "recharts"
 import { Link } from "react-router-dom"
 import { useDashboardService } from "../services/dashboardService"
-import relatorios from "../assets/relatorios.png"
+import relatorios from "../assets/Relatorios.png"
 import "./css/CardRelatorioFinanceiro.css"
 
 

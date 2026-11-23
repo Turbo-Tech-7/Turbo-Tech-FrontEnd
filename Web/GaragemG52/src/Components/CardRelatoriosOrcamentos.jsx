@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import relatorios from "../assets/relatorios.png"
+import relatorios from "../assets/Relatorios.png"
 import { useDashboardService } from "../services/dashboardService"
 
 import {

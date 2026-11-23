@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import "./css/Home.css"
+import "./CSS/Home.css"
 
 import CardCentral from "../Components/CardCentral"
 import CardCriarOrcamento from "../Components/CardCriarOrcamento"

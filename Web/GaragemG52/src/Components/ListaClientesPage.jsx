@@ -15,6 +15,7 @@ function ListaClientesPage() {
 
   const [mensagem, setMensagem] = useState("")
   const [modalCliente, setModalCliente] = useState(null)
+  const [clienteVisualizado, setClienteVisualizado] = useState(null)
 
   const filtro = location.state?.filtro || ""
 
@@ -25,6 +26,10 @@ function ListaClientesPage() {
 
   const confirmarExclusao = (cliente) => {
     setModalCliente(cliente)
+  }
+
+  const visualizarCliente = (cliente) => {
+    setClienteVisualizado(cliente)
   }
 
   const cancelarExclusao = () => {
@@ -112,17 +117,13 @@ function ListaClientesPage() {
                 </span>
 
                 <span className="bcp_result_info">
-                  {c.telefoneCliente ||
-                    "Sem telefone"}
-
-                  {c.emailCliente
-                    ? ` • ${c.emailCliente}`
-                    : ""}
+                  Telefone: {c.telefoneCliente || "Não informado"}
                 </span>
 
                 <span className="bcp_result_info">
-                  {c.modeloVeiculo || ""}
+                  Email: {c.emailCliente || "Não informado"}
                 </span>
+
               </div>
 
               <div className="bcp_result_right">
@@ -131,6 +132,15 @@ function ListaClientesPage() {
                 </span>
 
                 <button
+                  type="button"
+                  className="bcp_btn_visualizar"
+                  onClick={() => visualizarCliente(c)}
+                >
+                  Visualizar
+                </button>
+
+                <button
+                  type="button"
                   className="bcp_btn_excluir"
                   onClick={() =>
                     confirmarExclusao(c)
@@ -143,10 +153,94 @@ function ListaClientesPage() {
           ))}
       </div>
 
-      {/* MODAL */}
+      {clienteVisualizado && (
+        <div
+          className="bcp_modal_overlay bcp_profile_overlay"
+          onClick={() => setClienteVisualizado(null)}
+        >
+          <section
+            className="bcp_profile_modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bcp_profile_title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="bcp_profile_header">
+              <div>
+                <h3 id="bcp_profile_title">Perfil do Cliente</h3>
+                <p>Informações pessoais e do veículo</p>
+              </div>
+              <button
+                type="button"
+                className="bcp_profile_close"
+                onClick={() => setClienteVisualizado(null)}
+                aria-label="Fechar perfil do cliente"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="bcp_profile_section">
+              <h4>Dados pessoais</h4>
+              <div className="bcp_profile_row">
+                <span>Nome</span>
+                <strong>{clienteVisualizado.nomeCliente || "Não informado"}</strong>
+              </div>
+              <div className="bcp_profile_row">
+                <span>Email</span>
+                <strong>{clienteVisualizado.emailCliente || "Não informado"}</strong>
+              </div>
+              <div className="bcp_profile_row">
+                <span>Telefone</span>
+                <strong>{clienteVisualizado.telefoneCliente || "Não informado"}</strong>
+              </div>
+            </div>
+
+            <div className="bcp_profile_section">
+              <h4>Veículo</h4>
+              <div className="bcp_profile_row">
+                <span>Placa</span>
+                <strong>
+                  {clienteVisualizado.placaVeiculo || clienteVisualizado.veiculo?.placa || "Não informado"}
+                </strong>
+              </div>
+              <div className="bcp_profile_row">
+                <span>Modelo</span>
+                <strong>
+                  {clienteVisualizado.modeloVeiculo ||
+                    [clienteVisualizado.veiculo?.marca, clienteVisualizado.veiculo?.modelo]
+                      .filter(Boolean)
+                      .join(" ") ||
+                    "Não informado"}
+                </strong>
+              </div>
+              <div className="bcp_profile_row">
+                <span>Ano</span>
+                <strong>{clienteVisualizado.veiculo?.ano || "Não informado"}</strong>
+              </div>
+              <div className="bcp_profile_row">
+                <span>Cor</span>
+                <strong>{clienteVisualizado.veiculo?.cor || "Não informado"}</strong>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="bcp_profile_done"
+              onClick={() => setClienteVisualizado(null)}
+            >
+              Fechar
+            </button>
+          </section>
+        </div>
+      )}
+
       {modalCliente && (
-        <div className="bcp_modal_overlay">
-          <div className="bcp_modal">
+        <div
+          className="bcp_modal_overlay"
+          onClick={cancelarExclusao}
+        >
+          <div className="bcp_modal" onClick={(event) => event.stopPropagation()}>
             <h3>Remoção de Cliente</h3>
 
             <p>

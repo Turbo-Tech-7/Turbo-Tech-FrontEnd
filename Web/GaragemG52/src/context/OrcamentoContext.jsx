@@ -26,6 +26,7 @@ export function OrcamentoContextProvider ({children}){
     const [Descricao, setDescricao] = useState(Orcamento.descricaoServico || "")
     const [MaoDeObra, setMaoDeObra] = useState(Orcamento.valorMaoDeObra || 0)
     const [Pecas, setPecas] = useState(Orcamento.pecas || Orcamento.itens || [])
+    const [OrcamentoSelecionado, setOrcamentoSelecionado] = useState(null)
 
     function adicionarPeca(peca){
     const index = Pecas.findIndex(item => item.id === peca.idPeca)
@@ -113,6 +114,8 @@ export function OrcamentoContextProvider ({children}){
     return(
         <OrcamentoContext.Provider value={{
             Orcamento,
+            OrcamentoSelecionado,
+            setOrcamentoSelecionado,
             Descricao,
             MaoDeObra,
             Pecas,
