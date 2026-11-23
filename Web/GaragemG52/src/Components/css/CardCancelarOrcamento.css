@@ -178,3 +178,67 @@
 .cco_button.cancel:hover {
     border-color: #ff4d4d;
 }
+
+@media (max-width: 768px) {
+    .cco_container {
+        box-sizing: border-box;
+        min-height: 100svh;
+        padding-bottom: 32px;
+    }
+
+    .cco_top_bar {
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+        margin-top: 16px;
+        padding: 12px 16px;
+    }
+
+    .cco_top_left,
+    .cco_top_left > div {
+        min-width: 0;
+    }
+
+    .cco_top_icon {
+        width: 36px;
+        flex-shrink: 0;
+    }
+
+    .cco_top_left h3 {
+        font-size: clamp(18px, 4.8vw, 23px);
+        overflow-wrap: anywhere;
+    }
+
+    .cco_card {
+        box-sizing: border-box;
+        width: min(470px, calc(100% - 32px));
+        margin-top: 60px;
+        padding: 35px 20px 25px;
+    }
+
+    .cco_header {
+        text-align: center;
+    }
+
+    .cco_header h2 {
+        font-size: clamp(20px, 5vw, 24px);
+    }
+
+    .cco_select {
+        box-sizing: border-box;
+        min-width: 0;
+        font-size: 16px;
+        padding-inline: 8px;
+    }
+
+    .cco_button {
+        height: auto;
+        min-height: 45px;
+        padding: 10px 12px;
+        white-space: normal;
+    }
+
+    .cco_content p {
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+}

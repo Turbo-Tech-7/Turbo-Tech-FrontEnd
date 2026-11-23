@@ -36,3 +36,18 @@
     display: flex;
     justify-content: center;
 }
+
+@media (max-width: 480px) {
+    .recuperar_card .codigo_container {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr));
+        gap: clamp(3px, 1.2vw, 6px);
+        width: 100%;
+    }
+
+    .recuperar_card .codigo_input {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 0;
+    }
+}

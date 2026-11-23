@@ -138,3 +138,64 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px), (max-height: 700px) {
+  .modal_overlay {
+    box-sizing: border-box;
+    padding: 16px;
+  }
+
+  .modal_container {
+    box-sizing: border-box;
+    width: 100%;
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .modal_header,
+  .modal_footer {
+    flex-shrink: 0;
+    padding: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .modal_content {
+    min-height: 0;
+    max-height: none;
+    padding: 16px;
+    flex: 1 1 auto;
+  }
+
+  .dados_card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dado_item {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .modal_footer {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .modal_footer button {
+    min-height: 44px;
+    flex: 1 1 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dados_card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modal_header h2 {
+    font-size: 18px;
+  }
+}

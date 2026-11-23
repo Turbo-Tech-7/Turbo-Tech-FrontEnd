@@ -104,3 +104,89 @@
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
+
+/* A escolha do cliente acompanha o cabeçalho sem sobrepor o formulário. */
+@media (max-width: 768px), (max-height: 600px) {
+    .login_container:has(> .top_bar) {
+        box-sizing: border-box;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100svh;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 64px;
+        padding: 16px 0 40px;
+    }
+
+    .login_container > .top_bar {
+        position: static;
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .top_bar_left,
+    .top_bar_left > div {
+        min-width: 0;
+    }
+
+    .top_bar_left {
+        flex: 1;
+    }
+
+    .top_bar_left .top_icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        object-fit: contain;
+    }
+
+    .top_bar_left h3 {
+        font-size: clamp(18px, 4vw, 20px);
+    }
+
+    .top_bar_left h3,
+    .top_bar_left p {
+        overflow-wrap: anywhere;
+    }
+
+    .top_bar_link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        flex-shrink: 0;
+    }
+
+    .top_bar + .recuperar_card {
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+        max-width: 470px;
+        margin: 0;
+    }
+
+    .top_bar + .recuperar_card .login_header h2 {
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    .top_bar + .recuperar_card .option_button {
+        height: auto;
+        min-height: 44px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login_container > .top_bar {
+        flex-wrap: wrap;
+    }
+
+    .top_bar_left {
+        flex-basis: 100%;
+    }
+
+    .top_bar_link {
+        margin-left: auto;
+    }
+}

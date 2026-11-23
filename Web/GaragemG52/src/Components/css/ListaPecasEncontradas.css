@@ -189,11 +189,81 @@
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .pecas_grid {
-    grid-template-columns: 1fr;
+  .lista_pecas_container {
+    min-width: 0;
+    padding: 12px;
   }
 
-  .dados_card {
-    grid-template-columns: 1fr;
+  .lista_header h3 {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .lista_pecas_container .filtro_input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .pecas_grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .peca_card {
+    min-width: 0;
+  }
+
+  .peca_header {
+    gap: 8px;
+  }
+
+  .peca_header h4 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .peca_id {
+    flex-shrink: 0;
+  }
+
+  .peca_descricao p {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+  }
+
+  .peca_info .info_item {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .peca_info .info_item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .peca_footer {
+    flex-wrap: wrap;
+  }
+
+  .peca_footer .link_externo,
+  .peca_footer .btn_adicionar {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 44px;
+    flex: 1 1 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .lista_vazia {
+    padding: 24px 12px;
+    overflow-wrap: anywhere;
   }
 }

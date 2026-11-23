@@ -139,3 +139,89 @@
 
     cursor: pointer;
 }
+
+@media (max-width: 768px) {
+    .ccc_container {
+        box-sizing: border-box;
+        min-height: 100svh;
+        padding-bottom: 32px;
+    }
+
+    .ccc_top_bar {
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+        margin-top: 16px;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+    }
+
+    .ccc_top_left {
+        flex: 1 1 220px;
+        min-width: 0;
+    }
+
+    .ccc_top_left > div {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .ccc_top_icon {
+        flex-shrink: 0;
+    }
+
+    .ccc_link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        margin-left: auto;
+    }
+
+    .ccc_card {
+        box-sizing: border-box;
+        width: min(600px, calc(100% - 32px));
+        margin-top: 60px;
+        padding: 40px 20px 25px;
+    }
+
+    .ccc_title {
+        text-align: center;
+        font-size: clamp(20px, 5vw, 24px);
+    }
+
+    .ccc_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ccc_input_group {
+        min-width: 0;
+    }
+
+    .ccc_input_group input {
+        box-sizing: border-box;
+        min-width: 0;
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .ccc_button {
+        height: auto;
+        min-height: 45px;
+        padding: 10px 12px;
+        white-space: normal;
+    }
+
+    .ccc_form p {
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+}
+
+@media (max-width: 560px) {
+    .ccc_grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
